@@ -1,0 +1,84 @@
+<%- include("../layouts/admin/header.ejs") %>
+    <%- include("../layouts/admin/navbar.ejs") %>
+        <main class="main-wrap">
+            <%- include("../layouts/admin/topnav.ejs") %>
+                <section class="content-main">
+                    <div class="content-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="content-title card-title">Edit Brand</h2>
+                            <p class="text-muted">Update brand details below</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <% if (locals.message && message.length> 0) { %>
+                                <div class="alert alert-success">
+                                    <%= message %>
+                                </div>
+                                <% } %>
+
+                                    <div class="row">
+                                        <!-- Edit Form -->
+                                        <div class="col-md-6 offset-md-3">
+                                            <form method="post" action="/admin/edit-brand?id=<%= data._id %>"
+                                                enctype="multipart/form-data">
+
+                                                <input type="hidden" name="brandid" value="<%= data._id %>" />
+                                                <div class="mb-4">
+                                                    <label for="brand_name" class="form-label">Brand Name</label>
+                                                    <input type="text" name="brandname" value="<%= data.brandname %>"
+                                                        class="form-control" id="name" />
+                                                    <small id="nameError" class="text-danger"></small>
+                                                </div>
+
+                                                <div class="mb-4">
+                                                    <label class="form-label">Description</label>
+                                                    <textarea name="branddescription" id="description"
+                                                        class="form-control"><%= data.description %></textarea>
+                                                    <small id="descriptionError" class="text-danger"></small>
+                                                </div>
+
+                                                <div class="mb-4">
+                                                    <label for="brand_logo" class="form-label">Brand Logo</label>
+                                                    <div class="mb-2">
+                                                        <img src="/uploads/<%= data.image %>" alt="Current Brand Logo"
+                                                            height="50" class="rounded">
+                                                    </div>
+                                                    <input type="file" name="image" class="form-control" id="image"
+                                                        accept="image/*" />
+                                                    <small id="logoError" class="text-danger"></small>
+                                                </div>
+
+                                                <div class="d-grid">
+                                                    <button class="btn btn-primary">Update Brand</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                        </div> <!-- card body .// -->
+                    </div> <!-- card .// -->
+                </section> <!-- content-main end// -->
+                <%- include("../layouts/admin/footer.ejs") %>
+                    <script>
+                        function validateForm() {
+                            let name = document.getElementById('name').value;
+                            let description = document.getElementById('description').value;
+                            let valid = true;
+
+                            document.getElementById('nameError').innerText = '';
+                            document.getElementById('descriptionError').innerText = '';
+
+                            if (name.trim() === '') {
+                                document.getElementById('nameError').innerText = 'Brand name is required';
+                                valid = false;
+                            }
+
+                            if (description.trim() === '') {
+                                document.getElementById('descriptionError').innerText = 'Brand description is required';
+                                valid = false;
+                            }
+
+                            return valid;
+                        }
+                    </script>

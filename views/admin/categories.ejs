@@ -1,0 +1,173 @@
+<%- include("../layouts/admin/header.ejs")  %>
+    
+<%- include("../layouts/admin/navbar.ejs")  %>
+    <main class="main-wrap">
+        <%- include("../layouts/admin/topnav.ejs")  %>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Categories </h2>
+                    <p>Add, edit or delete a category</p>
+                </div>
+                <div>
+                    <input type="text" placeholder="Search Categories" class="form-control bg-white">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <% if (success_msg.length>0) { %>
+                        <div id="success-alert" class="alert alert-success" style="transition: opacity 0.5s;" ><%= success_msg %></div>
+                      <% } %>
+                      <% if (error_msg.length>0) { %>
+                        <div id="error-alert" class="alert alert-danger"  style="transition: opacity 0.5s;"  ><%= error_msg %></div>
+                      <% } %>
+                    <div class="row">
+                        <div class="col-md-3">
+                         
+                            <form method="post" action="/admin/categories" onsubmit="return validateForm()">
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Name</label>
+                                    <input type="text" name="name" placeholder="Type here" class="form-control" id="name" />
+                                    <small id="nameError" class="text-danger"></small> 
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Description</label>
+                                    <textarea placeholder="Type here" name="Description" id="Description" class="form-control"></textarea>
+                                    <small id="descriptionError" class="text-danger"></small>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-primary">Create category</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Status</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <%  if( data && data.length > 0)  { %>
+                                        <% for(let i=0; i < data.length; i++)  { %>
+                                        <tr>
+                                            <td><%= data[i]._id %></td>
+                                            <td><b><%= data[i].categoryName %></b></td>
+                                            <td><b><%= data[i].Description %></b></td>
+                                            <td>
+                                                <% if(data[i].isDelete === false) { %>
+                                                    <span class="badge bg-success">Active</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-danger">Inactive</span>
+                                                <% } %>
+                                            </td>
+                                            <td class="text-end">
+                                               
+                                                <button class="btn btn-sm btn-outline-primary"><a href="/admin/edit-categories?id=<%=data[i]._id%>">Edit</a></button>
+                                                <% if(data[i].isDelete === true) { %>
+                                                <button class="btn btn-sm btn-outline-danger"><a href="/admin/delete-categories?id=<%=data[i]._id%>">List</a></button>
+                                                <% } else { %>
+                                                <button class="btn btn-sm btn-outline-success"><a href="/admin/delete-categories?id=<%=data[i]._id%>">Unlist</a></button>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                       <% } else { %>
+                                        <tr><td colspan="4" class="text-center">No categories found.</td></tr>
+                                          <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- .col// -->
+                    </div> <!-- .row // -->
+                </div> <!-- card body .// -->
+            </div>
+            <!-- Pagination Controls -->
+        <div class="pagination-area mt-15 mb-50">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-start">
+                    <% if(currentPage > 1 )  { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage-1 %>&limit=<%= limit  %>">
+                                <i class="material-icons md-chevron_left"></i>
+                            </a>
+                        </li>
+                       
+                            <% } %>
+                     <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %> & <% limit %> "> <%= i %></a>
+                        </li>
+               
+                            <% } %>   
+                 <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>&limit=<%= limit %>">
+                                <i class="material-icons md-chevron_right"></i>
+                            </a>
+                        </li>
+                    <% }%>
+
+                </ul>
+            </nav>
+        </div> <!-- card .// -->
+        </section> <!-- content-main end// -->
+    </main>
+<%- include("../layouts/admin/footer.ejs")  %>
+
+<script>
+    function validateForm() {
+        let name = document.getElementById('name').value;
+        let description = document.getElementById('Description').value;
+        let valid = true;
+
+        
+        document.getElementById('nameError').innerText = '';
+        document.getElementById('descriptionError').innerText = '';
+
+      
+        if (name.trim() === '') {
+            document.getElementById('nameError').innerText = 'Category name is required';
+            valid = false;
+        }
+
+      
+        if (description.trim() === '') {
+            document.getElementById('descriptionError').innerText = 'Category description is required';
+            valid = false;
+        }
+
+        return valid; 
+    }
+
+
+  
+  setTimeout(function() {
+    const successAlert = document.getElementById('success-alert');
+    if (successAlert) {
+      successAlert.style.opacity = '0';
+      setTimeout(function() {
+        successAlert.style.display = 'none'; 
+      }, 500); 
+    }
+  }, 2000); 
+
+ 
+  setTimeout(function() {
+    const errorAlert = document.getElementById('error-alert');
+    if (errorAlert) {
+      errorAlert.style.opacity = '0'; 
+      setTimeout(function() {
+        errorAlert.style.display = 'none'; 
+      }, 500); 
+    }
+  }, 2000); 
+
+
+</script>

@@ -1,0 +1,69 @@
+<%- include("../layouts/admin/header.ejs")  %>
+    
+<%- include("../layouts/admin/navbar.ejs")  %>
+    <main class="main-wrap">
+        <%- include("../layouts/admin/topnav.ejs")  %>
+   
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Edit Category</h2>
+                    <p>Modify category details</p>
+                </div>
+                <div>
+                    <a href="/admin/categories" class="btn btn-light rounded font-md">Back to Categories</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                          
+                          
+                            <form method="post" action="/admin/edit-categories">
+
+                                <div class="mb-4">
+                                    <label for="category_id" class="form-label">Id</label>
+                                    <input type="text" name="id" readonly class="form-control-plaintext" id="category_id" value="<%= data._id %>" />
+                                </div>
+                                <div class="mb-4">
+                                    <label for="category_name" class="form-label">Name</label>
+                                    <input type="text" name="name" placeholder="Type here" class="form-control" id="name" value="<%= data.categoryName %>" />
+                                </div>
+                                <div class="mb-4">
+                                    <label for="category_description" class="form-label">Description</label>
+                                    <textarea placeholder="Type here" name="description" class="form-control" id="description" rows="4"><%= data.Description %></textarea>
+                                </div>
+                                <div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                            
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Category Details</h5>
+                                    <ul class="list-group list-group-flush">
+                                       
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            ID
+                                            <span class="text-muted"><%= data._id %></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Name
+                                            <span class="text-muted"><%= data.categoryName %></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Description
+                                            <span class="text-muted"><%= data.Description %></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- .row // -->
+                </div> <!-- card body .// -->
+            </div> <!-- card .// -->
+        </section> <!-- content-main end// -->
+<%- include("../layouts/admin/footer.ejs")  %>

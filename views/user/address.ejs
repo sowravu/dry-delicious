@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Account &ndash; DryDelicious</title>
+    <meta name="description" content="User Profile">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="assets/images/favicon.png" />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/css/plugins.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+        .input-error {
+            border-color: red;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+            justify-content: center; /* Center modal horizontally */
+            align-items: center; /* Center modal vertically */
+        }
+        .modal-content {
+            background-color: white; 
+            padding: 2em; 
+            border-radius: 8px; 
+            width: 600px; /* Increased width for horizontal layout */
+            position: relative;
+        }
+    </style>
+
+<!-- Header Section -->
+<div class="header-wrap animated d-flex border-bottom">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <!-- Desktop Logo -->
+            <div class="logo col-md-2 col-lg-2 d-none d-lg-block">
+                <a href="index.html">
+                    <img src="assets/images/download (2).svg" width="130px" height="70px" alt="DryDelicious" title="DryDelicious" />
+                </a>
+            </div>
+            <!-- Desktop Menu -->
+            <div class="col-2 col-sm-3 col-md-3 col-lg-8">
+                <nav id="AccessibleNav">
+                    <ul id="siteNav" class="site-nav medium center hidearrow">
+                        <li><a href="/home">Home</a></li>
+                        <li><a href="/shop">Shop</a></li>
+                        <li><a href="#">Product</a></li>
+                        <li><a href="#">Pages</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#"><b>Buy Now!</b></a></li>
+                    </ul>
+                </nav>
+            </div>
+            <!-- Cart & Search -->
+            <div class="col-4 col-sm-3 col-md-3 col-lg-2">
+                <div class="site-header__search" style="margin-left: 15px;">
+                    <a href="/cart" style="background: none; border: none; cursor: pointer;">
+                      <i class="icon anm anm-bag-l" style="font-size: 24px;"></i>
+                    </a>
+                  </div>
+                <div class="site-header__search">
+                    <button type="button" class="search-trigger"><i class="icon anm anm-search-l"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Header Section -->
+
+<!-- Main Container -->
+<div style="max-width: 1000px; margin: 2em auto; background-color: white; padding: 2em; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative;">
+    <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 1em;">Your Address List</h2>
+
+    <!-- Add Address Button Positioned to Top Right -->
+    <button onclick="openAddAddressModal()" style="position: absolute; top: 20px; right: 20px; padding: 0.5em 1em; background-color: black; color: white; border: none; cursor: pointer; border-radius: 5px;">
+        Add Address
+    </button>
+
+    <!-- Address List Items -->
+    <div id="addressList" style="margin-top: 2em;">
+        <% for(let i=0; i< data.address.length; i++) { %>
+        <div style="border-bottom: 1px solid #ccc; padding: 1em 0; display: flex; justify-content: space-between; align-items: center;">
+            <% if ( data.address.length > 0) { %>   
+                <div>
+                    <p><strong><%= data.address[i].Fullname %></strong></p>
+                    <p><%= data.address[i].Address %></p>
+                    <p><%= data.address[i].State %>, <%= data.address[i].pinCode %>, <%= data.address[i].Country %></p>
+                    <p>Phone: <%= data.address[i].phone %></p>
+                </div>
+            <% } else { %>
+                <div>
+                    <p><strong></strong></p>
+                    <p>Enter your updated address</p>
+                </div>
+            <%  } %>
+            <div>
+                <button   style="margin-right: 1em; padding: 0.5em 1em; border: none; background-color: #007bff; color: white; cursor: pointer; border-radius: 5px;"><a href="/edit-address?id=<%= data.address[i]._id %>">Edit</a></button>
+               
+               
+                    <button onclick="deleteAddress('<%= data.address[i]._id %>')" style="padding: 0.5em 1em; border: none; background-color: #dc3545; color: white; cursor: pointer; border-radius: 5px;">Delete</button>
+
+                
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Add Address Modal -->
+<div id="addAddressModal" class="modal">
+    <div class="modal-content">
+        <h2>Add Address</h2>
+        <form id="addAddressForm" method="post" action="/address" onsubmit="handleFormSubmit(event)">
+            <label>Full Name</label>
+            <input name="Fullname" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
+            
+            <label>Address</label>
+            <input name="Address" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
+            
+            <label>City</label>
+            <input name="city" value="<%= data.address.city %>" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
+            
+            <label>State</label>
+            <input name="State" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
+            
+            <label>Pin Code</label>
+            <input name="pinCode" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
+            
+            <label>Country</label>
+            <input name="Country" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
+            
+            <label>Phone</label>
+            <input name="phone" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
+            
+            <button type="submit" style="padding: 0.5em 1em; background-color: black; color: white; border: none; cursor: pointer; border-radius: 5px;">Save Address</button>
+            <button type="button" onclick="closeAddAddressModal()" style="padding: 0.5em 1em; background-color: #ccc; color: black; border: none; cursor: pointer; border-radius: 5px; margin-left: 1em;">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Address Modal -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function openAddAddressModal() {
+        document.getElementById('addAddressModal').style.display = 'flex';
+    }
+
+    function closeAddAddressModal() {
+        document.getElementById('addAddressModal').style.display = 'none';
+    }
+
+    function validateAddressForm(form) {
+        let valid = true;
+
+        // Clear previous error messages
+        clearErrorMessages();
+
+        // Validate Full Name
+        if (!form.Fullname.value) {
+            valid = false;
+            showError(form.Fullname, 'Full name is required.');
+        }
+
+        // Validate Address
+        if (!form.Address.value) {
+            valid = false;
+            showError(form.Address, 'Address is required.');
+        }
+
+        // Validate City
+        if (!form.city.value) {
+            valid = false;
+            showError(form.city, 'City is required.');
+        }
+
+        // Validate State
+        if (!form.State.value) {
+            valid = false;
+            showError(form.State, 'State is required.');
+        }
+
+        // Validate Pin Code
+        if (!form.pinCode.value) {
+            valid = false;
+            showError(form.pinCode, 'Pin code is required.');
+        } else if (!/^\d{6}$/.test(form.pinCode.value)) {
+            valid = false;
+            showError(form.pinCode, 'Invalid pin code. It should be 6 digits.');
+        }
+
+        // Validate Country
+        if (!form.Country.value) {
+            valid = false;
+            showError(form.Country, 'Country is required.');
+        }
+
+        // Validate Phone
+        if (!form.phone.value) {
+            valid = false;
+            showError(form.phone, 'Phone number is required.');
+        } else if (!/^\d{10}$/.test(form.phone.value)) {
+            valid = false;
+            showError(form.phone, 'Invalid phone number. It should be 10 digits.');
+        }
+
+        return valid;
+    }
+
+    function showError(input, message) {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = message;
+        input.classList.add('input-error');
+        input.parentNode.insertBefore(errorMessage, input.nextSibling);
+        
+        // Add event listener for real-time validation
+        input.addEventListener('input', function() {
+            clearErrorMessages();
+        });
+    }
+
+    function clearErrorMessages() {
+        document.querySelectorAll('.error-message').forEach(el => el.remove());
+        document.querySelectorAll('input').forEach(el => el.classList.remove('input-error'));
+    }
+
+    // Function to handle form submission
+    async function handleFormSubmit(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const form = event.target; // Get the form element
+
+        if (validateAddressForm(form)) {
+
+            // Simulate an AJAX request or form submission here
+
+            // Replace this with your actual form submission logic
+
+            try {
+                 // Simulate successful submission
+                // Simulating delay
+                // Show success message
+             Swal.fire({
+                    icon: 'success',
+                    text: 'Address added successfully',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 1000
+                })
+                closeAddAddressModal();
+                await new Promise((resolve) => setTimeout(resolve, 1000))
+                form.submit()
+                // Close the modal after successful addition
+                
+                // Optionally reset the form
+                
+                form.reset();
+               
+                 
+            } catch (error) {
+                // Show error message if there's an error
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Failed to add address. Please try again.',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 2000
+                });
+            }
+        }
+    }
+
+
+
+   
+
+
+</script>
+
+<script>
+    async function deleteAddress(addressId) {
+        try {
+            
+            const response = await fetch(`/delete-address?id=${addressId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                // Show success alert
+                Swal.fire({
+                    icon: 'success',
+                    text: 'Address deleted successfully',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 1000
+                }).then(() => {
+                   
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Failed to delete address. Please try again.',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 2000
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                text: 'An error occurred. Please try again later.',
+                toast: true,
+                position: 'top-right',
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 2000
+            });
+        }
+    }
+</script>
+</body>
+</html>
+
+
+
+
+
+
+

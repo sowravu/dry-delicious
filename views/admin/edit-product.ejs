@@ -1,0 +1,685 @@
+<%- include("../layouts/admin/header.ejs") %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+  <style>
+    .additional-fields {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .modal-content {
+      position: relative;
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 800px;
+    }
+
+    .img-edit-modal__close {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .button-container {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    #modalImage,
+    #cropImage {
+      max-width: 100%;
+      height: auto;
+    }
+
+    #replaceImageInput {
+      display: none;
+    }
+
+    .button {
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #45a049;
+    }
+  </style>
+
+  <%- include("../layouts/admin/navbar.ejs") %>
+    <main class="main-wrap">
+      <%- include("../layouts/admin/topnav.ejs") %>
+
+
+        <section class="content-main">
+          <div class="row">
+            <div class="col-9">
+              <div class="content-header">
+                <h2 class="content-title">Edit Product</h2>
+
+
+
+                <form action="/admin/edit-products?id=<%= data._id %>" class="edit-form" method="post" onsubmit="return validate()"
+                  enctype="multipart/form-data">
+                  <div>
+                    <button type="submit" class="btn btn-md rounded font-sm hover-up">
+                      Publish
+                    </button>
+                  </div>
+
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h4>Basic</h4>
+                </div>
+
+                <div class="card-body">
+                  <div class="mb-4">
+                    <label for="productname" class="form-label">Product title</label>
+                    <input name="productname" type="text" placeholder="Enter product name" class="form-control"
+                      id="productname" value="<%= data.productname%>" />
+                    <span id="errorname" class="text-danger"></span>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="form-label">Full description</label>
+                    <textarea name="productDis" id="productdis" placeholder="Type here" class="form-control" rows="4">
+
+                    <%= data.productDis%>
+                  </textarea>
+                    <span id="errordis" class="text-danger"></span>
+                  </div>
+
+                  <label class="form-label">Select weigth:</label>
+                  <br /><br />
+                  <div class="container mt-4">
+                    <div class="row">
+                      <div class="col-lg-4">
+                        <div class="mb-4">
+                          <input type="radio" name="weigth" id="sm" value="SM" />
+                          <label for="sm">250gm</label>
+                        </div>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="mb-4">
+                          <input type="radio" name="weigth" id="medium" value="Medium" />
+                          <label for="medium">500gm</label>
+                        </div>
+                      </div>
+                      <div class="col-lg-4">
+                        <input type="radio" name="weigth" id="l" value="L" />
+                        <label for="l">1kg</label>
+                      </div>
+                    </div>
+
+                    <div id="additionalFieldsSM" class="additional-fields">
+                      <h5>250 Gm</h5>
+                      <div class="form-group">
+                        <label for="stockSM">Stock:</label>
+                        <input type="number" id="stockSM" name="weigth[SM][stock]" class="form-control" min="0"
+                          value="<%=data.weightoptions[0].stock  %>" placeholder="Enter stock count" />
+                      </div>
+
+                      <div class="form-group">
+                        <label for="salesPriceSM">Sales Price:</label>
+                        <input type="number" id="salesPriceSM" name="weigth[SM][salesPrice]" class="form-control"
+                          step="0.01" value="<%=data.weightoptions[0].salesPrice %>" placeholder="Enter sales price" />
+                      </div>
+                    </div>
+
+                    <div id="additionalFieldsMedium" class="additional-fields">
+                      <h5>500 Gm</h5>
+                      <div class="form-group">
+                        <label for="stockMedium">Stock:</label>
+                        <input type="number" id="stockMedium" name="weigth[Medium][stock]" class="form-control" min="0"
+                          value="<%=data.weightoptions[1].stock  %>" placeholder="Enter stock count" />
+                      </div>
+
+                      <div class="form-group">
+                        <label for="salesPriceMedium">Sales Price:</label>
+                        <input type="number" id="salesPriceMedium" name="weigth[Medium][salesPrice]"
+                          class="form-control" step="0.01" value="<%=data.weightoptions[1].salesPrice %>"
+                          placeholder="Enter sales price" />
+                      </div>
+
+                    </div>
+
+                    <div id="additionalFieldsL" class="additional-fields">
+                      <h5>1 Kg</h5>
+                      <div class="form-group">
+                        <label for="stockL">Stock:</label>
+                        <input type="number" id="stockL" name="weigth[L][stock]" class="form-control" min="0"
+                          value="<%=data.weightoptions[2].stock %>" placeholder="Enter stock count" />
+                      </div>
+
+                      <div class="form-group">
+                        <label for="salesPriceL">Sales Price:</label>
+                        <input type="number" id="salesPriceL" name="weigth[L][salesPrice]" class="form-control"
+                          value="<%=data.weightoptions[2].salesPrice %>" step="0.01" placeholder="Enter sales price" />
+                      </div>
+                    </div>
+                  </div>
+
+
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h4>Media</h4>
+                </div>
+
+
+                <div class="card-body">
+                  <div class="input-upload">
+                    <label for="image" class="form-label">Update Images</label>
+                    <input type="file" name="productimage" class="form-control " id="image" multiple
+                      onchange="handleFiles(event)" />
+
+                    <input type="hidden" id="existingImages" name="existingImages" value="">
+
+                    <input type="hidden" id="imageMapping" name="imageMapping" value="">
+
+                    <div id="imagePreview" class="existing-images mt-3">
+                      <% data.productImage.forEach(function(image, index) { %>
+                        <img src="/uploads/<%= image %>" alt="Current Image" width="100px"
+                          style="margin-right: 10px; cursor: pointer;"
+                          onclick="openImageModal('<%= image %>', '<%= index %>')">
+                        <% }) %>
+                    </div>
+
+                    <div id="imageEditModal" class="modal">
+                      <div class="modal-content">
+                        <span class="img-edit-modal__close">&times;</span>
+
+                        <!-- Regular Image Container -->
+                        <div id="regularImageContainer">
+                          <img id="modalImage" src="" alt="Modal Image">
+                          <div class="button-container">
+                            <button type="button" id="startCropBtn" class="button">Crop Image</button>
+                            <input type="file" id="replaceImageInput" accept="image/*">
+                            <label for="replaceImageInput" class="button">Replace Image</label>
+                          </div>
+                        </div>
+
+                        <!-- Crop Container -->
+                        <div id="cropContainer" style="display: none;">
+                          <img id="cropImage" src="" alt="Crop Image">
+                          <div class="button-container">
+                            <button type="button" id="saveCropBtn" class="button">Save Crop</button>
+                            <button type="button" id="cancelCropBtn" class="button">Cancel</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="card mb-4">
+                      <div class="card-header">
+                        <h4>Brand & Category</h4>
+                      </div>
+                      <div class="card-body">
+                        <div class="row gx-2">
+                          <div class="col-sm-6 mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="productcategory">
+                              <option value="<%= data.productCategory._id %>">
+                                <%=data.productCategory.categoryName %>
+                              </option>
+                              <% for(let i=0; i < Category.length; i++) { %>
+                                <option value="<%= Category[i]._id %>">
+                                  <%= Category[i].categoryName %>
+                                </option>
+                                <% } %>
+                            </select>
+                          </div>
+
+
+                          <div class="col-sm-6 mb-3">
+                            <label class="form-label">Brand</label>
+                            <select class="form-select" name="productbrand">
+                              <option value="<%= data.productBrand._id %>">
+                                <%=data.productBrand.brandname %>
+                              </option>
+
+                              <% for(let i=0; i < Brand.length; i++) { %>
+                                <option value="<%= Brand[i]._id %>">
+                                  <%= Brand[i].brandname %>
+                                </option>
+                                <% } %>
+                                  </option>
+
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </form>
+              </div>
+        </section>
+
+
+    </main>
+    <%- include("../layouts/admin/footer.ejs") %>
+
+
+      <script>
+        const radios = document.querySelectorAll('input[name="weigth"]');
+
+        const additionalFieldsSM = document.getElementById("additionalFieldsSM");
+        const additionalFieldsMedium = document.getElementById("additionalFieldsMedium");
+        const additionalFieldsL = document.getElementById("additionalFieldsL");
+
+
+        radios.forEach((radio) => {
+          radio.addEventListener("change", () => {
+            additionalFieldsSM.style.display = "none";
+            additionalFieldsMedium.style.display = "none";
+            additionalFieldsL.style.display = "none";
+
+            if (radio.value === "SM") {
+              additionalFieldsSM.style.display = "block";
+            } else if (radio.value === "Medium") {
+              additionalFieldsMedium.style.display = "block";
+            } else if (radio.value === "L") {
+              additionalFieldsL.style.display = "block";
+            }
+          });
+        });
+
+        function validate() {
+          let isValid = true;
+
+          const name = document.getElementById("productname").value.trim();
+          if (name.length < 4) {
+            document.getElementById("errorname").innerText = "Name must be at least 4 characters long";
+            isValid = false;
+          } else {
+            document.getElementById("errorname").innerText = "";
+          }
+
+          const description = document.getElementById("productdis").value.trim();
+          if (description.length < 10) {
+            document.getElementById("errordis").innerText = "Description is required";
+            isValid = false;
+          } else {
+            document.getElementById("errordis").innerText = "";
+          }
+
+
+
+          // Prevent form submission if not valid
+          return isValid;
+        }
+
+
+
+
+      </script>
+      </body>
+
+      </html>
+
+
+      <script>
+        function handleFiles(event) {
+          const imagePreviewDiv = document.getElementById('imagePreview');
+
+          imagePreviewDiv.innerHTML = '';
+
+          const files = event.target.files;
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            const imgElement = document.createElement('img');
+            imgElement.style.width = '100px';
+            imgElement.style.marginRight = '10px';
+            imgElement.style.cursor = 'pointer';
+            imgElement.alt = 'New Image';
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              imgElement.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            imagePreviewDiv.appendChild(imgElement);
+          }
+        }
+
+
+
+
+        let existingImages = [];
+        let currentImageIndex = -1;
+        let cropper = null;
+        let croppedImages = new Map();
+        const imageMapping = {};
+
+        function initializeExistingImages() {
+          const imagePreview = document.getElementById('imagePreview');
+          existingImages = Array.from(imagePreview.getElementsByTagName('img')).map(img => {
+            return img.src.split('/').pop();
+          });
+          updateExistingImagesInput();
+
+          // Add click handlers to all preview images
+          const images = imagePreview.getElementsByTagName('img');
+          Array.from(images).forEach((img, index) => {
+            img.addEventListener('click', () => {
+              const imageName = existingImages[index];
+              openImageModal(imageName, index);
+            });
+          });
+        }
+
+        function updateExistingImagesInput() {
+          const input = document.getElementById('existingImages');
+          if (input) {
+            input.value = JSON.stringify(existingImages);
+          }
+
+
+
+          croppedImages.forEach((data, index) => {
+            imageMapping[data.originalName] = data.newName;
+
+          });
+
+          const inputt = document.getElementById('imageMapping');
+          if (inputt) {
+            inputt.value = JSON.stringify(imageMapping);
+          }
+        }
+
+        function openImageModal(imageName, index) {
+          currentImageIndex = index;
+
+
+          const modal = document.getElementById('imageEditModal');
+          const modalImage = document.getElementById('modalImage');
+
+          // Reset modal state
+          const cropContainer = document.getElementById('cropContainer');
+          const regularContainer = document.getElementById('regularImageContainer');
+          cropContainer.style.display = 'none';
+          regularContainer.style.display = 'block';
+
+          // Clear any existing cropper
+          if (cropper) {
+            cropper.destroy();
+            cropper = null;
+          }
+
+          // Set the modal image source
+          modalImage.src = `/uploads/${imageName}`;
+
+          // Show the modal
+          modal.style.display = 'block';
+
+          // Reset crop buttons
+          const saveCropBtn = document.getElementById('saveCropBtn');
+          const cancelCropBtn = document.getElementById('cancelCropBtn');
+          if (saveCropBtn) saveCropBtn.style.display = 'none';
+          if (cancelCropBtn) cancelCropBtn.style.display = 'none';
+        }
+
+        function startImageCropping() {
+          const regularContainer = document.getElementById('regularImageContainer');
+          const cropContainer = document.getElementById('cropContainer');
+          const cropImage = document.getElementById('cropImage');
+          const modalImage = document.getElementById('modalImage');
+
+          // Copy the current image to the crop container
+          cropImage.src = modalImage.src;
+
+          regularContainer.style.display = 'none';
+          cropContainer.style.display = 'block';
+
+          // Show crop buttons
+          const saveCropBtn = document.getElementById('saveCropBtn');
+          const cancelCropBtn = document.getElementById('cancelCropBtn');
+          if (saveCropBtn) saveCropBtn.style.display = 'inline-block';
+          if (cancelCropBtn) cancelCropBtn.style.display = 'inline-block';
+
+          // Initialize cropper
+          if (cropper) {
+            cropper.destroy();
+          }
+
+          cropper = new Cropper(cropImage, {
+            aspectRatio: 1,
+            viewMode: 2,
+            ready: function () {
+              // Ensure cropper is properly initialized
+              console.log('Cropper initialized');
+            }
+          });
+        }
+
+        function saveImageCrop() {
+          if (!cropper) {
+            console.error('No active cropper');
+            return;
+          }
+
+          cropper.getCroppedCanvas().toBlob(blob => {
+            const fileName = existingImages[currentImageIndex];
+            const timestamp = Date.now();
+            const newFileName = `cropped_${timestamp}_${fileName}`;
+
+            const croppedFile = new File([blob], newFileName, { type: 'image/jpeg' });
+            croppedImages.set(currentImageIndex, {
+              file: croppedFile,
+              originalName: fileName,
+              newName: newFileName
+            });
+
+            // Update preview image
+            const imagePreview = document.getElementById('imagePreview');
+            const images = imagePreview.getElementsByTagName('img');
+            if (images[currentImageIndex]) {
+              const newImageUrl = URL.createObjectURL(blob);
+              images[currentImageIndex].src = newImageUrl;
+              existingImages[currentImageIndex] = newFileName;
+              updateExistingImagesInput();
+            }
+
+            closeImageModal();
+          }, 'image/jpeg');
+        }
+
+        function handleImageReplace(event) {
+          const file = event.target.files[0];
+          if (!file) return;
+          console.log(croppedImages, 'lllll', imageMapping)
+          const timestamp = Date.now();
+          const fileExtension = file.name.split('.').pop();
+          const newFileName = `replaced_${timestamp}.${fileExtension}`;
+
+          const renamedFile = new File([file], newFileName, { type: file.type });
+
+          // Store both the new filename and the file object
+          croppedImages.set(currentImageIndex, {
+            file: renamedFile,
+            originalName: existingImages[currentImageIndex],
+            newName: newFileName
+          });
+
+          // Update preview and modal images
+          const newImageUrl = URL.createObjectURL(file);
+
+          const imagePreview = document.getElementById('imagePreview');
+          const images = imagePreview.getElementsByTagName('img');
+          if (images[currentImageIndex]) {
+            images[currentImageIndex].src = newImageUrl;
+          }
+
+          const modalImage = document.getElementById('modalImage');
+          if (modalImage) {
+            modalImage.src = newImageUrl;
+          }
+
+          existingImages[currentImageIndex] = newFileName;
+
+          updateExistingImagesInput();
+          //initializeExistingImages();
+
+          // Reset file input
+          event.target.value = '';
+        }
+
+        function handleFormSubmit(e) {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+
+          for (let [key, data] of croppedImages) {
+            formData.append('productimage', data?.file);
+          }
+
+
+          // Add the existing images array
+          formData.set('existingImages', JSON.stringify(existingImages));
+
+         
+          console.log('Submitting form with images:', existingImages);
+          console.log('Image mapping:', imageMapping);
+
+          fetch(e.target.action, {
+             method: 'POST',
+             body: formData
+           })
+             .then(response => {
+              if (response.redirected) {
+                 window.location.href = response.url;
+               }
+             })
+             .catch(error => {
+               console.error('Error submitting form:', error);
+             });
+        }
+
+        // Initialize everything when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+          initializeExistingImages();
+
+          // Set up replace image handler
+          const replaceInput = document.getElementById('replaceImageInput');
+          if (replaceInput) {
+            replaceInput.addEventListener('change', handleImageReplace);
+          }
+
+          // Set up form submission
+          const form = document.querySelector('.edit-form');
+          if (form) {
+            form.addEventListener('submit', handleFormSubmit);
+          }
+
+          // Set up modal close handler
+          const closeBtn = document.querySelector('.img-edit-modal__close');
+          if (closeBtn) {
+            closeBtn.addEventListener('click', closeImageModal);
+          }
+
+          // Set up crop button handlers
+          const startCropBtn = document.getElementById('startCropBtn');
+          if (startCropBtn) {
+            startCropBtn.addEventListener('click', startImageCropping);
+          }
+
+          const saveCropBtn = document.getElementById('saveCropBtn');
+          if (saveCropBtn) {
+            saveCropBtn.addEventListener('click', saveImageCrop);
+          }
+
+          const cancelCropBtn = document.getElementById('cancelCropBtn');
+          if (cancelCropBtn) {
+            cancelCropBtn.addEventListener('click', cancelImageCropping);
+          }
+
+          // Set up modal background click handler
+          const modal = document.getElementById('imageEditModal');
+          if (modal) {
+            window.addEventListener('click', function (event) {
+              if (event.target === modal) {
+                closeImageModal();
+              }
+            });
+          }
+
+          // Set up escape key handler
+          document.addEventListener('keydown', function (event) {
+            const modal = document.getElementById('imageEditModal');
+            if (event.key === 'Escape' && modal && modal.style.display === 'block') {
+              closeImageModal();
+            }
+          });
+        });
+
+        function closeImageModal() {
+          const modal = document.getElementById('imageEditModal');
+          const cropContainer = document.getElementById('cropContainer');
+          const regularContainer = document.getElementById('regularImageContainer');
+          const saveCropBtn = document.getElementById('saveCropBtn');
+          const cancelCropBtn = document.getElementById('cancelCropBtn');
+
+          if (cropper) {
+            cropper.destroy();
+            cropper = null;
+          }
+
+          if (cropContainer) cropContainer.style.display = 'none';
+          if (regularContainer) regularContainer.style.display = 'block';
+          if (saveCropBtn) saveCropBtn.style.display = 'none';
+          if (cancelCropBtn) cancelCropBtn.style.display = 'none';
+          if (modal) modal.style.display = 'none';
+
+          currentImageIndex = -1;
+        }
+
+        function cancelImageCropping() {
+          if (cropper) {
+            cropper.destroy();
+            cropper = null;
+          }
+
+          const cropContainer = document.getElementById('cropContainer');
+          const regularContainer = document.getElementById('regularImageContainer');
+          const saveCropBtn = document.getElementById('saveCropBtn');
+          const cancelCropBtn = document.getElementById('cancelCropBtn');
+
+          if (cropContainer) cropContainer.style.display = 'none';
+          if (regularContainer) regularContainer.style.display = 'block';
+          if (saveCropBtn) saveCropBtn.style.display = 'none';
+          if (cancelCropBtn) cancelCropBtn.style.display = 'none';
+        }
+      </script>

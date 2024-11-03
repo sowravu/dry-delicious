@@ -1,0 +1,153 @@
+<%- include("../layouts/admin/header.ejs")  %>
+    
+<%- include("../layouts/admin/navbar.ejs")  %>
+<main class="main-wrap">
+    <%- include("../layouts/admin/topnav.ejs")  %>
+    <section class="content-main">
+        <div class="content-header d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="content-title card-title">Manage Brands</h2>
+                <p class="text-muted">Add, edit or delete brands</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <!-- Display any success/error messages -->
+                <% if (success_msg.length>0) { %>
+                    <div class="alert alert-success"><%= success_msg %></div>
+                <% } %>
+                <% if (error_msg.length>0) { %>
+                    <div class="alert alert-danger"><%= error_msg %></div>
+                <% } %>
+                <div class="row">
+                    <!-- Form Section -->
+                    <div class="col-md-4">
+                        <form method="post" action="/admin/brands" onsubmit="return validateForm()" enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <label for="brand_name" class="form-label">Brand Name</label>
+                                <input type="text" name="name" placeholder="Brand Name" class="form-control" id="name" />
+                                <small id="nameError" class="text-danger"></small> 
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Description</label>
+                                <textarea placeholder="Brand Description" name="description" id="description" class="form-control"></textarea>
+                                <small id="descriptionError" class="text-danger"></small>
+                            </div>
+                            <div class="mb-4">
+                                <label for="brand_logo" class="form-label">Brand Logo</label>
+                                <input type="file" name="image" class="form-control" id="image" accept="image/*" />
+                                <small id="logoError" class="text-danger"></small>
+                            </div>
+                            <div class="d-grid">
+                                <button class="btn btn-primary">Create Brand</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Brand List Section -->
+                    <div class="col-md-8">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Logo</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for(let i=0 ; i< brandData.length ; i++) { %>
+                                        <tr>
+                                            <td><%= brandData[i]._id %></td>
+                                            <td>
+                                                <img src="/uploads/<%= brandData[i].image %>" alt="<%= brandData[i].brandname %> Logo" height="50" class="rounded">
+                                            </td>
+                                            <td><b><%= brandData[i].brandname %></b></td>
+                                            <td><%= brandData[i].description %></td>
+                                            <% if(brandData[i].isActive) { %>
+                                                <td><span class="badge bg-success">Active</span></td>
+                                            <% } else { %>
+                                                <td><span class="badge bg-danger">Inactive</span></td>
+                                            <% } %>
+                                            <td class="text-end">
+                                                <div class="btn-group">
+                                                    <a href="/admin/edit-brand?id=<%= brandData[i]._id %>" class="btn btn-sm btn-outline-primary">Edit</a>
+                                                    <% if(brandData[i].isActive === false) { %>
+                                                        <a href="/admin/delete-brand?id=<%= brandData[i]._id %>" class="btn btn-sm btn-outline-danger">List</a>
+                                                    <% } else { %>
+                                                        <a href="/admin/delete-brand?id=<%= brandData[i]._id %>" class="btn btn-sm btn-outline-success">Unlist</a>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- .col-md-8 -->
+                </div> <!-- .row -->
+            </div> <!-- card-body -->
+        </div> <!-- card -->
+                    <!-- Pagination Controls -->
+                    <div class="pagination-area mt-15 mb-50">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-start">
+                                <% if(currentpage > 1 )  { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<%= currentpage -1 %>&limit=<%= limit  %>">
+                                            <i class="material-icons md-chevron_left"></i>
+                                        </a>
+                                    </li>
+                                        <% } %>
+                                 <% for (let i = 1; i <= totalPageCount; i++) { %>
+                                    <li class="page-item <%= i === currentpage ? 'active' : '' %>">
+                                        <a class="page-link" href="?page=<%= i %> & <% limit %> "> <%= i %></a>
+                                    </li>
+                           
+                                        <% } %>   
+                             <% if (currentpage < totalPageCount) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<%= currentpage + 1 %>&limit=<%= limit %>">
+                                            <i class="material-icons md-chevron_right"></i>
+                                        </a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                    </div>
+    </section> <!-- content-main -->
+<%- include("../layouts/admin/footer.ejs")  %>
+
+<script>
+    function validateForm() {
+        let name = document.getElementById('name').value;
+        let description = document.getElementById('description').value;
+        let logo = document.getElementById('image').value;
+        let valid = true;
+
+        document.getElementById('nameError').innerText = '';
+        document.getElementById('descriptionError').innerText = '';
+        document.getElementById('logoError').innerText = '';
+
+        if (name.trim() === '') {
+            document.getElementById('nameError').innerText = 'Brand name is required';
+            valid = false;
+        }
+
+        if (description.trim() === '') {
+            document.getElementById('descriptionError').innerText = 'Brand description is required';
+            valid = false;
+        }
+
+        if (logo.trim() === '') {
+            document.getElementById('logoError').innerText = 'Brand logo is required';
+            valid = false;
+        }
+
+        return valid;
+    }
+</script>

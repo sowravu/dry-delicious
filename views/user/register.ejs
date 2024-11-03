@@ -1,0 +1,235 @@
+<%- include("../layouts/user/header.ejs")  %>
+<style>
+  .form-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+  }
+</style>
+<div class="pageWrapper">
+
+    <div class="mobile-nav-wrapper" role="navigation">
+		<div class="closemobileMenu"><i class="icon anm anm-times-l pull-right"></i> Close Menu</div>
+        <ul id="MobileNav" class="mobile-nav">
+        	<li class="lvl1 parent megamenu"><a href="index.html">Home <i class="anm anm-plus-l"></i></a>
+         
+        </li>
+        	<li class="lvl1 parent megamenu"><a href="#">Shop <i class="anm anm-plus-l"></i></a>
+        
+        </li>
+        	<li class="lvl1 parent megamenu"><a href="product-layout-1.html">Product <i class="anm anm-plus-l"></i></a>
+        
+        </li>
+        	<li class="lvl1 parent megamenu"><a href="about-us.html">Pages <i class="anm anm-plus-l"></i></a>
+         
+        </li>
+        	<li class="lvl1 parent megamenu"><a href="blog-left-sidebar.html">Blog <i class="anm anm-plus-l"></i></a>
+        
+        </li>
+        	<li class="lvl1"><a href="#"><b>Buy Now!</b></a>
+        </li>
+      </ul>
+	</div>
+	<!--End Mobile Menu-->
+    
+    <!--Body Content-->
+    <div id="page-content">
+    	<!--Page Title-->
+    	<div class="page section-header text-center">
+			<div class="page-title">
+        		<div class="wrapper"><h1 class="page-width">Create an Account</h1></div>
+      		</div>
+		</div>
+        <!--End Page Title-->
+        
+        <div class="container">
+        	<div class="row">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 main-col offset-md-3">
+                	<div class="mb-4">
+                    <% if (locals.message && message.length > 0) { %>
+                      <div class="alert alert-danger"><%= message %></div>
+                      <% } %>
+                      <form method="post" action="/register" id="CustomerLoginForm" accept-charset="UTF-8" class="contact-form">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="FirstName">Full Name</label>
+                                    <input type="text" id="name" name="name" placeholder="" autofocus="" oninput="clearError('nameError')">
+                                    <span id="nameError" class="form-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="CustomerEmail">Email</label>
+                                    <input type="email" id="email" name="email" placeholder="" oninput="clearError('emailError')">
+                                    <span id="emailError" class="form-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="CustomerEmail">Phone Number</label>
+                                    <input type="text" id="phone" name="phone" placeholder="" oninput="clearError('phoneError')">
+                                    <span id="phoneError" class="form-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="CustomerPassword">Password</label>
+                                    <input type="password" value="" name="password" id="CustomerPassword" oninput="clearError('passwordError')">
+                                    <span id="passwordError" class="form-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="CustomerPassword">Confirm Password</label>
+                                    <input type="password" name="cpassword" id="CustomerConfirmPassword" oninput="clearError('cpasswordError')">
+                                    <span id="cpasswordError" class="form-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-center col-12">
+                                <input type="submit" class="btn mb-3" value="Create">
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+               	</div>
+            </div>
+        </div>
+        
+    </div>
+    <!--End Body Content-->
+    
+   
+    <span id="site-scroll"><i class="icon anm anm-angle-up-r"></i></span>
+    <!--End Scoll Top-->
+     <!-- Including Jquery -->
+     <script src="assets/js/vendor/jquery-3.3.1.min.js"></script>
+     <script src="assets/js/vendor/jquery.cookie.js"></script>
+     <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
+     <script src="assets/js/vendor/wow.min.js"></script>
+     <!-- Including Javascript -->
+     <script src="assets/js/bootstrap.min.js"></script>
+     <script src="assets/js/plugins.js"></script>
+     <script src="assets/js/popper.min.js"></script>
+     <script src="assets/js/lazysizes.js"></script>
+     <script src="assets/js/main.js"></script>
+</div>
+<%- include("../layouts/user/footer.ejs")  %>
+
+
+
+
+<script>
+    function validateForm(event) {
+        event.preventDefault(); // Prevent form submission
+    
+        let isValid = true;
+    
+        // Full Name Validation
+        const name = document.getElementById("name").value;
+        if (name.length < 3 || !/^[A-Za-z\s]+$/.test(name)) {
+            displayError('name', "Full name must be at least 3 characters and contain only letters.");
+            isValid = false;
+        } else {
+            clearError('name');
+        }
+    
+        // Email Validation
+        const email = document.getElementById("email").value;
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        if (!emailPattern.test(email)) {
+            displayError('email', "Please enter a valid email address.");
+            isValid = false;
+        } else {
+            clearError('email');
+        }
+    
+        // Phone Number Validation
+        const phone = document.getElementById("phone").value;
+        if (!/^\d{10}$/.test(phone)) {
+            displayError('phone', "Please enter a valid 10-digit phone number.");
+            isValid = false;
+        } else {
+            clearError('phone');
+        }
+    
+        // Password Validation
+        const password = document.getElementById("CustomerPassword").value;
+        const confirmPassword = document.getElementById("CustomerConfirmPassword").value;
+        if (password.length === 0) {
+            displayError('password', "Password cannot be empty.");
+            isValid = false;
+        } else {
+            clearError('password');
+        }
+    
+        // Confirm Password Validation
+        if (password !== confirmPassword) {
+            displayError('cpassword', "Passwords do not match.");
+            isValid = false;
+        } else {
+            clearError('cpassword');
+        }
+    
+        // Allow form submission if all validations pass
+        if (isValid) {
+            event.target.submit();
+        }
+    }
+    
+    document.getElementById('CustomerLoginForm').addEventListener('submit', validateForm);
+    
+    function displayError(inputId, message) {
+        const inputField = document.getElementById(inputId === 'password' || inputId === 'cpassword' ? inputId === 'password' ? 'CustomerPassword' : 'CustomerConfirmPassword' : inputId);
+        const errorSpan = document.getElementById(inputId + "Error");
+    
+        inputField.style.borderColor = "red";
+        errorSpan.innerText = message;
+    }
+
+    function clearError(inputId) {
+        const inputField = document.getElementById(inputId === 'password' || inputId === 'cpassword' ? inputId === 'password' ? 'CustomerPassword' : 'CustomerConfirmPassword' : inputId);
+        const errorSpan = document.getElementById(inputId + "Error");
+
+        inputField.style.borderColor = ""; // Reset border color
+        errorSpan.innerText = ""; // Clear error message
+    }
+
+    // Real-time error clearing using oninput event
+    document.getElementById("name").addEventListener("input", function () {
+        const name = this.value;
+        if (name.length >= 3 && /^[A-Za-z\s]+$/.test(name)) {
+            clearError('name'); // Clear error if the name is valid
+        }
+    });
+
+    document.getElementById("email").addEventListener("input", function () {
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        if (emailPattern.test(this.value)) {
+            clearError('email'); // Clear error if the email is valid
+        }
+    });
+
+    document.getElementById("phone").addEventListener("input", function () {
+        if (/^\d{10}$/.test(this.value)) {
+            clearError('phone'); // Clear error if the phone number is valid
+        }
+    });
+
+    document.getElementById("CustomerPassword").addEventListener("input", function () {
+        const password = this.value;
+        if (password.length > 0) {
+            clearError('password'); // Clear error if the password is valid
+        }
+    });
+
+    document.getElementById("CustomerConfirmPassword").addEventListener("input", function () {
+        const password = document.getElementById("CustomerPassword").value;
+        if (this.value === password) {
+            clearError('cpassword'); // Clear error if passwords match
+        }
+    });
+</script>

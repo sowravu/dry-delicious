@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Account &ndash; DryDelicious</title>
+    <meta name="description" content="User Profile">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="assets/images/favicon.png" />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/css/plugins.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+        .input-error {
+            border-color: red;
+        }
+    </style>
+    <div class="header-wrap animated d-flex border-bottom">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <!-- Desktop Logo -->
+                <div class="logo col-md-2 col-lg-2 d-none d-lg-block">
+                    <a href="index.html">
+                        <img src="assets/images/download (2).svg" width="130px" height="70px" alt="DryDelicious" title="DryDelicious" />
+                    </a>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="col-2 col-sm-3 col-md-3 col-lg-8">
+                    <nav id="AccessibleNav">
+                        <ul id="siteNav" class="site-nav medium center hidearrow">
+                            <li><a href="/home">Home</a></li>
+                            <li><a href="/shop">Shop</a></li>
+                            <li><a href="#">Product</a></li>
+                            <li><a href="#">Pages</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#"><b>Buy Now!</b></a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <!-- Cart & Search -->
+                <div class="col-4 col-sm-3 col-md-3 col-lg-2">
+                    <div class="site-header__search" style="margin-left: 15px;">
+                        <a href="/cart" style="background: none; border: none; cursor: pointer;">
+                          <i class="icon anm anm-bag-l" style="font-size: 24px;"></i>
+                        </a>
+                      </div>
+                    <div class="site-header__search">
+                        <button type="button" class="search-trigger"><i class="icon anm anm-search-l"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Address Form -->
+    <div style="max-width: 500px; margin: 30px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <h3 style="text-align: center; font-size: 1.5rem; color: #333; margin-bottom: 20px;">Edit Address</h3>
+
+        <form id="editAddressForm"  >
+            <label for="Fullname" style="display: block; font-size: 0.9rem; color: #5a5a5a; margin-top: 10px;">Full name</label>
+            <input name="Fullname" value="<%= findAddress.Fullname %>" type="text" id="Fullname" required style="width: 100%; padding: 8px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+            <div class="error-message" id="fullnameError"></div>
+
+            <label for="Address" style="display: block; font-size: 0.9rem; color: #555; margin-top: 10px;">Address</label>
+            <input name="Address" value="<%= findAddress.Address %>" type="text" id="Address" required style="width: 100%; padding: 8px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+            <div class="error-message" id="addressError"></div>
+
+            <label for="city" style="display: block; font-size: 0.9rem; color: #555; margin-top: 10px;">City </label>
+            <input name="city" value="<%= findAddress.city %>" type="text" id="city" required style="width: 100%; padding: 8px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+            <div class="error-message" id="cityError"></div>
+
+            <label for="State" style="display: block; font-size: 0.9rem; color: #555; margin-top: 10px;">State</label>
+            <input name="State" value="<%= findAddress.State %>" type="text" id="State" required style="width: 100%; padding: 8px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+            <div class="error-message" id="stateError"></div>
+
+            <label for="pinCode" style="display: block; font-size: 0.9rem; color: #555; margin-top: 10px;">Pin Code</label>
+            <input name="pinCode" value="<%= findAddress.pinCode %>" type="text" id="pinCode" required style="width: 100%; padding: 8px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+            <div class="error-message" id="pinCodeError"></div>
+
+            <label for="Country" style="display: block; font-size: 0.9rem; color: #555; margin-top: 10px;">Country</label>
+            <input name="Country" value="<%= findAddress.Country %>" type="text" id="Country" required style="width: 100%; padding: 8px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+            <div class="error-message" id="countryError"></div>
+
+            <label for="phone" style="display: block; font-size: 0.9rem; color: #555; margin-top: 10px;">Phone</label>
+            <input name="phone" value="<%= findAddress.phone %>" type="text" id="phone" required style="width: 100%; padding: 8px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+            <div class="error-message" id="phoneError"></div>
+
+            <button type="submit" style="padding: 10px 20px; font-size: 1rem; background-color: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px;">Update Address</button>
+            <button type="button"  style="padding: 10px 20px; font-size: 1rem; background-color: #ccc; color: #333; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; margin-left: 10px;"><a href="/address">Cancel</a></button>
+        </form>
+    </div>
+
+    <script>
+           const form = document.getElementById('editAddressForm');
+        
+          function showError(field, message) {
+            const errorElement = document.getElementById(field + 'Error');
+            const inputField = document.getElementById(field);
+            errorElement.textContent = message;
+            inputField.classList.add('input-error');
+        }
+
+        function clearError(field) {
+            const errorElement = document.getElementById(field + 'Error');
+            const inputField = document.getElementById(field);
+            errorElement.textContent = '';
+            inputField.classList.remove('input-error');
+        }
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+            
+            // Validate fields as before
+            let isValid = true;
+            const fields = ['Fullname', 'Address', 'city', 'State', 'pinCode', 'Country', 'phone'];
+            
+            fields.forEach(field => {
+                const input = document.getElementById(field);
+                if (input.value.trim() === '') {
+                    showError(field, field + ' is required.');
+                    isValid = false;
+                }
+            });
+
+            const phone = document.getElementById('phone');
+            if (!/^\d{10}$/.test(phone.value)) {
+                showError('phone', 'Phone number must be 10 digits.');
+                isValid = false;
+            }
+
+            const pinCode = document.getElementById('pinCode');
+            if (!/^\d{5,6}$/.test(pinCode.value)) {
+                showError('pinCode', 'Pin Code must be 5-6 digits.');
+                isValid = false;
+            }
+
+            if (!isValid) return; // Stop if form is invalid
+            
+            // Prepare data for fetch request
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            try {
+                // Send data to the server with Fetch API
+                const response = await fetch('/edit-address', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // Show success alert
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'Address updated successfully',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 1000
+                    });
+
+                    // Optionally, redirect or reload after a delay
+                    setTimeout(() => {
+                        window.location.href = '/address'; // Redirect to the address page
+                    }, 1000);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Failed to update address. Please try again.',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 2000
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    text: 'An error occurred. Please try again later.',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 2000
+                });
+            }
+
+
+        });
+
+    </script>
+</body>
+</html>

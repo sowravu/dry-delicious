@@ -1,0 +1,131 @@
+<%- include("../layouts/admin/header.ejs")  %>
+<%- include("../layouts/admin/navbar.ejs")  %>
+<main class="main-wrap">
+    <%- include("../layouts/admin/topnav.ejs")  %>
+    <section class="content-main">
+        <div class="content-header">
+            <h2 class="content-title">Products List</h2>
+            <div>
+                <% if (success_msg.length>0) { %>
+                    <div class="alert alert-success"><%= success_msg %></div>
+                <% } %>
+                <% if (error_msg.length>0) { %>
+                    <div class="alert alert-danger"><%= error_msg %></div>
+                <% } %>
+                <a href="/admin/add-products" class="btn btn-primary">Add New Product</a>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Brand</th>
+                                <th>Category</th>
+                                <th>Price (250gm)</th>
+                                <th>Price (500gm)</th>
+                                <th>Price (1kg)</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% data.forEach(product => { %>
+                            <tr>
+                                <td><%= product.productname %></td>
+                                <td><%= product.productBrand.brandname %></td>
+                                <td><%= product.productCategory.categoryName %></td>
+                                
+                            
+                                <td>
+                                    <% let price250 = product.weightoptions.find(option => option.weight === "250gm"); %>
+                                    <% if (price250) { %>
+                                        ₹<%= price250.salesPrice %>
+                                    <% } else { %>
+                                        Not Available
+                                    <% } %>
+                                </td>
+
+                           
+                                <td>
+                                    <% let price500 = product.weightoptions.find(option => option.weight === "500gm"); %>
+                                    <% if (price500) { %>
+                                        ₹<%= price500.salesPrice %>
+                                    <% } else { %>
+                                        Not Available
+                                    <% } %>
+                                </td>
+
+                                <td>
+                                    <% let price1kg = product.weightoptions.find(option => option.weight === "1kg"); %>
+                                    <% if (price1kg) { %>
+                                        ₹<%= price1kg.salesPrice %>
+                                    <% } else { %>
+                                        Not Available
+                                    <% } %>
+                                </td>
+
+                           
+                                <td>
+                                    <% if (price250.stock + price500.stock + price1kg.stock > 0){ %>
+                                        <span class="text-success">In Stock</span>
+                                        <br>
+                                        <small>(<%= price250.stock + price500.stock + price1kg.stock  %> units)</small>
+                                    <% } else { %>
+                                        <span class="text-danger">Out of Stock</span>
+                                        <br>
+                                        <small>(0 units)</small>
+                                    <% } %>
+                                </td>
+
+                                <td>
+                                    <a href="/admin/edit-products?id=<%= product._id %>" class="btn btn-sm btn-outline-primary">Edit</a>
+
+                                    <% if(product.is_delete === true) { %>
+                                                <button class="btn btn-sm btn-outline-danger"><a href="/admin/delete-product?id=<%=product._id%>">List</a></button>
+                                                <% } else { %>
+                                                <button class="btn btn-sm btn-outline-success"><a href="/admin/delete-product?id=<%=product._id%>">Unlist</a></button>
+                                     <% } %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div> <!-- table-responsive end -->
+            </div> <!-- card-body end -->
+        </div> <!-- card end -->
+
+     <!-- Pagination Controls -->
+     <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <% if(currentpage > 1 )  { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentpage -1 %>&limit=<%= limit  %>">
+                            <i class="material-icons md-chevron_left"></i>
+                        </a>
+                    </li>
+                        <% } %>
+                 <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= i === currentpage ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %> & <% limit %> "> <%= i %></a>
+                    </li>
+           
+                        <% } %>   
+             <% if (currentpage < totalPages) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentpage + 1 %>&limit=<%= limit %>">
+                            <i class="material-icons md-chevron_right"></i>
+                        </a>
+                    </li>
+                <% }%>
+            </ul>
+        </nav>
+    </div>
+
+    </section> <!-- content-main end -->
+</main>
+<%- include("../layouts/admin/footer.ejs")  %>

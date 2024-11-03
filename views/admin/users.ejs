@@ -1,0 +1,171 @@
+<%- include("../layouts/admin/header.ejs")  %>
+<%- include("../layouts/admin/navbar.ejs")  %>
+
+<main class="main-wrap">
+    <%- include("../layouts/admin/topnav.ejs")  %>
+
+    <section class="content-main">
+        <div class="content-header">
+            <h2 class="content-title">Users List</h2>
+            <div>
+                <a href="#" class="btn btn-primary"><i class="material-icons md-plus"></i> Create new</a>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <header class="card-header">
+                <div class="row gx-3">
+                    <div class="col-lg-4 col-md-6 me-auto">
+                        <input type="text" placeholder="Search..." class="form-control" id="searchInput">
+                    </div>
+                </div>
+            </header>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (user.length > 0) { %>
+                                <% for(let i = 0; i < user.length; i++) { %>
+                                    <tr>
+                                        <td width="40%">
+                                            <a href="#" class="itemside">
+                                                <div class="info pl-3">
+                                                    <h6 class="mb-0 title"><%= user[i].name %></h6>
+                                                    <small class="text-muted">_id:<%= user[i]._id %></small>
+                                                </div>
+                                            </a>
+                                        </td>
+                                        <td><%= user[i].email %></td>
+                                        <td>
+                                            <% if(user[i].isVerified === true) { %>
+                                                <span class="badge bg-success">Active</span>
+                                            <% } else { %>
+                                                <span class="badge bg-danger">Inactive</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="text-end">
+                                               
+                                          
+                                            <% if(user[i].isVerified === true) { %>
+                                            <button class="btn btn-sm btn-outline-danger"><a href="/admin/block?id=<%=user[i]._id%>">Unlist</a></button>
+                                            <% } else { %>
+                                            <button class="btn btn-sm btn-outline-success"><a href="/admin/unblock?id=<%=user[i]._id%>">List</a></button>
+                                            <% } %>
+                                        </td>
+                                     
+                                    </tr>
+                                <% } %>
+                            <% } else { %>
+                                <tr><td colspan="4" class="text-center">No users found.</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-area mt-15 mb-50">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-start">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>&limit=<%= limit %>">
+                                <i class="material-icons md-chevron_left"></i>
+                            </a>
+                        </li>
+                    <% } %>
+
+                    <% for(let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>&limit=<%= limit %>"><%= i %></a>
+                        </li>
+                    <% } %>
+
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>&limit=<%= limit %>">
+                                <i class="material-icons md-chevron_right"></i>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+    </section>
+</main>
+
+<%- include("../layouts/admin/footer.ejs")  %>
+<script>
+function blockUser(userId) {
+    fetch(`/admin/users/block?id=${userId}`, { method: 'GET' })
+        .then(response => {
+            if (response.ok) {
+                updateUserStatus(userId, 'Inactive');
+            } else {
+                console.error('Failed to block user');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function unblockUser(userId) {
+    fetch(`/admin/users/unblock?id=${userId}`, { method: 'GET' })
+        .then(response => {
+            if (response.ok) {
+                updateUserStatus(userId, 'Active');
+            } else {
+                console.error('Failed to unblock user');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function updateUserStatus(userId, status) {
+    const statusSpan = document.getElementById(`status-${userId}`);
+    statusSpan.textContent = status;
+    statusSpan.classList.remove('alert-success', 'alert-danger');
+    statusSpan.classList.add(status === 'Active' ? 'alert-success' : 'alert-danger');
+    
+    // Save status to localStorage
+    localStorage.setItem(`userStatus-${userId}`, status);
+}
+
+// Function to load and apply saved statuses
+function loadSavedStatuses() {
+    const userRows = document.querySelectorAll('tbody tr');
+    userRows.forEach(row => {
+        const userId = row.querySelector('.text-muted').textContent.split(':')[1].trim();
+        const savedStatus = localStorage.getItem(`userStatus-${userId}`);
+        if (savedStatus) {
+            updateUserStatus(userId, savedStatus);
+        }
+    });
+}
+
+// Call loadSavedStatuses when the page loads
+document.addEventListener('DOMContentLoaded', loadSavedStatuses);
+
+// Add search functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr');
+
+    rows.forEach(row => {
+        const name = row.querySelector('.title').textContent.toLowerCase();
+        const email = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        if (name.includes(searchTerm) || email.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+</script>
