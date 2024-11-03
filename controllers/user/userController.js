@@ -556,15 +556,18 @@ const loadCart=async(req,res)=>{
 
 const Addcart=async(req,res)=>{
   try {
+    const a=10
     const userdata = req.session.users;
     const id=req.query.id;
     const product=await  Product.findById(id)
     const weight = req.body.weight||product.weightoptions[0].weight ;
     const salesPrice = req.body.salesPrice;
     const stock = req.body.curstock
+    const cartdata=await CartItem.find()
+
     
     if(product){
-      if(stock>0){
+      if(stock>0 ){
         const saveCart = await new CartItem({
           userId:userdata._id,
           productId:id,
