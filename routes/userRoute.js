@@ -40,6 +40,7 @@ user_route.get("/auth/google",passport.authenticate('google',{scope:['profile','
 user_route.get("/product-details",userController.LoadproductDetails)
 user_route.get("/cart",userController.loadCart)
 user_route.post("/cart",userController.Addcart)
+user_route.post("/delete-cart",userController.deleteCart)
       
 
 user_route.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: "/" }), (req, res) => {

@@ -546,7 +546,8 @@ const deleteAddress = async (req, res) => {
 
 const loadCart=async(req,res)=>{
   try {
-    const cartdata=await CartItem.find()
+    const userdata = req.session.users;
+    const cartdata=await CartItem.find({userId:userdata._id})
    return  res.render("cart",{cartdata:cartdata})
   } catch (error) {
     console.log(error)
@@ -554,42 +555,70 @@ const loadCart=async(req,res)=>{
   }
 }
 
-const Addcart=async(req,res)=>{
+const Addcart = async (req, res) => {
   try {
-    const a=10
     const userdata = req.session.users;
-    const id=req.query.id;
-    const product=await  Product.findById(id)
-    const weight = req.body.weight||product.weightoptions[0].weight ;
+    const id = req.query.id;
+    const product = await Product.findById(id);
+    const weight = req.body.curweight 
     const salesPrice = req.body.salesPrice;
-    const stock = req.body.curstock
-    const cartdata=await CartItem.find()
+    const stock = req.body.curstock;
+     console.log("weight is ii",weight)
+     console.log("sales price is",salesPrice)
+     console.log("stock is ",stock)
+     console.log("the req.body is",req.body)
+    if (product) {
+      const existingCartItem = await CartItem.findOne({
+        userId: userdata._id,
+        productId: id,
+        size: weight
+      });
 
-    
-    if(product){
-      if(stock>0 ){
-        const saveCart = await new CartItem({
-          userId:userdata._id,
-          productId:id,
-          name:product.productname,
-          size:weight,
-          price:salesPrice,
-          quantity:1,
-          image:product.productImage[0]
-        })
-        await saveCart.save()
-        res.redirect(`/product-details?id=${id}`)
-      }else{
-        return res.redirect(`/product-details?id=${id}`)
+      if (existingCartItem) {
+   
+        return res.redirect(`/product-details?id=${id}`);
+      }
+      if (stock > 0) {
+        const saveCart = new CartItem({
+          userId: userdata._id,
+          productId: id,
+          name: product.productname,
+          size: weight,
+          price: salesPrice,
+          quantity: 1,
+          image: product.productImage[0]
+        });
+        await saveCart.save();
+   
+        res.redirect(`/product-details?id=${id}`);
+      } else {
+      
+        return res.redirect(`/product-details?id=${id}`);
       }
     }
-    
+  } catch (error) {
+    console.log(error);
+  }
+};
+const deleteCart=async(req,res)=>{
+  try {
+    const id=req.query.id
+    if(id){
+      await CartItem.findByIdAndDelete(id)
+    }
+    //messge passed remider producet removed success
+   res.redirect("/cart")
+     
   } catch (error) {
     console.log(error)
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("product removing faield")
+    
   }
 }
 
+
 module.exports = {
+  deleteCart,
   Addcart,
   loadCart,
   deleteAddress,
