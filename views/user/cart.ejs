@@ -93,7 +93,7 @@
         	<div class="row">
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12 main-col">
                 	
-                	<form action="#" method="post" class="cart style2">
+                	
                 		<table>
                             <thead id="12" class="cart__row cart__header">
                                 <tr>
@@ -134,7 +134,15 @@
                                     <td class="text-right small--hide cart-price">
                                         <div><span class="money">₹735.00</span></div>
                                     </td>
-                                    <td class="text-center small--hide"><a href="#" class="btn btn--secondary cart__remove" title="Remove tem"><i class="icon icon anm anm-times-l"></i></a></td>
+                                    <td class="text-center small--hide">
+                                        <form action="/delete-cart?id=<%= cartdata[i]._id %>" method="post" style="display: inline;">
+                                          <input type="hidden" name="id" value="">
+                                          <button type="submit" class="btn btn--secondary cart__remove" title="Remove item" style="background: none; border: none; cursor: pointer;">
+                                            <i class="icon icon anm anm-times-l"></i>
+                                          </button>
+                                        </form>
+                                      </td>
+                                      
                                 </tr>
                                 <%}%>
                              
@@ -149,7 +157,7 @@
                                 </tr>
                             </tfoot>
                     </table> 
-                    </form>                   
+                                     
                	</div>
                 
                 
