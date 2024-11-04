@@ -139,7 +139,7 @@
                             </div>
                         </div>
                         <!--End Breadcrumb-->
-                        <form   id="AddtoCartForm"
+                        <form action='/cart?id=<%= product._id %>'  method="post" 
                             accept-charset="UTF-8" class="product-form product-form-product-template hidedropdown"
                             enctype="application/x-www-form-urlencoded">
                         <div id="ProductSection-product-template"
@@ -214,8 +214,11 @@
                                                         <span class="money">₹<span id="dynamicPrice">
                                                          <%= weightoptions[0].salesPrice %>
                                                                 </span></span>
-                                                                <input type="hidden" name="salesPrice" id="itemprice" value="<%= weightoptions[0].salesPrice %>">
-                                                                <input type="hidden" name="curstock" id="curstock" value="<%= weightoptions[0].stock %>">
+                                                                <input type="text" name="salesPrice" id="itemprice" value="<%= weightoptions[0].salesPrice %>">
+                                                                <input type="text" name="curstock" id="curstock" value="<%= weightoptions[0].stock %>">
+                                                                <input type="text" name="curweight" id="weight" value="<%= weightoptions[0].weight %>">
+                                                               
+
                                                     </span>
                                                 </p>
                                                 <br>
@@ -236,14 +239,20 @@
                                                             <div class="swatch-element <%= option.weight %> available">
                                                                 <input class="swatchInput"
                                                                     id="swatch-1-<%= option.weight %>" type="radio"
-                                                                    name="weight" value="<%= option.weight %>"
+                                                                     value="<%= option.weight %>"
+                                                                   
                                                                     data-price="<%= option.salesPrice %>"
-                                                                    data-stock="<%= option.stock %>">
+                                                                    data-stock="<%= option.stock %>"
+                                                                    data-weight="<%= option.weight %>" >
+                                                                  
                                                                 <label class="swatchLbl medium rectangle"
                                                                     for="swatch-1-<%= option.weight %>"
                                                                     title="<%= option.weight %>">
                                                                     <%= option.weight %>
                                                                 </label>
+                                                              
+                                                                
+                                                                
                                                             </div>
                                                             <% }) %>
                                                     </div>
@@ -668,10 +677,17 @@
         input.addEventListener('change', function() {
             const newPrice = this.getAttribute('data-price');
             const stock = this.getAttribute('data-stock')
+            const weightOptions = this.getAttribute('data-weight');
+            console.log("dsfhishf",weightOptions)
+
+            
 
             document.getElementById('dynamicPrice').textContent = newPrice; // Update the displayed price
             document.getElementById('itemprice').value = newPrice;
             document.getElementById('curstock').value = stock; 
+            document.getElementById('weight').value = weightOptions;
+            
+          
 
         });
     });
