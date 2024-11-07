@@ -34,6 +34,8 @@
                         </thead>
                         <tbody>
                             <% data.forEach(product => { %>
+                                
+
                             <tr>
                                 <td><%= product.productname %></td>
                                 <td><%= product.productBrand.brandname %></td>
@@ -91,7 +93,9 @@
                                      <% } %>
                                 </td>
                             </tr>
+                            
                             <% }) %>
+
                         </tbody>
                     </table>
                 </div> <!-- table-responsive end -->

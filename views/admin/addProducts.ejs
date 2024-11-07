@@ -157,10 +157,15 @@
                         <label class="form-label">Category</label>
                         <select class="form-select" name="productcategory">
                           <option value="">Select a Category</option>
+                        
                           <% for(let i=0; i < cat.length; i++) { %>
+                                         
+                                  <% if(cat[i].isDelete==false) { %>
+                            
                             <option value="<%= cat[i]._id %>">
                               <%= cat[i].categoryName %>
                             </option>
+                            <%}%>
                             <% } %>
                         </select>
                       </div>
@@ -171,9 +176,12 @@
                         <select class="form-select" name="productbrand">
                           <option value="">Select a Brand</option>
                           <% for(let i=0; i < brand.length; i++) { %>
+                                <% if(brand[i].isActive==true) { %>
                             <option value="<%= brand[i]._id %>">
+                              
                               <%= brand[i].brandname %>
                             </option>
+                            <% } %>
                             <% } %>
                         </select>
                       </div>
@@ -185,8 +193,6 @@
             </form>
           </div>
         </section>
-
-
     </main>
     <%- include("../layouts/admin/footer.ejs") %>
 

@@ -19,14 +19,13 @@ const loadproducts = async (req, res) => {
     .find()
     .populate("productBrand")
     .populate("productCategory").skip(skip) .limit(limit);
-
+ 
+  
     const totalProducts = await product.countDocuments();
-     
 
   
     const totalPages = Math.ceil(totalProducts / limit);
-       
-
+      
    return res.render("products", { data: data,
     currentpage: page,
     totalPages: totalPages,
@@ -61,7 +60,8 @@ const addProduct = async (req, res) => {
     const stock250gm = weight.SM ? weight.SM.stock : null;
 
     const price250gm = weight.SM ? weight.SM.salesPrice : null;
-    
+    const stock500gm = weight.Medium ? weight.Medium.stock : 0;
+
     
     const price500gm = weight.Medium ? weight.Medium.salesPrice : null;
     const stock1kg = weight.L ? weight.L.stock : null;

@@ -11,7 +11,7 @@ mongoose
   .then(() => {
     console.log("connectd to mongo");
   })
-  .catch((err) => console.log("faild to conne"));
+  .catch((err) => console.log(err,"faild to conne"));
 
 const express = require("express");
 const app = express();
@@ -27,13 +27,20 @@ app.use(
     },
   })
 );
+
+app.use((req, res, next) => {
+  res.locals.message = req.session.message;
+  delete req.session.message; 
+  next();
+});
+
 app.use(flash());
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   next();
 });
-// Serve node_modules as static for SweetAlert2 access
+
 app.use('/modules', express.static('node_modules'));
 app.use(passport.initialize());
 app.use(passport.session());

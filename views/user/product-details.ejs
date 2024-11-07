@@ -214,11 +214,9 @@
                                                         <span class="money">₹<span id="dynamicPrice">
                                                          <%= weightoptions[0].salesPrice %>
                                                                 </span></span>
-                                                                <input type="text" name="salesPrice" id="itemprice" value="<%= weightoptions[0].salesPrice %>">
-                                                                <input type="text" name="curstock" id="curstock" value="<%= weightoptions[0].stock %>">
-                                                                <input type="text" name="curweight" id="weight" value="<%= weightoptions[0].weight %>">
-                                                               
-
+                                                                <input type="hidden" name="salesPrice" id="itemprice" value="<%= weightoptions[0].salesPrice %>">
+                                                                <input type="hidden" name="curstock" id="curstock" value="<%= weightoptions[0].stock %>">
+                                                                <input type="hidden" name="curweight" id="weight" value="<%= weightoptions[0].weight %>">
                                                     </span>
                                                 </p>
                                                 <br>
@@ -680,82 +678,29 @@
             const weightOptions = this.getAttribute('data-weight');
             console.log("dsfhishf",weightOptions)
 
-            
-
             document.getElementById('dynamicPrice').textContent = newPrice; // Update the displayed price
             document.getElementById('itemprice').value = newPrice;
             document.getElementById('curstock').value = stock; 
             document.getElementById('weight').value = weightOptions;
-            
           
-
         });
     });
 </script>
-<script>
-       const form = document.getElementById('AddtoCartForm');
-       const formData = new FormData(form);
-       const data = Object.fromEntries(formData);
-       form.addEventListener('submit', async function(event) {
-        event.preventDefault();
-
-       try {
-          // Send data to the server with Fetch API
-          const response = await fetch('/cart?id=<%= product._id %>', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    // Show success alert
-                    Swal.fire({
-                        icon: 'success',
-                        text: 'product added to cart',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 1000
-                    });
-                    const idh=`<%= product._id %>`
-
-                    setTimeout(() => {
-                        window.location.href = `/product-details?id=${idh}`; // Redirect to the address page
-                    }, 1000);
-
-                }else {
-                    Swal.fire({
-                        icon: 'error',
-                        text: 'product is out of stock',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 2000
-                    });
-                }
-
-        
-       } catch (error) {
-        Swal.fire({
-                    icon: 'error',
-                    text: 'An error occurred. Please try again later.',
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 2000
-                });
-
-        
-       }
-    });
-</script>
-
-  
 
 
+<% if (message) { %>
+    <script>
+      Swal.fire({
+        icon: '<%= message.icon %>',
+        text: '<%= message.text %>',
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1000
+      });
+    </script>
+  <% } %>
     </div>
 
     <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">

@@ -575,8 +575,31 @@ const Addcart = async (req, res) => {
       });
 
       if (existingCartItem) {
-   
-        return res.redirect(`/product-details?id=${id}`);
+        // req.session.message = {
+        //   icon: 'error',
+        //   text: 'This product with the selected weight is already in your cart.'
+        // };
+      
+          
+         const currentQty=existingCartItem.quantity;
+         if(stock>currentQty && currentQty < 5){
+          await CartItem.findByIdAndUpdate({_id:existingCartItem._id}
+            ,
+            {$set:{quantity:currentQty+1}}
+          )
+          req.session.message = {
+            icon: 'success',
+            text: 'Product added to cart successfully.'
+          };
+          return res.redirect(`/product-details?id=${id}`);
+         }
+         else{
+          req.session.message = {
+            icon: 'error',
+            text: 'This product is out of stock or The maximum quantity reached'
+          };
+          return res.redirect(`/product-details?id=${id}`);
+         }
       }
       if (stock > 0) {
         const saveCart = new CartItem({
@@ -589,35 +612,88 @@ const Addcart = async (req, res) => {
           image: product.productImage[0]
         });
         await saveCart.save();
-   
+        req.session.message = {
+          icon: 'success',
+          text: 'Product added to cart successfully.'
+        };
         res.redirect(`/product-details?id=${id}`);
       } else {
+        req.session.message = {
+          icon: 'error',
+          text: 'Sorry, this product is out of stock.'
+        };
       
         return res.redirect(`/product-details?id=${id}`);
       }
     }
   } catch (error) {
+    
+    req.session.message = {
+      icon: 'error',
+      text: 'An error occurred. Please try again.'
+    };
+
     console.log(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error")
   }
 };
+
+
 const deleteCart=async(req,res)=>{
   try {
     const id=req.query.id
     if(id){
       await CartItem.findByIdAndDelete(id)
     }
-    //messge passed remider producet removed success
+  
+    req.session.message = {
+      icon: 'success',
+      text: 'Product removed successfully.'
+    };
+
    res.redirect("/cart")
      
   } catch (error) {
     console.log(error)
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("product removing faield")
+  }
+}
+
+const increaseQty=async(req,res)=>{
+
+
+  const { productId, quantity } = req.body;
+
+
+  if (!productId || !quantity || isNaN(quantity)) {
+    return res.status(400).json({ success: false, message: 'Invalid data' });
+}
+
+  try {
+
+    const updatedCart = await CartItem.findOneAndUpdate(
+      { _id: productId }, 
+      { quantity: quantity },
+      { new: true } 
+  );
+  if (updatedCart) {
+    res.json({ success: true, cart: updatedCart });
+
+  }else{
+    res.status(404).json({ success: false, message: 'Cart item not found.' });
+  }
+  } catch (error) {
+    console.error('Error updating cart:', error);
+        res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
     
   }
 }
 
 
+
+
 module.exports = {
+  increaseQty,
   deleteCart,
   Addcart,
   loadCart,
