@@ -126,7 +126,7 @@
                     <div class="list-view-item__title">
                         <a href="#"><%= cartdata[i].name %></a>
                     </div>
-                    <div class="cart__meta-text">
+                    <div  class="cart__meta-text">
                         Weight: <%= cartdata[i].size %><br>
                     </div>
                 </td>
@@ -134,6 +134,9 @@
                 <!-- Product Price -->
                 <td class="cart__price-wrapper cart-flex-item">
                     <span class="money">₹<span class="price-value"><%= cartdata[i].price %></span></span>
+                    <input type="hidden" id="itemid" value="<%= cartdata[i].productId %>">
+                    <input type="hidden" id="itemsize" value="<%= cartdata[i].size %>">
+
                 </td>
 
                 <!-- Quantity Update -->
@@ -408,170 +411,198 @@
 
     </html>
     <script>
-        
         document.addEventListener("DOMContentLoaded", function () {
-    const minusBtns = document.querySelectorAll(".qtyBtn.minus");
-    const plusBtns = document.querySelectorAll(".qtyBtn.plus");
-    const qtyInputs = document.querySelectorAll(".cart__qty-input");
-    const totalPrices = document.querySelectorAll(".total-price-value");
-    const priceValues = document.querySelectorAll(".price-value");
-
-    // Function to handle quantity change
-    function handleQuantityChange(qtyInput, productId, index) {
-        let qtyValue = parseInt(qtyInput.value, 10);
-
-        if (qtyValue >= 1 && qtyValue <= 5) {
-            updateQuantityOnServer(productId, qtyInput.value, index);
-        }
-    }
-
-    // Function to update quantity on the server
-    function updateQuantityOnServer(productId, quantity, index) {
-        fetch('/update-cart-quantity', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ productId: productId, quantity: quantity }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        text: 'Quantity updated successfully!',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 1250
-                    });
-
-                    // Update the total price for the current item
-                    const pricePerItem = parseFloat(priceValues[index].textContent);
-                    totalPrices[index].textContent = (pricePerItem * quantity).toFixed(2);
-
-                    // Update the grand total
-                    updateGrandTotal();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        text: 'Failed to update quantity. Please try again.',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 1250
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error updating quantity:', error);
-                Swal.fire({
-                    icon: 'error',
-                    text: 'An error occurred. Please try again.',
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 1250
-                });
-            });
-    }
-
-    // Attach event listeners to plus buttons
-    plusBtns.forEach((plusBtn, index) => {
-        plusBtn.addEventListener("click", function () {
-            const qtyInput = qtyInputs[index];
-            let currentQty = parseInt(qtyInput.value, 10);
-            const productId = plusBtn.getAttribute("data-product-item-id");
-
-            if (currentQty < 5) {
-                qtyInput.value = currentQty + 1;
-                handleQuantityChange(qtyInput, productId, index);
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    text: 'The maximum quantity limit is 5.',
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 1250
-                });
-            }
-        });
-    });
-
-    // Attach event listeners to minus buttons
-    minusBtns.forEach((minusBtn, index) => {
-        minusBtn.addEventListener("click", function () {
-            const qtyInput = qtyInputs[index];
-            let currentQty = parseInt(qtyInput.value, 10);
-            const productId = minusBtn.getAttribute("data-product-item-id");
-
-            if (currentQty > 1) {
-                qtyInput.value = currentQty - 1;
-                handleQuantityChange(qtyInput, productId, index);
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    text: 'The minimum quantity limit is 1.',
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 1250
-                });
-            }
-        });
-    });
-
-    // Attach event listeners to quantity inputs
-    qtyInputs.forEach((qtyInput, index) => {
-        qtyInput.addEventListener("input", function () {
-            const productId = plusBtns[index].getAttribute("data-product-item-id");
-            handleQuantityChange(qtyInput, productId, index);
-        });
-    });
-
-    // Function to update the grand total
-    function updateGrandTotal() {
-        const grandTotalElement = document.querySelector('.grand-total');
-
-        // Calculate the grand total
-        let total = 0;
-        totalPrices.forEach(item => {
-            total += parseFloat(item.textContent);
-        });
-
-        // Update the grand total element if it exists
-        if (grandTotalElement) {
-            grandTotalElement.textContent = `₹${total.toFixed(2)}`;
-        } else {
-            console.error("Grand total element not found!");
-        }
-    }
-
-    // Call updateGrandTotal on page load
-    updateGrandTotal();
-});
-
+            const minusBtns = document.querySelectorAll(".qtyBtn.minus");
+            const plusBtns = document.querySelectorAll(".qtyBtn.plus");
+            const qtyInputs = document.querySelectorAll(".cart__qty-input");
+            const totalPrices = document.querySelectorAll(".total-price-value");
+            const priceValues = document.querySelectorAll(".price-value");
         
-    </script>
-
-
-    
-    <% if (message) { %>
-        <script>
-            Swal.fire({
-                icon: '<%= message.icon %>',
-                text: '<%= message.text %>',
-                toast: true,
-                position: 'top-right',
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 1000
+            // Function to handle quantity change
+            function handleQuantityChange(qtyInput, productId, index, previousQty) {
+                let qtyValue = parseInt(qtyInput.value, 10);
+        
+                if (qtyValue >= 1 && qtyValue <= 5) {
+                    updateQuantityOnServer(productId, qtyInput.value, index, previousQty);
+                }
+            }
+        
+            // Function to update quantity on the server
+            function updateQuantityOnServer(productId, quantity, index, previousQty) {
+                const itemid = document.getElementById("itemid").value;
+                const itemsize = document.getElementById("itemsize").value;
+        
+                fetch('/update-cart-quantity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId: productId, quantity: quantity, itemid, itemsize }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: 'Quantity updated successfully!',
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 1250
+                            });
+        
+                            // Update the total price for the current item
+                            const pricePerItem = parseFloat(priceValues[index].textContent);
+                            totalPrices[index].textContent = (pricePerItem * quantity).toFixed(2);
+        
+                            // Update the grand total
+                            updateGrandTotal();
+        
+                            // Re-enable the plus button if stock is available
+                            plusBtns[index].disabled = false;
+        
+                        } else if (data.outOfStock) {
+                            Swal.fire({
+                                icon: 'error',
+                                text: data.message,  // Out-of-stock message from the server
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 1250
+                            });
+        
+                            // Revert to the previous quantity since it's out of stock
+                            qtyInputs[index].value = previousQty;
+                            
+                            // Disable the plus button to prevent further increments
+                            plusBtns[index].disabled = true;
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                text: data.message,
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 1250
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating quantity:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'An error occurred. Please try again.',
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 1250
+                        });
+        
+                        // Revert to the previous quantity in case of an error
+                        qtyInputs[index].value = previousQty;
+                    });
+            }
+        
+            // Attach event listeners to plus buttons
+            plusBtns.forEach((plusBtn, index) => {
+                plusBtn.addEventListener("click", function () {
+                    const qtyInput = qtyInputs[index];
+                    let currentQty = parseInt(qtyInput.value, 10);
+                    const productId = plusBtn.getAttribute("data-product-item-id");
+        
+                    if (currentQty < 5) {
+                        const previousQty = currentQty; // Store the previous quantity
+                        qtyInput.value = currentQty + 1;
+                        handleQuantityChange(qtyInput, productId, index, previousQty);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'The maximum quantity limit is 5.',
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 1500
+                        });
+                    }
+                });
             });
+        
+            // Attach event listeners to minus buttons
+            minusBtns.forEach((minusBtn, index) => {
+                minusBtn.addEventListener("click", function () {
+                    const qtyInput = qtyInputs[index];
+                    let currentQty = parseInt(qtyInput.value, 10);
+                    const productId = minusBtn.getAttribute("data-product-item-id");
+        
+                    if (currentQty > 1) {
+                        const previousQty = currentQty; // Store the previous quantity
+                        qtyInput.value = currentQty - 1;
+                        handleQuantityChange(qtyInput, productId, index, previousQty);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'The minimum quantity limit is 1.',
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 1500
+                        });
+                    }
+                });
+            });
+        
+            // Attach event listeners to quantity inputs
+            qtyInputs.forEach((qtyInput, index) => {
+                qtyInput.addEventListener("input", function () {
+                    const productId = plusBtns[index].getAttribute("data-product-item-id");
+                    const previousQty = qtyInput.defaultValue; // Original quantity as the previous value
+                    handleQuantityChange(qtyInput, productId, index, previousQty);
+                });
+            });
+        
+            // Function to update the grand total
+            function updateGrandTotal() {
+                const grandTotalElement = document.querySelector('.grand-total');
+        
+                // Calculate the grand total
+                let total = 0;
+                totalPrices.forEach(item => {
+                    total += parseFloat(item.textContent);
+                });
+        
+                // Update the grand total element if it exists
+                if (grandTotalElement) {
+                    grandTotalElement.textContent = `₹${total.toFixed(2)}`;
+                } else {
+                    console.error("Grand total element not found!");
+                }
+            }
+        
+            // Call updateGrandTotal on page load
+            updateGrandTotal();
+        });
         </script>
-    <% } %>
+        
+        
+        
+        <% if (message) { %>
+            <script>
+                Swal.fire({
+                    icon: '<%= message.icon %>',
+                    text: '<%= message.text %>',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 1000
+                });
+            </script>
+        <% } %>
+        
+        

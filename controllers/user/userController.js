@@ -12,7 +12,6 @@ const StatusCodes = require("../../utils/statusCodes");
 const crypto = require("crypto");
 const CartItem = require("../../models/cartModel");
 
-
 //the page to display page not found
 const pageNotFound = async (req, res) => {
   try {
@@ -518,7 +517,7 @@ const editaddress = async (req, res) => {
     return res.redirect(`/address`);
   } catch (error) {
     console.log(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("deleting failed")
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("deleting failed");
   }
 };
 
@@ -544,34 +543,36 @@ const deleteAddress = async (req, res) => {
   }
 };
 
-const loadCart=async(req,res)=>{
+const loadCart = async (req, res) => {
   try {
     const userdata = req.session.users;
-    const cartdata=await CartItem.find({userId:userdata._id})
-   return  res.render("cart",{cartdata:cartdata})
+    const cartdata = await CartItem.find({ userId: userdata._id });
+    return res.render("cart", { cartdata: cartdata });
   } catch (error) {
-    console.log(error)
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("failed to loading cart page")
+    console.log(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send("failed to loading cart page");
   }
-}
+};
 
 const Addcart = async (req, res) => {
   try {
     const userdata = req.session.users;
     const id = req.query.id;
     const product = await Product.findById(id);
-    const weight = req.body.curweight 
+    const weight = req.body.curweight;
     const salesPrice = req.body.salesPrice;
     const stock = req.body.curstock;
-     console.log("weight is ii",weight)
-     console.log("sales price is",salesPrice)
-     console.log("stock is ",stock)
-     console.log("the req.body is",req.body)
+    console.log("weight is ii", weight);
+    console.log("sales price is", salesPrice);
+    console.log("stock is ", stock);
+    console.log("the req.body is", req.body);
     if (product) {
       const existingCartItem = await CartItem.findOne({
         userId: userdata._id,
         productId: id,
-        size: weight
+        size: weight,
       });
 
       if (existingCartItem) {
@@ -579,27 +580,25 @@ const Addcart = async (req, res) => {
         //   icon: 'error',
         //   text: 'This product with the selected weight is already in your cart.'
         // };
-      
-          
-         const currentQty=existingCartItem.quantity;
-         if(stock>currentQty && currentQty < 5){
-          await CartItem.findByIdAndUpdate({_id:existingCartItem._id}
-            ,
-            {$set:{quantity:currentQty+1}}
-          )
+
+        const currentQty = existingCartItem.quantity;
+        if (stock > currentQty && currentQty < 5) {
+          await CartItem.findByIdAndUpdate(
+            { _id: existingCartItem._id },
+            { $set: { quantity: currentQty + 1 } }
+          );
           req.session.message = {
-            icon: 'success',
-            text: 'Product added to cart successfully.'
+            icon: "success",
+            text: "Product added to cart successfully.",
           };
           return res.redirect(`/product-details?id=${id}`);
-         }
-         else{
+        } else {
           req.session.message = {
-            icon: 'error',
-            text: 'This product is out of stock or The maximum quantity reached'
+            icon: "error",
+            text: "This product is out of stock or The maximum quantity reached",
           };
           return res.redirect(`/product-details?id=${id}`);
-         }
+        }
       }
       if (stock > 0) {
         const saveCart = new CartItem({
@@ -609,87 +608,98 @@ const Addcart = async (req, res) => {
           size: weight,
           price: salesPrice,
           quantity: 1,
-          image: product.productImage[0]
+          image: product.productImage[0],
         });
         await saveCart.save();
         req.session.message = {
-          icon: 'success',
-          text: 'Product added to cart successfully.'
+          icon: "success",
+          text: "Product added to cart successfully.",
         };
         res.redirect(`/product-details?id=${id}`);
       } else {
         req.session.message = {
-          icon: 'error',
-          text: 'Sorry, this product is out of stock.'
+          icon: "error",
+          text: "Sorry, this product is out of stock.",
         };
-      
+
         return res.redirect(`/product-details?id=${id}`);
       }
     }
   } catch (error) {
-    
     req.session.message = {
-      icon: 'error',
-      text: 'An error occurred. Please try again.'
+      icon: "error",
+      text: "An error occurred. Please try again.",
     };
 
     console.log(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error")
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error");
   }
 };
 
-
-const deleteCart=async(req,res)=>{
+const deleteCart = async (req, res) => {
   try {
-    const id=req.query.id
-    if(id){
-      await CartItem.findByIdAndDelete(id)
+    const id = req.query.id;
+    if (id) {
+      await CartItem.findByIdAndDelete(id);
     }
-  
+
     req.session.message = {
-      icon: 'success',
-      text: 'Product removed successfully.'
+      icon: "success",
+      text: "Product removed successfully.",
     };
 
-   res.redirect("/cart")
-     
+    res.redirect("/cart");
   } catch (error) {
-    console.log(error)
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("product removing faield")
+    console.log(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send("product removing faield");
   }
-}
+};
 
-const increaseQty=async(req,res)=>{
+const increaseQty = async (req, res) => {
+  const { productId, quantity, itemid, itemsize } = req.body;
 
-
-  const { productId, quantity } = req.body;
-
-
-  if (!productId || !quantity || isNaN(quantity)) {
-    return res.status(400).json({ success: false, message: 'Invalid data' });
-}
+  if (!itemid || !productId || !quantity || isNaN(quantity)) {
+    return res.status(400).json({ success: false, message: "Invalid data" });
+  }
 
   try {
+    const productData = await Product.findOne({ _id: itemid });
+    let itemStock = 0;
+    for (let value of productData.weightoptions) {
+      if (value.weight == itemsize) {
+        itemStock = value.stock;
+      }
+    }
+
+    if (itemStock < quantity) {
+      return res.json({
+        success: false,
+        message: "Cannot update because the item will be out of stock",
+        outOfStock: true,
+      });
+    }
 
     const updatedCart = await CartItem.findOneAndUpdate(
-      { _id: productId }, 
+      { _id: productId },
       { quantity: quantity },
-      { new: true } 
-  );
-  if (updatedCart) {
-    res.json({ success: true, cart: updatedCart });
+      { new: true }
+    );
 
-  }else{
-    res.status(404).json({ success: false, message: 'Cart item not found.' });
-  }
+    if (updatedCart) {
+      res.json({ success: true, cart: updatedCart, itemStock });
+    } else {
+      res.status(404).json({ success: false, message: "Cart item not found." });
+    }
   } catch (error) {
-    console.error('Error updating cart:', error);
-        res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
-    
+    console.error("Error updating cart:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
   }
-}
-
-
+};
 
 
 module.exports = {
