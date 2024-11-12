@@ -97,6 +97,15 @@
             <label for="phone" style="display: block; font-size: 0.9rem; color: #555; margin-top: 10px;">Phone</label>
             <input name="phone" value="<%= findAddress.phone %>" type="text" id="phone" required style="width: 100%; padding: 8px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
             <div class="error-message" id="phoneError"></div>
+            <div>
+                <span style="font-size: 14px; color: #6c757d; margin-right: 10px;">Address Type</span>
+                <label style="margin-right: 10px;">
+                    <input type="radio" name="addressType" value="Home" <%= findAddress.addressType === 'Home' ? 'checked' : '' %> > Home
+                </label>
+                <label style="margin-right: 10px;">
+                    <input type="radio" name="addressType" value="Work" <%= findAddress.addressType === 'Work' ? 'checked' : '' %> > Work
+              </label>
+            </div>
 
             <button type="submit" style="padding: 10px 20px; font-size: 1rem; background-color: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px;">Update Address</button>
             <button type="button"  style="padding: 10px 20px; font-size: 1rem; background-color: #ccc; color: #333; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; margin-left: 10px;"><a href="/address">Cancel</a></button>

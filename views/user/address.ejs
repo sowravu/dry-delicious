@@ -103,10 +103,30 @@
         <div style="border-bottom: 1px solid #ccc; padding: 1em 0; display: flex; justify-content: space-between; align-items: center;">
             <% if ( data.address.length > 0) { %>   
                 <div>
+                    <p>
+                        <span style="
+                            display: inline-block;
+                            padding: 0.25em 0.5em;
+                            font-size: 12px;
+                            font-weight: bold;
+                            color: #333;
+                            background-color: #f1f1f1;
+                            border-radius: 4px;
+                            text-transform: uppercase;
+                            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+                        ">
+                            <%= data.address[i].addressType %>
+                        </span>
+                    </p> 
+
                     <p><strong><%= data.address[i].Fullname %></strong></p>
                     <p><%= data.address[i].Address %></p>
                     <p><%= data.address[i].State %>, <%= data.address[i].pinCode %>, <%= data.address[i].Country %></p>
                     <p>Phone: <%= data.address[i].phone %></p>
+                      
+
+                               
+                    
                 </div>
             <% } else { %>
                 <div>
@@ -139,7 +159,7 @@
             <input name="Address" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
             
             <label>City</label>
-            <input name="city" value="<%= data.address.city %>" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
+            <input name="city" value="" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
             
             <label>State</label>
             <input name="State" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
@@ -152,7 +172,15 @@
             
             <label>Phone</label>
             <input name="phone" type="text" style="width: 100%; padding: 0.5em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 5px;">
-            
+            <div>
+                <span style="font-size: 14px; color: #6c757d; margin-right: 10px;">Address Type</span>
+                <label style="margin-right: 10px;">
+                    <input type="radio" name="addressType" value="Home"> Home
+                </label>
+                <label style="margin-right: 10px;">
+                    <input type="radio" name="addressType" value="Work" checked> Work
+                </label>
+            </div>
             <button type="submit" style="padding: 0.5em 1em; background-color: black; color: white; border: none; cursor: pointer; border-radius: 5px;">Save Address</button>
             <button type="button" onclick="closeAddAddressModal()" style="padding: 0.5em 1em; background-color: #ccc; color: black; border: none; cursor: pointer; border-radius: 5px; margin-left: 1em;">Cancel</button>
         </form>
@@ -307,31 +335,51 @@
 
 <script>
     async function deleteAddress(addressId) {
-        try {
-            
-            const response = await fetch(`/delete-address?id=${addressId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
+        const confirmation = await Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to delete this address?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        });
 
-            if (response.ok) {
-                // Show success alert
-                Swal.fire({
-                    icon: 'success',
-                    text: 'Address deleted successfully',
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 1000
-                }).then(() => {
-                   
-                    window.location.reload();
+        if (confirmation.isConfirmed) {
+            try {
+                const response = await fetch(`/delete-address?id=${addressId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
                 });
-            } else {
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'Address deleted successfully',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 1000
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Failed to delete address. Please try again.',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 2000
+                    });
+                }
+            } catch (error) {
+                console.error(error);
                 Swal.fire({
                     icon: 'error',
-                    text: 'Failed to delete address. Please try again.',
+                    text: 'An error occurred. Please try again later.',
                     toast: true,
                     position: 'top-right',
                     showConfirmButton: false,
@@ -339,17 +387,6 @@
                     timer: 2000
                 });
             }
-        } catch (error) {
-            console.error(error);
-            Swal.fire({
-                icon: 'error',
-                text: 'An error occurred. Please try again later.',
-                toast: true,
-                position: 'top-right',
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 2000
-            });
         }
     }
 </script>

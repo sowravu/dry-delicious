@@ -112,76 +112,96 @@
                                             <th class="action">&nbsp;</th>
                                         </tr>
                                     </thead>
-                               <table class="cart-table">
-    <tbody>
-        <% for (let i = 0; i < cartdata.length; i++) { %>
-            <tr class="cart__row border-bottom line1 cart-flex border-top">
-                <!-- Product Image -->
-                <td class="cart__image-wrapper cart-flex-item">
-                    <a href="#"><img class="cart__image" src="/uploads/<%= cartdata[i].image %>" alt="<%= cartdata[i].name %>"></a>
-                </td>
+                                    <table class="cart-table">
+                                        <tbody>
+                                            <% for (let i=0; i < cartdata.length; i++) { %>
+                                                <tr class="cart__row border-bottom line1 cart-flex border-top">
+                                                    <!-- Product Image -->
+                                                    <td class="cart__image-wrapper cart-flex-item">
+                                                        <a href="#"><img class="cart__image"
+                                                                src="/uploads/<%= cartdata[i].image %>"
+                                                                alt="<%= cartdata[i].name %>"></a>
+                                                    </td>
 
-                <!-- Product Details -->
-                <td class="cart__meta small--text-left cart-flex-item">
-                    <div class="list-view-item__title">
-                        <a href="#"><%= cartdata[i].name %></a>
-                    </div>
-                    <div  class="cart__meta-text">
-                        Weight: <%= cartdata[i].size %><br>
-                    </div>
-                </td>
+                                                    <!-- Product Details -->
+                                                    <td class="cart__meta small--text-left cart-flex-item">
+                                                        <div class="list-view-item__title">
+                                                            <a href="#">
+                                                                <%= cartdata[i].name %>
+                                                            </a>
+                                                        </div>
+                                                        <div class="cart__meta-text">
+                                                            Weight: <%= cartdata[i].size %><br>
+                                                        </div>
+                                                    </td>
 
-                <!-- Product Price -->
-                <td class="cart__price-wrapper cart-flex-item">
-                    <span class="money">₹<span class="price-value"><%= cartdata[i].price %></span></span>
-                    <input type="hidden" id="itemid" value="<%= cartdata[i].productId %>">
-                    <input type="hidden" id="itemsize" value="<%= cartdata[i].size %>">
+                                                    <!-- Product Price -->
+                                                    <td class="cart__price-wrapper cart-flex-item">
+                                                        <span class="money">₹<span class="price-value">
+                                                                <%= cartdata[i].price %>
+                                                            </span></span>
+                                                        <input type="hidden" id="itemid"
+                                                            value="<%= cartdata[i].productId %>">
+                                                        <input type="hidden" id="itemsize"
+                                                            value="<%= cartdata[i].size %>">
 
-                </td>
+                                                    </td>
 
-                <!-- Quantity Update -->
-                <td class="cart__update-wrapper cart-flex-item text-right">
-                    <div class="cart__qty text-center">
-                        <div class="qtyField">
-                            <button class="qtyBtn minus btn btn-sm btn-secondary decrease-quantity" data-product-item-id="<%= cartdata[i]._id %>">-</button>
-                            <input class="cart__qty-input qty" type="text" name="quantity" value="<%= cartdata[i].quantity %>" pattern="[0-9]*">
-                            <button class="qtyBtn plus btn btn-sm btn-secondary increase-quantity" data-product-item-id="<%= cartdata[i]._id %>">+</button>
-                        </div>
-                    </div>
-                </td>
+                                                    <!-- Quantity Update -->
+                                                    <td class="cart__update-wrapper cart-flex-item text-right">
+                                                        <div class="cart__qty text-center">
+                                                            <div class="qtyField">
+                                                                <button
+                                                                    class="qtyBtn minus btn btn-sm btn-secondary decrease-quantity"
+                                                                    data-product-item-id="<%= cartdata[i]._id %>">-</button>
+                                                                <input class="cart__qty-input qty" type="text"
+                                                                    name="quantity" value="<%= cartdata[i].quantity %>"
+                                                                    pattern="[0-9]*">
+                                                                <button
+                                                                    class="qtyBtn plus btn btn-sm btn-secondary increase-quantity"
+                                                                    data-product-item-id="<%= cartdata[i]._id %>">+</button>
+                                                            </div>
+                                                        </div>
+                                                    </td>
 
-                <!-- Total Price -->
-                <td class="text-right small--hide cart-price">
-                    <div>₹<span class="total-price-value"><%= cartdata[i].price * cartdata[i].quantity %></span></div>
-                </td>
+                                                    <!-- Total Price -->
+                                                    <td class="text-right small--hide cart-price">
+                                                        <div>₹<span class="total-price-value">
+                                                                <%= cartdata[i].price * cartdata[i].quantity %>
+                                                            </span></div>
+                                                    </td>
 
-                <!-- Remove Item Button -->
-                <td class="text-center small--hide">
-                    <form action="/delete-cart?id=<%= cartdata[i]._id %>" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn--secondary cart__remove" title="Remove item" style="background: none; border: none; cursor: pointer;">
-                            <i class="icon icon anm anm-times-l"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-        <% } %>
-    </tbody>
+                                                    <!-- Remove Item Button -->
+                                                    <td class="text-center small--hide">
+                                                        <form id="deleteForm" action="/delete-cart?id=<%= cartdata[i]._id %>"
+                                                            method="post" style="display: inline;">
+                                                            <button type="button"
+                                                                class="btn btn--secondary cart__remove"
+                                                                title="Remove item"
+                                                                style="background: none; border: none; cursor: pointer;"
+                                                                 onclick="confirmDelete()">
+                                                                <i class="icon icon anm anm-times-l"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                <% } %>
+                                        </tbody>
 
-    <tfoot>
-        <tr>
-            <!-- Continue Shopping Button -->
-            <td colspan="3" class="text-left">
-                <a href="http://annimexweb.com/" class="btn btn-secondary btn--small cart-continue">Continue Shopping</a>
-            </td>
+                                        <tfoot>
+                                            <tr>
+                                                <!-- Continue Shopping Button -->
+                                                <td colspan="3" class="text-left">
+                                                    <a href="/shop"
+                                                        class="btn btn-secondary btn--small cart-continue">Continue
+                                                        Shopping</a>
+                                                </td>
 
-            <!-- Clear Cart and Update Cart Buttons -->
-            <td colspan="3" class="text-right">
-                <button type="submit" name="clear" class="btn btn-secondary btn--small small--hide">Clear Cart</button>
-                <button type="submit" name="update" class="btn btn-secondary btn--small cart-continue ml-2">Update Cart</button>
-            </td>
-        </tr>
-    </tfoot>
-</table>
+                                                <!-- Clear Cart and Update Cart Buttons -->
+
+                                            </tr>
+                                        </tfoot>
+                                    </table>
 
                             </div>
 
@@ -205,25 +225,27 @@
                                                 <span class="col-12 col-sm-6 text-right">0</span>
                                             </div>
                                             <div class="row border-bottom pb-2 pt-2">
-                                                <span class="col-12 col-sm-6 cart__subtotal-title">Delivery charges </span>
+                                                <span class="col-12 col-sm-6 cart__subtotal-title">Delivery charges
+                                                </span>
                                                 <span class="col-12 col-sm-6 text-right">0</span>
                                             </div>
                                             <div class="row border-bottom pb-2 pt-2">
                                                 <span class="col-12 col-sm-6 cart__subtotal-title">
                                                     <strong>Grand Total</strong>
                                                 </span>
-                                                <span class="col-12 col-sm-6 cart__subtotal-title cart__subtotal text-right">
+                                                <span
+                                                    class="col-12 col-sm-6 cart__subtotal-title cart__subtotal text-right">
                                                     <span class="money grand-total">₹0.00</span>
                                                 </span>
                                             </div>
-                                          
-                                         
+
+
                                             <input type="submit" name="checkout" id="cartCheckout"
                                                 class="btn btn--small-wide checkout" value="Proceed To Checkout"
-                                                disabled="disabled">
+                                                disabled="disabled" onclick=""  >
                                             <div class="paymnet-img"><img src="assets/images/payment-img.jpg"
                                                     alt="Payment"></div>
-                                           
+
                                         </div>
                                     </div>
                                 </div>
@@ -405,10 +427,6 @@
     <script src="assets/js/main.js"></script>
     </div>
     </body>
-
-
-   
-
     </html>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -417,21 +435,21 @@
             const qtyInputs = document.querySelectorAll(".cart__qty-input");
             const totalPrices = document.querySelectorAll(".total-price-value");
             const priceValues = document.querySelectorAll(".price-value");
-        
+
             // Function to handle quantity change
             function handleQuantityChange(qtyInput, productId, index, previousQty) {
                 let qtyValue = parseInt(qtyInput.value, 10);
-        
+
                 if (qtyValue >= 1 && qtyValue <= 5) {
                     updateQuantityOnServer(productId, qtyInput.value, index, previousQty);
                 }
             }
-        
+
             // Function to update quantity on the server
             function updateQuantityOnServer(productId, quantity, index, previousQty) {
                 const itemid = document.getElementById("itemid").value;
                 const itemsize = document.getElementById("itemsize").value;
-        
+
                 fetch('/update-cart-quantity', {
                     method: 'POST',
                     headers: {
@@ -451,17 +469,17 @@
                                 timerProgressBar: true,
                                 timer: 1250
                             });
-        
+
                             // Update the total price for the current item
                             const pricePerItem = parseFloat(priceValues[index].textContent);
                             totalPrices[index].textContent = (pricePerItem * quantity).toFixed(2);
-        
+
                             // Update the grand total
                             updateGrandTotal();
-        
+
                             // Re-enable the plus button if stock is available
                             plusBtns[index].disabled = false;
-        
+
                         } else if (data.outOfStock) {
                             Swal.fire({
                                 icon: 'error',
@@ -472,10 +490,10 @@
                                 timerProgressBar: true,
                                 timer: 1250
                             });
-        
+
                             // Revert to the previous quantity since it's out of stock
                             qtyInputs[index].value = previousQty;
-                            
+
                             // Disable the plus button to prevent further increments
                             plusBtns[index].disabled = true;
                         } else {
@@ -501,19 +519,19 @@
                             timerProgressBar: true,
                             timer: 1250
                         });
-        
+
                         // Revert to the previous quantity in case of an error
                         qtyInputs[index].value = previousQty;
                     });
             }
-        
+
             // Attach event listeners to plus buttons
             plusBtns.forEach((plusBtn, index) => {
                 plusBtn.addEventListener("click", function () {
                     const qtyInput = qtyInputs[index];
                     let currentQty = parseInt(qtyInput.value, 10);
                     const productId = plusBtn.getAttribute("data-product-item-id");
-        
+
                     if (currentQty < 5) {
                         const previousQty = currentQty; // Store the previous quantity
                         qtyInput.value = currentQty + 1;
@@ -531,14 +549,14 @@
                     }
                 });
             });
-        
+
             // Attach event listeners to minus buttons
             minusBtns.forEach((minusBtn, index) => {
                 minusBtn.addEventListener("click", function () {
                     const qtyInput = qtyInputs[index];
                     let currentQty = parseInt(qtyInput.value, 10);
                     const productId = minusBtn.getAttribute("data-product-item-id");
-        
+
                     if (currentQty > 1) {
                         const previousQty = currentQty; // Store the previous quantity
                         qtyInput.value = currentQty - 1;
@@ -556,7 +574,7 @@
                     }
                 });
             });
-        
+
             // Attach event listeners to quantity inputs
             qtyInputs.forEach((qtyInput, index) => {
                 qtyInput.addEventListener("input", function () {
@@ -565,17 +583,17 @@
                     handleQuantityChange(qtyInput, productId, index, previousQty);
                 });
             });
-        
+
             // Function to update the grand total
             function updateGrandTotal() {
                 const grandTotalElement = document.querySelector('.grand-total');
-        
+
                 // Calculate the grand total
                 let total = 0;
                 totalPrices.forEach(item => {
                     total += parseFloat(item.textContent);
                 });
-        
+
                 // Update the grand total element if it exists
                 if (grandTotalElement) {
                     grandTotalElement.textContent = `₹${total.toFixed(2)}`;
@@ -583,26 +601,39 @@
                     console.error("Grand total element not found!");
                 }
             }
-        
+
             // Call updateGrandTotal on page load
             updateGrandTotal();
         });
+    </script>
+
+<script>
+    function confirmDelete() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to remove this item from your cart?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`deleteForm`).submit();
+            }
+        });
+    }
+</script>
+    <% if (message) { %>
+        <script>
+            Swal.fire({
+                icon: '<%= message.icon %>',
+                text: '<%= message.text %>',
+                toast: true,
+                position: 'top-right',
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 1000
+            });
         </script>
-        
-        
-        
-        <% if (message) { %>
-            <script>
-                Swal.fire({
-                    icon: '<%= message.icon %>',
-                    text: '<%= message.text %>',
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 1000
-                });
-            </script>
         <% } %>
-        
-        
