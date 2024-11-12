@@ -88,30 +88,62 @@ const loadHome = async (req, res) => {
 
 const loadshop = async (req, res) => {
   try {
-    const currentpage = req.query.page || 1;
+
+    const currentpage = parseInt(req.query.page) || 1;
     const limit = 8;
-    const totalProducts = await Product.countDocuments();
+    const filter = { is_delete: false };
+     
+    
+    const selectedCategories = req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [];
+    const selectedBrands = req.query.brand ? (Array.isArray(req.query.brand) ? req.query.brand : [req.query.brand]) : [];
+    const selectedSort = req.query.sort || '';
+
+  
+    if (selectedCategories.length) {
+      filter.productCategory = { $in: selectedCategories };
+    }
+
+    if (selectedBrands.length) {
+      filter.productBrand = { $in: selectedBrands };
+    }
+
+    
+    let sortOption = {};
+    if (selectedSort === "priceAsc") sortOption = { "weightoptions.salesPrice": 1 };
+    if (selectedSort === "priceDesc") sortOption = { "weightoptions.salesPrice": -1 };
+    if (selectedSort === "nameAsc") sortOption = { productname: 1 };
+    if (selectedSort === "nameDesc") sortOption = { productname: -1 };
+
+    const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / limit);
-    const categories = await Category.find();
-    const product = await Product.find({ is_delete: false })
+
+    const product = await Product.find(filter)
+      .sort(sortOption)
       .skip((currentpage - 1) * limit)
-      .limit(limit);
-    const popular = await Product.find({ is_delete: false });
+      .limit(limit)
+      .populate("productCategory")
+      .populate("productBrand");
+
+    const categories = await Category.find();
     const brand = await Brand.find();
+
     return res.render("shop", {
-      product: product,
-      categories: categories,
-      brand: brand,
+      product,
+      categories,
+      brand,
       currentpage,
       totalPages,
-      limit,
-      popular,
+      selectedCategories, 
+      selectedSort,
+      selectedBrands,  
+      limit      
     });
   } catch (error) {
     console.log(error);
-    res.send("shop page loading faield");
+    res.send("Failed to load shop page");
   }
 };
+
 
 const loadForgetPassword = async (req, res) => {
   try {
@@ -376,12 +408,14 @@ const LoadproductDetails = async (req, res) => {
       productCategory: productDetails.productCategory,
     });
 
-    if (productDetails && productDetails.weightoptions) {
+    if (productDetails.is_delete==false &&productDetails && productDetails.weightoptions) {
       return res.render("product-details", {
         product: productDetails,
         weightoptions: productDetails.weightoptions,
         relativeProducts: relativeProducts,
       });
+    }else{
+      return res.redirect("/pageNotFound")
     }
   } catch (error) {
     res.send("faild to load product details page");
@@ -451,9 +485,9 @@ const loadAddress = async (req, res) => {
 const Address = async (req, res) => {
   try {
     const userdata = req.session.users;
-    const { Fullname, Address, city, State, pinCode, Country, phone } =
+    const { Fullname, Address, city, State, pinCode, Country, phone,addressType } =
       req.body;
-
+console.log("addres typei is is :",addressType)
     const saveAddress = await new address({
       Fullname: Fullname,
       Address: Address,
@@ -462,6 +496,7 @@ const Address = async (req, res) => {
       pinCode: pinCode,
       Country: Country,
       phone: phone,
+      addressType:addressType.toString()
     });
     await saveAddress.save();
     const id = userdata._id;
@@ -494,8 +529,9 @@ const editaddress = async (req, res) => {
   try {
     const addressId = req.session.addressId;
 
-    const { Fullname, Address, city, State, pinCode, Country, phone } =
+    const { Fullname, Address, city, State, pinCode, Country, phone,addressType } =
       req.body;
+     
 
     if (addressId) {
       await address.findByIdAndUpdate(
@@ -509,6 +545,7 @@ const editaddress = async (req, res) => {
             pinCode: pinCode,
             Country: Country,
             phone: phone,
+            addressType:addressType
           },
         }
       );
@@ -576,11 +613,7 @@ const Addcart = async (req, res) => {
       });
 
       if (existingCartItem) {
-        // req.session.message = {
-        //   icon: 'error',
-        //   text: 'This product with the selected weight is already in your cart.'
-        // };
-
+  
         const currentQty = existingCartItem.quantity;
         if (stock > currentQty && currentQty < 5) {
           await CartItem.findByIdAndUpdate(
@@ -701,8 +734,19 @@ const increaseQty = async (req, res) => {
   }
 };
 
+const Loadcheckout=async(req,res)=>{
+  try {
+    return res.render("checkout")
+  } catch (error) {
+    console.log(error)
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("chekout page loading failed")
+    
+  }
+}
+
 
 module.exports = {
+  Loadcheckout,
   increaseQty,
   deleteCart,
   Addcart,

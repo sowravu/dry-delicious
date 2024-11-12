@@ -1,7 +1,8 @@
 
 const express=require("express");
 const user_route=express()
-const {userAuth,adminAuth}=require("../middleware/auth")
+const {userAuth,adminAuth,
+  isLogout}=require("../middleware/auth")
 const userController = require("../controllers/user/userController");
 const { Passport } = require("passport");
 const passport=require("passport")
@@ -14,7 +15,7 @@ user_route.set("views","./views/user");
 user_route.use(express.static("public/user"));
 
 
-user_route.get("/",userController.loginload);
+user_route.get("/",isLogout,userController.loginload);
 user_route.get("/home",userAuth,userController.loadHome)
 user_route.post("/",userController.loginVerify)
 user_route.get("/pageNotFound", userController.pageNotFound)
@@ -44,6 +45,10 @@ user_route.get("/cart",userAuth,userController.loadCart)
 user_route.post("/cart",userAuth,userController.Addcart)
 user_route.post("/delete-cart",userAuth,userController.deleteCart)
 user_route.post("/update-cart-quantity",userController.increaseQty)
+
+//checkout
+user_route.get("/checkout",userAuth,userController.Loadcheckout)
+
       
 
 user_route.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: "/" }), (req, res) => {
@@ -53,17 +58,25 @@ user_route.get("/auth/google/callback", passport.authenticate('google', { failur
     res.redirect ('/home');
   }
   else{
-
     req.flash("error_msg","user is blocked by admin")
-
-    res.redirect("/")
-    
+    res.redirect("/")   
   }
-
 });
 
-
 module.exports = user_route;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
