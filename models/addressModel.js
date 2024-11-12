@@ -28,8 +28,14 @@ const addressSchema = new mongoose.Schema({
   phone:{
   type:Number,
   required:true
- }
+ },
+ addressType: {
+  type: String,
+  enum: ['Home', 'Work'], // Restricts values to "Home" or "Work"
+  required: true           // Makes the field mandatory
+},
 
 })
 
 module.exports = mongoose.model("Address", addressSchema);
+
