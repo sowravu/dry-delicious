@@ -9,12 +9,12 @@ const userAuth = (req, res, next) => {
         if (data && data.isVerified) {
           next();
         } else {
-          req.session.destroy((err)=>{
-            if(err){
+          req.session.destroy((err) => {
+            if (err) {
               console.log("faild to distory err")
               return res.redirect("/pageNotFound")
             }
-          
+
           })
           return res.redirect("/")// check channunnath isvarified false akkumbol
         }
@@ -29,6 +29,18 @@ const userAuth = (req, res, next) => {
 };
 
 
+
+
+const isLogout = async (req, res, next) => {
+  try {
+    if (req.session.users) {
+      return res.redirect("/home")
+    }
+    next()
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 
 const adminAuth = (req, res, next) => {
@@ -50,7 +62,11 @@ const adminAuth = (req, res, next) => {
   }
 };
 
-module.exports = { userAuth, adminAuth };
+
+module.exports = {
+  userAuth, adminAuth,
+  isLogout
+};
 
 
 
