@@ -1,6 +1,7 @@
 const { name } = require("ejs");
 const mongoose = require("mongoose");
 
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -31,6 +32,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  walletBalance: {
+    type: Number,
+    default: 0,
+    required: true
+  },
   isVerified: {
     type: Boolean,
     default: false,
@@ -38,6 +44,10 @@ const userSchema = new mongoose.Schema({
   isAdmin: {
     type: Boolean,
     default: false,
+  },
+  Image:{
+  type:String,
+  required: false,
   },
   resetPasswordToken: String,
   resetPasswordExpires: Date,

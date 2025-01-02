@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complete Your Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <h1>Complete Your Payment</h1>
+    <div id="payment-button"></div>
+
+    <script>
+        var options = {
+            "key": "<%= key_id %>", 
+            "amount": "<%= razorpayOrder.amount %>", 
+            "currency": "INR",
+            "name": "Dry delicious",
+            "description": "Order Payment",
+            "image": "https://your-logo-url.com/logo.png",
+            "order_id": "<%= razorpayOrder.id %>",
+            "handler": function (response) {
+                // Send payment verification request to server
+                fetch('/verify-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature
+                    })
+                }).then(res => {
+                    if (res.ok) {
+                        window.location.href = '/order-details?orderId=<%= order.orderId%>';
+                    } else {
+                        alert('Payment failed');
+                    }
+                });
+            },
+            "prefill": {
+                "name": "<%= order.shipping_address.Fullname %>",
+                "email": "user@example.com", // Replace with actual user email
+                "contact": "<%= order.shipping_address.phone %>"
+            },
+            "notes": {
+                "address": "<%= order.shipping_address.Address %>"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        
+        // Automatically open payment form
+        window.onload = function() {
+            rzp1.open();
+        }
+    </script>
+</body>
+</html>

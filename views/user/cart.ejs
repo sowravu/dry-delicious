@@ -114,7 +114,7 @@
                                     </thead>
                                     <table class="cart-table">
                                         <tbody>
-                                            <% for (let i=0; i < cartdata.length; i++) { %>
+                                            <% for ( let i=0; i < cartdata.length; i++ ) { %>
                                                 <tr class="cart__row border-bottom line1 cart-flex border-top">
                                                     <!-- Product Image -->
                                                     <td class="cart__image-wrapper cart-flex-item">
@@ -185,26 +185,26 @@
                                                         </form>
                                                     </td>
                                                 </tr>
-                                                <% } %>
+                                                
+                                                <%    }   %>
+                                                
                                         </tbody>
 
                                         <tfoot>
+
                                             <tr>
-                                                <!-- Continue Shopping Button -->
+                                                 <!-- Continue Shopping Button -->
                                                 <td colspan="3" class="text-left">
                                                     <a href="/shop"
                                                         class="btn btn-secondary btn--small cart-continue">Continue
                                                         Shopping</a>
                                                 </td>
-
                                                 <!-- Clear Cart and Update Cart Buttons -->
-
                                             </tr>
+
                                         </tfoot>
                                     </table>
-
                             </div>
-
 
                             <div class="container mt-4">
                                 <div class="row">
@@ -238,12 +238,12 @@
                                                     <span class="money grand-total">₹0.00</span>
                                                 </span>
                                             </div>
-
-
-                                            <input type="submit" name="checkout" id="cartCheckout"
-                                                class="btn btn--small-wide checkout" value="Proceed To Checkout"
-                                                disabled="disabled" onclick=""  >
+                                            <input type="button" name="checkout" id="cartCheckout"
+                                                  class="btn btn--small-wide checkout" value="Proceed To Checkout"
+                                                  onclick="window.location.href='/checkout'">
+                                                 
                                             <div class="paymnet-img"><img src="assets/images/payment-img.jpg"
+
                                                     alt="Payment"></div>
 
                                         </div>
@@ -605,6 +605,44 @@
             // Call updateGrandTotal on page load
             updateGrandTotal();
         });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+    const checkoutButton = document.getElementById("cartCheckout");
+    const cartTableBody = document.querySelector("tbody");
+
+    // Check if cart is empty
+    function isCartEmpty() {
+        return cartTableBody.children.length === 0; // No rows in the cart table
+    }
+
+    // Disable the checkout button if the cart is empty
+    function updateCheckoutButton() {
+        if (isCartEmpty()) {
+            checkoutButton.disabled = true;
+            checkoutButton.style.opacity = "0.5";
+            checkoutButton.style.cursor = "not-allowed";
+        } else {
+            checkoutButton.disabled = false;
+            checkoutButton.style.opacity = "1";
+            checkoutButton.style.cursor = "pointer";
+        }
+    }
+
+    // Initial check on page load
+    updateCheckoutButton();
+
+    // Example: Recheck on any cart update (if using dynamic cart updates via AJAX)
+    document.addEventListener("cartUpdated", updateCheckoutButton);
+});
+
+
+
+
+
+
+
+
     </script>
 
 <script>

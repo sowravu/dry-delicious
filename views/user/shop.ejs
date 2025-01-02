@@ -1,5 +1,6 @@
 <%- include("../layouts/user/header.ejs") %>
 
+
   <div class="pageWrapper">
     <!--Search Form Drawer-->
     <div class="search">
@@ -14,7 +15,7 @@
     </div>
     <!--End Search Form Drawer-->
     <!--Top Header-->
-
+     
 
     <!--End Top Header-->
     <!--Header-->
@@ -237,7 +238,7 @@
                   </div>
                   <div class="sidebar_widget categories filter-widget">
                     <div class="widget-title">
-                      <h2>Categories</h2>
+                      <h2>Brands</h2>
                     </div>
                     <div class="widget-content">
                       <ul class="sidebar_categories">
@@ -339,51 +340,86 @@
             <!--End Toolbar-->
             <div class="grid-products grid--view-items">
               <div class="row">
-                <% product.forEach(item=> { %>
+                <% product.forEach(item => { %>
                   <div class="col-6 col-sm-6 col-md-4 col-lg-3 item">
-                    <!-- start product image -->
-                    <div class="product-image">
+                    <!-- Start product image -->
+                    <div class="product-image" style="position: relative; overflow: hidden;">
                       <a href="/product-details?id=<%= item._id %>">
-                        <!-- image -->
+                        <!-- Primary image -->
                         <img style="height: 180px; width: 250px;" class="primary blur-up lazyload"
                           data-src="/uploads/<%= item.productImage[0] %>" src="/uploads/<%= item.productImage[0] %>"
                           alt="<%= item.productname %>" title="<%= item.productname %>">
                         <!-- Hover image -->
-                        <% if (item.productImage.length> 1) { %>
+                        <% if (item.productImage.length > 1) { %>
                           <img style="height: 180px; width: 250px;" class="hover blur-up lazyload"
                             data-src="/uploads/<%= item.productImage[1] %>" src="/uploads/<%= item.productImage[1] %>"
                             alt="<%= item.productname %>" title="<%= item.productname %>">
-                          <% } %>
+                        <% } %>
                       </a>
+            
+                      <!-- Wishlist button -->
+                      <div class="button-set">
+                        <% 
+                          let isProductInWishlist = false;
+                          let isRed = false; // Initialize the isRed variable
+                          if (findwishlist && findwishlist.products) {
+                            findwishlist.products.forEach(wishlistItem => {
+                              if (wishlistItem.productId.toString() === item._id.toString()) {
+                                isProductInWishlist = true;
+                                isRed = wishlistItem.isRed; // Assign isRed based on the wishlist item
+                              }
+                            });
+                          }
+                        %>
+                        <% if (isProductInWishlist && isRed) { %>
+                          <!-- Product is in wishlist and is red (filled heart) -->
+                          <div class="wishlist-btn" data-product-id="<%= item._id %>">
+                            <i class="fas fa-heart" style="font-size: 20px; color: red; cursor: pointer; transition: color 0.3s ease;"></i>
+                          </div>
+                        <% } else { %>
+                          <!-- Product is not in wishlist, or not red (empty heart) -->
+                          <div class="wishlist-btn" data-product-id="<%= item._id %>">
+                            <i class="far fa-heart" style="font-size: 20px; color: rgb(242, 9, 9); cursor: pointer; transition: color 0.3s ease;"></i>
+                          </div>
+                        <% } %>
+                      </div>
                     </div>
-                    <!-- end product image -->
-
-                    <!--start product details -->
+                    <!-- End product image -->
+            
+                    <!-- Start product details -->
                     <div class="product-details text-center">
-                      <!-- product name -->
+                      <!-- Product name -->
                       <div class="product-name">
-                        <a class="product-link" href="#">
+                        <a class="product-link" href="/product-details?id=<%= item._id %>">
                           <%= item.productname %>
                         </a>
                       </div>
                       <!-- End product name -->
-
-                      <!-- product price -->
+            
+                      <!-- Product price -->
                       <div class="product-price">
-                        <% let price=item.weightoptions.find(option=> option.stock > 0); %>
-                          <% if (price) { %>
+                        <% 
+                            let price = item.weightoptions.find(option => option.stock > 0);
+                        %>
+                        <% if (price) { %>
                             <span class="price">₹<%= price.salesPrice %></span>
-                            <% } else { %>
-                              <span class="price">Out of Stock</span>
-                              <% } %>
-                      </div>
+                            <span class="old-price" style="text-decoration: line-through; color: #999;">₹<%= price.Actualprice %></span>
+                        <% } else { %>
+                            <span class="price">Out of Stock</span>
+                        <% } %>
+                    </div>
+                    
                       <!-- End product price -->
                     </div>
                     <!-- End product details -->
                   </div>
-                  <% }); %>
+                <% }); %>
               </div>
             </div>
+            
+            
+            
+            
 
 
           </div>
@@ -694,14 +730,7 @@
                       </div>
                       <!-- End Product Action -->
                     </form>
-                    <div class="display-table shareRow">
-                      <div class="display-table-cell">
-                        <div class="wishlist-btn">
-                          <a class="wishlist add-to-wishlist" href="#" title="Add to Wishlist"><i
-                              class="icon anm anm-heart-l" aria-hidden="true"></i> <span>Add to Wishlist</span></a>
-                        </div>
-                      </div>
-                    </div>
+                    
                   </div>
                 </div>
               </div>
@@ -759,4 +788,106 @@
         }
       }
     }
-  </script>
+
+
+
+
+// Show wishlist button on hover
+document.querySelectorAll('.product-image').forEach(image => {
+  image.addEventListener('mouseenter', function () {
+    const wishlistButton = this.querySelector('.wishlist-btn');
+    wishlistButton.style.display = 'block';
+  });
+
+  image.addEventListener('mouseleave', function () {
+    const wishlistButton = this.querySelector('.wishlist-btn');
+    if (!wishlistButton.classList.contains('active')) {
+      wishlistButton.style.display = 'none';
+    }
+  });
+});
+
+
+document.querySelectorAll('.wishlist-btn').forEach(button => {
+  button.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const wishlistButton = e.currentTarget;
+    const heartIcon = wishlistButton.querySelector('i');
+    const productId = wishlistButton.getAttribute("data-product-id");
+
+    if (!productId) {
+      console.error("Product ID not found");
+      return;
+    }
+
+    // Check current state
+    const isInWishlist = heartIcon.classList.contains('fas'); // Check if filled heart
+
+    try {
+      const response = await fetch("/wishlist", {
+        method: isInWishlist ? "DELETE" : "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ productId })
+      });
+
+      if (response.ok) {
+        if (isInWishlist) {
+          // Change to empty heart
+          heartIcon.classList.remove('fas');
+          heartIcon.classList.add('far');
+          heartIcon.style.color = 'gray';
+          Swal.fire({
+            icon: 'success',
+            text: 'Removed from wishlist!',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1250
+          });
+        } else {
+          // Change to filled heart
+          heartIcon.classList.remove('far');
+          heartIcon.classList.add('fas');
+          heartIcon.style.color = 'red';
+          Swal.fire({
+            icon: 'success',
+            text: 'Added to wishlist!',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1250
+          });
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: isInWishlist ? 'Error removing from wishlist!' : 'Error adding to wishlist!',
+          toast: true,
+          position: 'top-right',
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1250
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      Swal.fire({
+        icon: 'error',
+        text: 'Something went wrong!',
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1250
+      });
+    }
+  });
+});
+
+
+
+</script>

@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
-
+const CartItem = require("../models/cartModel");
+const { find } = require("../models/cartModel");
 const userAuth = (req, res, next) => {
 
   if (req.session.users) {
@@ -16,7 +17,7 @@ const userAuth = (req, res, next) => {
             }
 
           })
-          return res.redirect("/")// check channunnath isvarified false akkumbol
+          return res.redirect("/")
         }
       })
       .catch((error) => {
@@ -24,7 +25,7 @@ const userAuth = (req, res, next) => {
         return res.status(500).send("internal server error");
       });
   } else {
-    res.redirect("/"); // session illathappol
+    res.redirect("/"); 
   }
 };
 
@@ -63,9 +64,35 @@ const adminAuth = (req, res, next) => {
 };
 
 
+const isOrderplaced = async (req, res, next) => {
+  if (req.session.users) {
+    const userId = req.session.users._id;
+
+    try {
+      
+      const cart = await CartItem.findOne({ userId: userId });
+
+      
+      if (!cart) {
+        return res.redirect('/orderComplete');
+      }
+
+      
+      next();
+    } catch (err) {
+      return res.status(500).send("Error fetching cart items.");
+    }
+  } else {
+    return res.redirect('/'); 
+  }
+};
+
+
+
+
 module.exports = {
   userAuth, adminAuth,
-  isLogout
+  isLogout,isOrderplaced
 };
 
 

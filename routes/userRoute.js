@@ -2,11 +2,16 @@
 const express=require("express");
 const user_route=express()
 const {userAuth,adminAuth,
-  isLogout}=require("../middleware/auth")
+  isLogout,isOrderplaced}=require("../middleware/auth")
 const userController = require("../controllers/user/userController");
+const orderController=require("../controllers/user/orderController")
+const wishlistController=require("../controllers/user/wishlistController")
+const WalletController=require("../controllers/user/WalletController")
+
+
 const { Passport } = require("passport");
 const passport=require("passport")
-
+const upload=require("../middleware/multer")
 user_route.use(express.json());
 user_route.use(express.urlencoded({extended:true}));
 
@@ -23,11 +28,15 @@ user_route.get("/shop",userAuth,userController.loadshop)
 user_route.get("/logout",userAuth,userController.logout)
 user_route.get('/forget-password',userController.loadForgetPassword)
 user_route.post('/forget-password',userController.ForgetPassword)
+user_route.get('/reset-pass',userController.LoadresetPassword)
+user_route.post('/reset-pass',userController.resetPassword)
+
 user_route.get('/reset-password/:token',userController.LoadUpdatePassword);
 user_route.post('/reset-password',userController.UpdatePassword);
 user_route.get('/profile',userAuth,userController.loadUserProfile);
-user_route.post('/profile',userController.userProfile);
-user_route.get("/address",userAuth,userController.loadAddress);
+user_route.post('/profile',upload.single("image"),userController.userProfile);
+
+user_route.get("/address",userAuth,upload.single("image"),userController.loadAddress);
 user_route.post("/address",userController.Address);
 user_route.get("/edit-address",userAuth,userController.loadeditaddress);
 user_route.post("/edit-address",userAuth,userController.editaddress)
@@ -48,8 +57,38 @@ user_route.post("/update-cart-quantity",userController.increaseQty)
 
 //checkout
 user_route.get("/checkout",userAuth,userController.Loadcheckout)
+user_route.post("/checkoutAddressAdd",userAuth,userController.checkoutAddaddress)
+user_route.post("/checkoutAddressEdit",userAuth,userController.checkoutEditaddress)
 
-      
+
+//order
+user_route.post("/orderComplete",userAuth,isOrderplaced,orderController.orderplaced)
+user_route.get('/orders',userAuth,orderController.loadOrders)
+user_route.get('/order-details',userAuth,orderController.loadOrderDetails)
+user_route.get('/cancel-order/',userAuth,orderController.cancelOrder)
+user_route.post("/verify-payment",userAuth,isOrderplaced,orderController.verifyRazorpayPayment)
+user_route.get('/download-invoice',userAuth,orderController.generateInvoice)
+
+
+//retry payment
+user_route.post("/create-order",userAuth,orderController.razorpayCreateorder)
+user_route.post("/verify-paymenttt",userAuth,isOrderplaced,orderController.verifyRetryRazorpayPayment)
+
+//return order
+user_route.post("/return-order",userAuth,orderController.returnOrder)
+
+//wishlist
+user_route.get("/wishlist",userAuth,wishlistController.loadWishlist)
+user_route.post("/wishlist",userAuth,wishlistController.addwishlist)
+user_route.delete("/wishlist", userAuth, wishlistController.addwishlist);
+user_route.post("/wishlist",userAuth,wishlistController.addwishlist)
+user_route.post("/wishlisttocart",userAuth,wishlistController.wishlistToCart)
+
+//Wallet controller
+user_route.get('/Wallet',userAuth,WalletController.loadWallet)
+user_route.post('/create-razorpay-order', userAuth, WalletController.createOrder);
+user_route.post('/verify-paymentt', userAuth, WalletController.verifyPayment);
+
 
 user_route.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: "/" }), (req, res) => {
   if(req.user && req.user.isVerified){
@@ -57,6 +96,7 @@ user_route.get("/auth/google/callback", passport.authenticate('google', { failur
     req.session.googleVarified=true
     res.redirect ('/home');
   }
+  
   else{
     req.flash("error_msg","user is blocked by admin")
     res.redirect("/")   
@@ -64,6 +104,12 @@ user_route.get("/auth/google/callback", passport.authenticate('google', { failur
 });
 
 module.exports = user_route;
+
+
+
+
+
+
 
 
 

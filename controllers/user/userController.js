@@ -11,6 +11,8 @@ const address = require("../../models/addressModel");
 const StatusCodes = require("../../utils/statusCodes");
 const crypto = require("crypto");
 const CartItem = require("../../models/cartModel");
+const Wishlist=require("../../models/wishlistModel")
+const coupon=require("../../models/coupenModel")
 
 //the page to display page not found
 const pageNotFound = async (req, res) => {
@@ -88,17 +90,18 @@ const loadHome = async (req, res) => {
 
 const loadshop = async (req, res) => {
   try {
-
+    const userdata = req.session.users;
     const currentpage = parseInt(req.query.page) || 1;
     const limit = 8;
     const filter = { is_delete: false };
-     
-    
+    const findwishlist=await Wishlist.findOne({ userId: userdata._id });
+   
+
     const selectedCategories = req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [];
     const selectedBrands = req.query.brand ? (Array.isArray(req.query.brand) ? req.query.brand : [req.query.brand]) : [];
     const selectedSort = req.query.sort || '';
 
-  
+
     if (selectedCategories.length) {
       filter.productCategory = { $in: selectedCategories };
     }
@@ -107,7 +110,7 @@ const loadshop = async (req, res) => {
       filter.productBrand = { $in: selectedBrands };
     }
 
-    
+
     let sortOption = {};
     if (selectedSort === "priceAsc") sortOption = { "weightoptions.salesPrice": 1 };
     if (selectedSort === "priceDesc") sortOption = { "weightoptions.salesPrice": -1 };
@@ -128,15 +131,16 @@ const loadshop = async (req, res) => {
     const brand = await Brand.find();
 
     return res.render("shop", {
+      findwishlist,
       product,
       categories,
       brand,
       currentpage,
       totalPages,
-      selectedCategories, 
+      selectedCategories,
       selectedSort,
-      selectedBrands,  
-      limit      
+      selectedBrands,
+      limit
     });
   } catch (error) {
     console.log(error);
@@ -408,13 +412,13 @@ const LoadproductDetails = async (req, res) => {
       productCategory: productDetails.productCategory,
     });
 
-    if (productDetails.is_delete==false &&productDetails && productDetails.weightoptions) {
+    if (productDetails.is_delete == false && productDetails && productDetails.weightoptions) {
       return res.render("product-details", {
         product: productDetails,
         weightoptions: productDetails.weightoptions,
         relativeProducts: relativeProducts,
       });
-    }else{
+    } else {
       return res.redirect("/pageNotFound")
     }
   } catch (error) {
@@ -443,15 +447,17 @@ const loadUserProfile = async (req, res) => {
 
 const userProfile = async (req, res) => {
   try {
-    const { name, phone } = req.body;
+    const { name, phone  } = req.body;
     const userdata = req.session.users;
-    console.log("userdata id is", userdata._id);
+    const image = req.file ? req.file.filename : null
+
     const id = userdata._id.trim();
     const findUser = await User.findOne({ _id: id });
+  
     if (findUser) {
       await User.findByIdAndUpdate(
         { _id: findUser._id },
-        { $set: { name: name, phone: phone } }
+        { $set: { name: name, phone: phone,Image:image } }
       );
       return res.redirect(`/profile?id=${id}`);
     } else {
@@ -469,7 +475,7 @@ const loadAddress = async (req, res) => {
   try {
     const userdata = req.session.users;
     const data = await User.findById({ _id: userdata._id }).populate("address");
-    console.log("adddress are", address);
+   
     if (address) {
       return res.render("address", { data: data });
     } else {
@@ -485,9 +491,9 @@ const loadAddress = async (req, res) => {
 const Address = async (req, res) => {
   try {
     const userdata = req.session.users;
-    const { Fullname, Address, city, State, pinCode, Country, phone,addressType } =
+    const { Fullname, Address, city, State, pinCode, Country, phone, addressType } =
       req.body;
-console.log("addres typei is is :",addressType)
+  
     const saveAddress = await new address({
       Fullname: Fullname,
       Address: Address,
@@ -496,11 +502,11 @@ console.log("addres typei is is :",addressType)
       pinCode: pinCode,
       Country: Country,
       phone: phone,
-      addressType:addressType.toString()
+      addressType: addressType.toString()
     });
     await saveAddress.save();
     const id = userdata._id;
-    console.log(saveAddress);
+ 
     const updatedUser = await User.findByIdAndUpdate(
       id,
       { $push: { address: saveAddress._id } },
@@ -529,9 +535,9 @@ const editaddress = async (req, res) => {
   try {
     const addressId = req.session.addressId;
 
-    const { Fullname, Address, city, State, pinCode, Country, phone,addressType } =
+    const { Fullname, Address, city, State, pinCode, Country, phone, addressType } =
       req.body;
-     
+
 
     if (addressId) {
       await address.findByIdAndUpdate(
@@ -545,7 +551,7 @@ const editaddress = async (req, res) => {
             pinCode: pinCode,
             Country: Country,
             phone: phone,
-            addressType:addressType
+            addressType: addressType
           },
         }
       );
@@ -601,10 +607,7 @@ const Addcart = async (req, res) => {
     const weight = req.body.curweight;
     const salesPrice = req.body.salesPrice;
     const stock = req.body.curstock;
-    console.log("weight is ii", weight);
-    console.log("sales price is", salesPrice);
-    console.log("stock is ", stock);
-    console.log("the req.body is", req.body);
+
     if (product) {
       const existingCartItem = await CartItem.findOne({
         userId: userdata._id,
@@ -613,7 +616,7 @@ const Addcart = async (req, res) => {
       });
 
       if (existingCartItem) {
-  
+
         const currentQty = existingCartItem.quantity;
         if (stock > currentQty && currentQty < 5) {
           await CartItem.findByIdAndUpdate(
@@ -734,18 +737,165 @@ const increaseQty = async (req, res) => {
   }
 };
 
-const Loadcheckout=async(req,res)=>{
+const Loadcheckout = async (req, res) => {
   try {
-    return res.render("checkout")
-  } catch (error) {
-    console.log(error)
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("chekout page loading failed")
+    const coupons = await coupon.find({
+      isActive: true,
+      expirationDate: { $gte: new Date() },
+    });
+    const userdata = req.session.users;
+    const cartdata = await CartItem.find({ userId: userdata._id });
+    const data = await User.findById({ _id: userdata._id }).populate("address");
+
+    let totalprice = 0;
+    for (let i of cartdata) {
+      totalprice += i.price * i.quantity;
+    }
+
     
+    const applicableCoupons = coupons.filter((coupon) => {
+      return totalprice >= coupon.minimumPurchase;
+    });
+
+    if (cartdata && totalprice > 0) {
+      return res.render("checkout", {
+        data: data,
+        cartdata: cartdata,
+        totalprice: totalprice,
+        userid: userdata._id,
+        coupons: applicableCoupons, 
+      });
+    } else {
+      return res.redirect("/pageNotFound");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+const checkoutAddaddress=async(req,res)=>{
+
+  try {
+    const userdata = req.session.users;
+    const { Fullname, Address, city, State, pinCode, Country, phone, addressType } =
+      req.body;
+   
+    const saveAddress = await new address({
+      Fullname: Fullname,
+      Address: Address,
+      city: city,
+      State: State,
+      pinCode: pinCode,
+      Country: Country,
+      phone: phone,
+      addressType: addressType.toString()
+    });
+    await saveAddress.save();
+    const id = userdata._id;
+   
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $push: { address: saveAddress._id } },
+      { new: true }
+    );
+    if (updatedUser) {
+      req.session.message = {
+        icon: "success",
+        text: "Address added successfully.",
+      };
+      return res.redirect("/checkout");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+ 
+}
+
+const checkoutEditaddress=async(req,res)=>{
+try {
+    
+
+    const { Fullname, Address, city, State, pinCode, Country, phone, addressType,addressId } =
+      req.body;
+    if (addressId) {
+      await address.findByIdAndUpdate(
+        { _id: addressId.trim() },
+        {
+          $set: {
+            Fullname: Fullname,
+            Address: Address,
+            city: city,
+            State: State,
+            pinCode: pinCode,
+            Country: Country,
+            phone: phone,
+            addressType: addressType
+          },
+        }
+      );
+    }
+
+   return res.json({ success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("deleting failed");
   }
 }
 
 
+const LoadresetPassword=async(req,res)=>{
+  try {
+     
+    return res.render("reset-pass")
+      
+  } catch (error) {
+    console.log(error)
+    
+  }
+}
+const resetPassword=async(req,res)=>{
+  try {
+    const userdata = req.session.users;
+    const finduser=await User.findById({_id:userdata._id});
+    const {oldPassword,newPassword,confirmPassword}=req.body;
+   if(finduser){
+    const passMatch = await bcrypt.compare(oldPassword,userdata.password);
+
+    if(passMatch && newPassword==confirmPassword ){
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+       await User.findByIdAndUpdate(
+        userdata._id,
+        { $set: { password: hashedPassword } },
+        { new: true, runValidators: true } 
+      );
+      req.session.message = {
+        icon: "success",
+        text: "passaword updated successfully.",
+      };
+      return res.redirect(`/profile?id=${userdata._id}`)        
+    }else{
+      res.send("The old password is not match")
+    }
+
+   }
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+
+ 
+
 module.exports = {
+  resetPassword,
+  LoadresetPassword,
+  checkoutEditaddress,
+  checkoutAddaddress,
   Loadcheckout,
   increaseQty,
   deleteCart,

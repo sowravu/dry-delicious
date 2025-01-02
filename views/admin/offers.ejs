@@ -1,0 +1,121 @@
+<!-- Include header layout here -->
+<%- include("../layouts/admin/header.ejs")  %>
+<%- include("../layouts/admin/navbar.ejs")  %>
+<main class="main-wrap">
+    <!-- Include top navigation here -->
+    <%- include("../layouts/admin/topnav.ejs")  %>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">product Offers</h1>
+        
+        <div class="d-flex justify-content-center mb-4">
+            <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#productOfferModal">
+                Create Product Offer
+            </button>
+       
+        </div>
+
+        <!-- Product Offer Modal -->
+        <div class="modal fade" id="productOfferModal" tabindex="-1" aria-labelledby="productOfferModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productOfferModalLabel">Create Product Offer</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="productOfferForm" action="/admin/offers" method="post">
+                            <div class="mb-3">
+                                <label for="productSelect" class="form-label">Select Product</label>
+                                <select class="form-select" id="productSelect" name="productSelect" required>
+                                    <option value="">Choose a product...</option>
+                                    <% for(let i = 0; i < product.length; i++) { %>
+                                        <option value="<%= product[i]._id %>"><%= product[i].productname %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="productOfferPercentage" class="form-label">Offer Percentage</label>
+                                <input type="number" name="productOfferPercentage" class="form-control" id="productOfferPercentage" min="0" max="100" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productOfferStartDate" class="form-label">Start Date</label>
+                                <input type="date" name="productOfferStartDate" class="form-control" id="productOfferStartDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productOfferEndDate" class="form-label">End Date</label>
+                                <input type="date" name="productOfferEndDate" class="form-control" id="productOfferEndDate" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create Offer</button>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Offer Modal -->
+      
+
+        <!-- Offers List -->
+        <div class="mt-5">
+            <h2>Current Offers</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Percentage</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="offersTableBody">
+                    <% offers.forEach(function(offers) { %>
+                    <tr>
+                        <td><%= offers.type %></td>
+                        <td><%= offers.productname %></td>
+                        <td><%= offers.offerPercentage %>%</td>
+                        <td><%= new Date(offers.startDate).toLocaleDateString() %></td>
+                        <td><%= new Date(offers.endDate).toLocaleDateString() %></td>
+                        <td>
+                        
+                            <!-- Remove Button -->
+                             <form action="/admin/remove-offer?id=<%= offers.productId %>" method="post">
+
+                                 <!-- <a href="/admin/remove-offer" class="btn btn-danger">Remove</a> -->
+                                 <button type="submit"  class="btn btn-danger"  >Remove</button>
+
+                             </form>
+
+                    </tr>
+                    <% }) %>
+                    <!-- Offers will be displayed here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+
+
+<% if (message) { %>
+    <script>
+      Swal.fire({
+        icon: '<%= message.icon %>',
+        text: '<%= message.text %>',
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1000
+      });
+    </script>
+  <% } %>

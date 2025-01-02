@@ -15,11 +15,20 @@ const weightSchema=new mongoose.Schema({
     max:1000,
     default:0,
   },
+  Actualprice:{
+    type:Number,
+    required:false,
+    default:0,
+  },
   salesPrice:{
     type:Number,
     required:false,
     default:0,
-  }
+  },
+  originalSalesPrice:{
+     type: Number,
+     default: null
+     },
 })
 
 

@@ -1,0 +1,293 @@
+<%- include("../layouts/user/header.ejs") %>
+
+<div class="search">
+    <div class="search__form">
+        <form class="search-bar__form" action="#">
+            <button class="go-btn search__button" type="submit"><i class="icon anm anm-search-l"></i></button>
+            <input class="search__input" type="search" name="q" value="" placeholder="Search entire store..." aria-label="Search" autocomplete="off">
+        </form>
+        <button type="button" class="search-trigger close-btn"><i class="icon anm anm-times-l"></i></button>
+    </div>
+</div>
+    <%- include("../layouts/user/topnav.ejs") %>
+
+
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --accent-color: #c4a484;
+            --text-light: #ffffff;
+        }
+
+       
+
+        /* Wallet Section Styles */
+        .wallet-section {
+            background-color: #f8f9fa;
+            padding: 50px 0;
+        }
+
+        .wallet-card {
+            background-color: white;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .wallet-balance {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .btn-add-money {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-weight: 500;
+        }
+
+        .btn-add-money:hover {
+            background-color: #a88a6a;
+            color: white;
+        }
+
+        .transaction-history {
+            margin-top: 30px;
+        }
+
+        .transaction-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <section class="wallet-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="wallet-card card">
+                        <div class="wallet-balance text-center">
+                            <h3 style="color: white;">Wallet Balance</h3>
+                            <div class="balance-amount" id="walletBalance">₹<%= walletBalance.toFixed(2) %></div>
+                            <button class="btn btn-add-money" data-bs-toggle="modal" data-bs-target="#addMoneyModal">
+                                Add Money
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="transaction-history">
+                                <h4 class="mb-4">Transaction History</h4>
+                                <div id="transactionList">
+                                    <% transactions.forEach(function(transaction) { %>
+                                        <div class="transaction-item">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h6 class="mb-1"><%= transaction.type === 'credit' ? 'Added Money' : 'Spent' %></h6>
+                                                    <small class="text-muted"><%= transaction.createdAt.toLocaleString() %></small>
+                                                </div>
+                                                <div class="<%= transaction.type === 'credit' ? 'text-success' : 'text-danger' %>">
+                                                    <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Money Modal -->
+    <div class="modal fade" id="addMoneyModal" tabindex="-1" aria-labelledby="addMoneyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMoneyModalLabel">Add Money to Wallet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMoneyForm">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount (₹)</label>
+                            <input type="number" class="form-control" id="amount" min="1" step="0.01" required>
+                        </div>
+                        <button type="submit" class="btn btn-add-money w-100">Add Money</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+       
+        let walletBalance = parseFloat('<%- walletBalance %>') || 0;
+
+        let transactions = JSON.parse('<%- JSON.stringify(transactions) %>') || [];
+
+    
+       
+        function updateWalletDisplay() {
+            document.getElementById('walletBalance').textContent = `₹${walletBalance.toFixed(2)}`;
+        }
+    
+        function addTransaction(transaction) {
+            transactions.unshift(transaction);
+            updateTransactionHistory();
+        }
+    
+      
+        function updateTransactionHistory() {
+            const historyContainer = document.getElementById('transactionList');
+            if (!historyContainer) return;
+    
+            const transactionsList = transactions.map(t => `
+                <div class="transaction-item">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="mb-1">${t.type === 'credit' ? 'Added Money' : 'Spent'}</h6>
+                            <small class="text-muted">${new Date(t.createdAt).toLocaleString()}</small>
+                        </div>
+                        <div class="${t.type === 'credit' ? 'text-success' : 'text-danger'}">
+                            ${t.type === 'credit' ? '+' : '-'}₹${parseFloat(t.amount).toFixed(2)}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            historyContainer.innerHTML = transactionsList;
+        }
+    
+        
+        document.getElementById('addMoneyForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const amount = parseFloat(document.getElementById('amount').value);
+    if (isNaN(amount) || amount <= 0) {
+        Swal.fire({
+            icon: 'error',
+            text: 'Please enter a valid amount.',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1500
+        });
+        return;
+    }
+
+    try {
+       
+        const orderResponse = await fetch('/create-razorpay-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ amount: amount })
+        });
+        const orderData = await orderResponse.json();
+        console.log("order data is ", orderData);
+
+       
+        const options = {
+            key: '<%- process.env.RAZORPAY_KEY_ID %>',
+            amount: orderData.amount,
+            currency: "INR",
+            name: "Dry Delicious",
+            description: "Wallet Recharge",
+            order_id: orderData.id,
+            handler: async function (response) {
+              
+                const verifyResponse = await fetch('/verify-paymentt', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature,
+                        amount: amount
+                    })
+                });
+                const verifyData = await verifyResponse.json();
+                console.log("verifyData is", verifyData);
+                if (verifyData.message === "Payment verified successfully") {
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'Payment successful! Your wallet has been updated.',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 2000
+                    });
+                    walletBalance += amount;
+                    updateWalletDisplay();
+                    addTransaction({
+                        type: 'credit',
+                        amount: amount,
+                        createdAt: new Date().toISOString()
+                    });
+                    const modal = document.getElementById('addMoneyModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modal);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Payment verification failed. Please contact support.',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 2000
+                    });
+                }
+            },
+            prefill: {
+                name: "<%- user && user.name ? user.name : '' %>",
+                email: "<%- user && user.email ? user.email : '' %>",
+                contact: "<%- user && user.phone ? user.phone : '' %>"
+            },
+            theme: {
+                color: "#3399cc"
+            }
+        };
+        const rzp1 = new Razorpay(options);
+        rzp1.open();
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            text: 'An error occurred. Please try again.',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 2000
+        });
+    }
+});
+
+
+updateWalletDisplay();
+updateTransactionHistory();
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+

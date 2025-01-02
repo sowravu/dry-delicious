@@ -40,10 +40,7 @@
 </div>
 <div class="pageWrapper">
 	
-	<div class="notification-bar mobilehide">
-    	<a href="#" class="notification-bar__message">20% off your very first purchase, use promo code: </a>
-        <span class="close-announcement"></span>
-    </div>
+	
   
 	<div class="search">
         <div class="search__form">
@@ -313,9 +310,9 @@
                                         <a href="javascript:void(0)" title="Quick View" class="quick-view-popup quick-view" data-toggle="modal" data-target="#content_quickview">
                                             <i class="icon anm anm-search-plus-r"></i>
                                         </a>
-                                        <div class="wishlist-btn">
+                                         <div class="wishlist-btn">
                                             <a class="wishlist add-to-wishlist" href="wishlist.html">
-                                                <i class="icon anm anm-heart-l"></i>
+                                               <i class="icon anm anm-heart-l"></i>
                                             </a>
                                         </div>
                                         <div class="compare-btn">
@@ -336,19 +333,34 @@
                                     </div>
                                     <!-- End product name -->
                                     <!-- product price -->
-                                    <div class="product-price">
-                                        <% 
-                                            let price = product[i].weightoptions[0].salesPrice && product[i].weightoptions[0].stock > 0
-                                                ? product[i].weightoptions[0].salesPrice
-                                                : product[i].weightoptions[1].salesPrice && product[i].weightoptions[1].stock > 0
-                                                    ? product[i].weightoptions[1].salesPrice
-                                                    : product[i].weightoptions[2].salesPrice && product[i].weightoptions[2].stock > 0
-                                                        ? product[i].weightoptions[2].salesPrice
-                                                        : 'Price not available';
-                                        %>
-                                        
-                                        <span class="price">₹<%= price %></span>
-                                    </div>
+                               <!-- product price -->
+<div class="product-price">
+    <% 
+        let salesPrice = product[i].weightoptions[0].salesPrice && product[i].weightoptions[0].stock > 0
+            ? product[i].weightoptions[0].salesPrice
+            : product[i].weightoptions[1].salesPrice && product[i].weightoptions[1].stock > 0
+                ? product[i].weightoptions[1].salesPrice
+                : product[i].weightoptions[2].salesPrice && product[i].weightoptions[2].stock > 0
+                    ? product[i].weightoptions[2].salesPrice
+                    : 'Price not available';
+
+        let actualPrice = product[i].weightoptions[0].Actualprice && product[i].weightoptions[0].stock > 0
+            ? product[i].weightoptions[0].Actualprice
+            : product[i].weightoptions[1].Actualprice && product[i].weightoptions[1].stock > 0
+                ? product[i].weightoptions[1].Actualprice
+                : product[i].weightoptions[2].Actualprice && product[i].weightoptions[2].stock > 0
+                    ? product[i].weightoptions[2].Actualprice
+                    : '';
+    %>
+    <% if (salesPrice !== 'Price not available' && actualPrice) { %>
+        <span class="price">₹<%= salesPrice %></span>
+        <span class="old-price" style="text-decoration: line-through; color: #999;">₹<%= actualPrice %></span>
+    <% } else { %>
+        <span class="price"><%= salesPrice %></span>
+    <% } %>
+</div>
+<!-- End product price -->
+
                                     <!-- End product price -->
                                     <!-- Color Variant -->
                                   
@@ -395,7 +407,7 @@
                 </div>
                 <div class="grid-products">
                     <div class="row">
-                        <% for (let i = 0; i < 8; i++) { %>
+                        <% for (let i = 0; i < 4; i++) { %>
                         <div class="col-6 col-sm-4 col-md-3 col-lg-3 item">
                             <!-- start product image -->
                             <div class="product-image">

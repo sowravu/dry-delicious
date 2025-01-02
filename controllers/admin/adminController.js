@@ -2,10 +2,16 @@ const Admin = require("../../models/userModel");
 const Category=require("../../models/CategoryModel")
 const Brand = require("../../models/brandModel");
 const StatusCodes = require('../../utils/statusCodes');
-
+const Order = require("../../models/orderModel");
+const PDFDocument = require('pdfkit');
 const bcrypt = require("bcrypt");
-
+const ExcelJS = require("exceljs");
+const Product = require("../../models/productsModel");
 const { render } = require("../../routes/adminRoute");
+const fs = require('fs');
+const path = require('path');
+
+
 
 // Admin Login Page Controller
 const loginload = async (req, res) => {
@@ -20,21 +26,375 @@ const loginload = async (req, res) => {
 };
 
 // Admin Dashboard Controller
+
 const loadDashboard = async (req, res) => {
   try {
     const admin = req.session.adminId;
+    const filter = req.query.filter || "All";
+    console.log("filter is", filter);
+
+    if (!admin) {
+      console.log("Admin session missing");
+      return res.status(401).send("Unauthorized access");
+    }
+
+    const adminData = await Admin.findOne({ _id: admin });
+    const now = new Date();
+    
+ 
+    let dateFilter = {};
+    if (filter === "Today") {
+      const startOfDay = new Date(now);
+      startOfDay.setHours(0, 0, 0, 0);
+      dateFilter = { createdAt: { $gte: startOfDay } };
+    } else if (filter === "This Week") {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+      dateFilter = { createdAt: { $gte: startOfWeek } };
+    } else if (filter === "Last Month") {
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+      dateFilter = { createdAt: { $gte: startOfMonth, $lte: endOfMonth } };
+    } else if (filter === "Yearly") {
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      dateFilter = { createdAt: { $gte: startOfYear } };
+    }
+
+    const baseQuery = {
+      ...dateFilter,
+      payment_status: "success",
+      "items.order_status": "Delivered"
+    };
+
+   
+    const orders = await Order.find(baseQuery).lean();
+    const grandTotal = orders.reduce((total, order) => total + order.total_price, 0);
+    const totalOrders = orders.length;
+
+   
+    const productSales = await Order.aggregate([
+      { $match: baseQuery },
+      { $unwind: "$items" },
+      {
+        $group: {
+          _id: "$items.product",
+          count: { $sum: "$items.quantity" },
+          name: { $first: "$items.name" }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+
+    const productIds = productSales.map(p => p._id);
+    const topProducts = await Product.find({ _id: { $in: productIds } })
+      .populate("productCategory")
+      .populate("productBrand")
+      .lean();
+
+    const enrichedProductSales = productSales.map(sale => {
+      const product = topProducts.find(p => p._id.toString() === sale._id.toString());
+      return {
+        ...sale,
+        categoryName: product?.productCategory?.categoryName || 'Unknown',
+        brandName: product?.productBrand?.brandname || 'Unknown'
+      };
+    });
+
+  
+    const categorySales = await Order.aggregate([
+      { $match: baseQuery },
+      { $unwind: "$items" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.product",
+          foreignField: "_id",
+          as: "product"
+        }
+      },
+      { $unwind: "$product" },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "product.productCategory",
+          foreignField: "_id",
+          as: "category"
+        }
+      },
+      { $unwind: "$category" },
+      {
+        $group: {
+          _id: "$category._id",
+          categoryName: { $first: "$category.categoryName" },
+          count: { $sum: "$items.quantity" }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+
+   
+    const brandSales = await Order.aggregate([
+      { $match: baseQuery },
+      { $unwind: "$items" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.product",
+          foreignField: "_id",
+          as: "product"
+        }
+      },
+      { $unwind: "$product" },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "product.productBrand",
+          foreignField: "_id",
+          as: "brand"
+        }
+      },
+      { $unwind: "$brand" },
+      {
+        $group: {
+          _id: "$brand._id",
+          brandName: { $first: "$brand.brandname" },
+          count: { $sum: "$items.quantity" }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+    const productCount = await Product.countDocuments();
+   
+    return res.render("dashboard", {
+      admin: adminData,
+      orders,
+      filter,
+      grandTotal, 
+      totalOrders,
+      filtername: filter,
+      topProducts: enrichedProductSales,
+      categorySales,
+      brandSales,
+      productCount
+    });
+
+  } catch (error) {
+    console.error("Dashboard Error:", error);
+    res.status(500).send("Dashboard page could not be loaded");
+  }
+};
+
+
+
+
+const downloadPDF = async (req, res) => {
+  try {
+    const admin = req.session.adminId;
+    const filter = req.query.filter || "All";
 
     if (admin) {
-      const adminData = await Admin.findOne({ _id: admin });
-      return res.render("dashboard", { admin: adminData });
+      let dateFilter = {};
+      const now = new Date();
+      if (filter === "Today") {
+        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+        dateFilter = { createdAt: { $gte: startOfDay } };
+      } else if (filter === "This Week") {
+        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+        startOfWeek.setHours(0, 0, 0, 0);
+        dateFilter = { createdAt: { $gte: startOfWeek } };
+      } else if (filter === "Last Month") {
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        dateFilter = { createdAt: { $gte: startOfMonth, $lte: endOfMonth } };
+      } else if (filter === "Yearly") {
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        dateFilter = { createdAt: { $gte: startOfYear } };
+      }
+
+      const orders = await Order.find({
+        ...dateFilter,
+        payment_status: "success",
+        "items.order_status": "Delivered",
+      }).lean();
+
+      const reportsDir = "./public/admin/reports";
+      if (!fs.existsSync(reportsDir)) {
+        fs.mkdirSync(reportsDir, { recursive: true });
+      }
+
+      const doc = new PDFDocument({ margin: 30 });
+      const fileName = `sales_report_${filter.replace(/ /g, "_")}.pdf`;
+      const filePath = `${reportsDir}/${fileName}`;
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+      doc.pipe(fs.createWriteStream(filePath));
+      doc.pipe(res);
+
+      // Header Section
+      const logoPath = "public/user/assets/images/download (3)sdfsd.png";
+      if (fs.existsSync(logoPath)) {
+        doc.image(logoPath, 50, 20, { width: 80 });
+      }
+      doc
+        .fontSize(20)
+        .fillColor("#333")
+        .text("Sales Report", 150, 20, { align: "center" })
+        .moveDown();
+      doc
+        .fontSize(12)
+        .fillColor("#555")
+        .text(`Filter: ${filter}`, { align: "right" })
+        .moveDown();
+
+    
+      doc
+        .fontSize(10)
+        .fillColor("#ffffff")
+        .rect(50, doc.y, 500, 20)
+        .fill("#4caf50")
+        .stroke()
+        .text("Order ID", 55, doc.y + 5, { width: 90 })
+        .text("Product Name", 145, doc.y + 5, { width: 150 })
+        .text("Date", 295, doc.y + 5, { width: 60, align: "center" })
+        .text("Total", 355, doc.y + 5, { width: 60, align: "right" })
+        .text("Payment Status", 415, doc.y + 5, { width: 85, align: "center" })
+        .moveDown();
+
+      
+      doc.fillColor("#333");
+      orders.forEach((order, index) => {
+        const isEvenRow = index % 2 === 0;
+        if (isEvenRow) {
+          doc.fillColor("#f9f9f9").rect(50, doc.y, 500, 20).fill().stroke();
+        } else {
+          doc.fillColor("#ffffff").rect(50, doc.y, 500, 20).fill().stroke();
+        }
+
+        doc.fillColor("#333");
+        doc.text(order.orderId, 55, doc.y + 5, { width: 90 });
+        order.items.forEach((item) => {
+          doc.text(`${item.name} (${item.quantity} x ${item.size})`, 145, doc.y + 5, { width: 150 });
+        });
+        doc.text(new Date(order.createdAt).toLocaleDateString(), 295, doc.y + 5, { width: 60, align: "center" });
+        doc.text(`₹${order.total_price}`, 355, doc.y + 5, { width: 60, align: "right" });
+        doc.text(order.payment_status, 415, doc.y + 5, { width: 85, align: "center" });
+      });
+
+      
+      const grandTotal = orders.reduce((acc, curr) => acc + curr.total_price, 0);
+      doc.moveDown().fontSize(14).fillColor("#000").text(`Grand Total: ₹${grandTotal}`, { align: "right" });
+
+      
+      doc
+        .fontSize(10)
+        .fillColor("#777")
+        .text("Generated by DryDelicious Admin Panel", 50, doc.page.height - 30, { align: "center" });
+
+      doc.end();
     } else {
-      console.log("admin is missing");
-      res.send("admin not found");
+      res.redirect("/admin/login");
     }
   } catch (error) {
-    console.log(error.message);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("dashbord page is not be loaded");
+    console.error("Error generating PDF:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error generating PDF");
+  }
+};
 
+
+
+const downloadExcel = async (req, res) => {
+  try {
+    const admin = req.session.adminId;
+    const filter = req.query.filter || "All";
+
+    if (admin) {
+      let dateFilter = {};
+      const now = new Date();
+      if (filter === "Today") {
+        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+        dateFilter = { createdAt: { $gte: startOfDay } };
+      } else if (filter === "This Week") {
+        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+        startOfWeek.setHours(0, 0, 0, 0);
+        dateFilter = { createdAt: { $gte: startOfWeek } };
+      } else if (filter === "Last Month") {
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        dateFilter = { createdAt: { $gte: startOfMonth, $lte: endOfMonth } };
+      } else if (filter === "Yearly") {
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        dateFilter = { createdAt: { $gte: startOfYear } };
+      }
+
+      const orders = await Order.find({
+        ...dateFilter,
+        payment_status: "success",
+        "items.order_status": "Delivered",
+      }).lean();
+
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Sales Report");
+
+     
+      worksheet.columns = [
+        { header: "Order ID", key: "orderId", width: 15 },
+        { header: "Product Name", key: "productName", width: 30 },
+        { header: "Date", key: "date", width: 15 },
+        { header: "Total", key: "total", width: 10 },
+        { header: "Payment Status", key: "paymentStatus", width: 15 },
+      ];
+
+     
+      orders.forEach((order) => {
+        order.items.forEach((item) => {
+          worksheet.addRow({
+            orderId: order.orderId,
+            productName: `${item.name} (${item.quantity} x ${item.size})`,
+            date: new Date(order.createdAt).toLocaleDateString(),
+            total: order.total_price,
+            paymentStatus: order.payment_status,
+          });
+        });
+      });
+
+     
+      const grandTotal = orders.reduce((acc, curr) => acc + curr.total_price, 0);
+      worksheet.addRow([]);
+      worksheet.addRow({ total: `Grand Total: ₹${grandTotal}` });
+
+      const reportsDir = "./public/admin/reports";
+      if (!fs.existsSync(reportsDir)) {
+        fs.mkdirSync(reportsDir, { recursive: true });
+      }
+      const fileName = `sales_report_${filter.replace(/ /g, "_")}.xlsx`;
+      const filePath = `${reportsDir}/${fileName}`;
+
+      await workbook.xlsx.writeFile(filePath);
+
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${fileName}`
+      );
+      res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+      res.download(filePath, (err) => {
+        if (err) {
+          console.error("Error downloading Excel file:", err);
+          res.status(500).send("Error downloading Excel file");
+        }
+      });
+    } else {
+      res.redirect("/admin/login");
+    }
+  } catch (error) {
+    console.error("Error generating Excel:", error);
+    res.status(500).send("Error generating Excel");
   }
 };
 
@@ -120,7 +480,7 @@ const loadeditCategories = async (req, res) => {
   }
 };
 
-// Brands List Page Controller
+
 const loadbrands = async (req, res) => {
 
   try {
@@ -152,12 +512,11 @@ const loadbrands = async (req, res) => {
 
 
 
-// Admin Login Verification Controller
+
 const loginverify = async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
-
     const adminData = await Admin.findOne({ email: email });
 
     if (!adminData) {
@@ -176,11 +535,12 @@ const loginverify = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("brands page is not loaded");
-
   }
 };
 
-// User Block Controller
+
+
+
 const userblock = async (req, res) => {
   try {
     const id = req.query.id;
@@ -198,7 +558,8 @@ const userblock = async (req, res) => {
   }
 };
 
-// User Unblock Controller
+
+
 const userUnblock = async (req, res) => {
   try {
     const id = req.query.id;
@@ -215,13 +576,12 @@ const userUnblock = async (req, res) => {
   }
 };
 
-// Add New Category Controller
+
 const addCategories = async (req, res) => {
   try {
     
     const name = req.body.name;
     const Description = req.body.Description;
-
     const categoriesData = await Category.findOne({ categoryName: name });
 
     if (categoriesData) {
@@ -300,6 +660,7 @@ const deleteCategories = async (req, res) => {
     res.status(500).json({ message: "Error updating category status", error });
   }
 };
+
 // Edit Brand Page Controller
 const loadeditBrand = async (req, res) => {
   try {
@@ -424,6 +785,8 @@ const adminLogout = async (req, res) => {
 };
 
 module.exports = {
+  downloadExcel,
+  downloadPDF,
   adminLogout,
   editBrand,
   loadeditBrand,

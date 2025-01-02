@@ -1,0 +1,106 @@
+<!-- Include header layout here -->
+<%- include("../layouts/admin/header.ejs")  %>
+<%- include("../layouts/admin/navbar.ejs")  %>
+<main class="main-wrap">
+    <!-- Include top navigation here -->
+    <%- include("../layouts/admin/topnav.ejs")  %>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">category Offers</h1>
+        
+        <div class="d-flex justify-content-center mb-4">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryOfferModal">
+                Create Category Offer
+            </button>
+        </div>
+
+        <!-- Category Offer Modal -->
+        <div class="modal fade" id="categoryOfferModal" tabindex="-1" aria-labelledby="categoryOfferModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="categoryOfferModalLabel">Create Category Offer</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="categoryOfferForm" action="/admin/category-offer" method="post">
+                            <div class="mb-3">
+                                <label for="categorySelect" class="form-label">Select Category</label>
+                                <select class="form-select" id="categorySelect" name="categorySelect" required>
+                                    <option value="">Choose a category...</option>
+                                    <% for(let i = 0; i < category.length; i++) { %>
+                                        <option value="<%= category[i]._id %>"><%= category[i].categoryName %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                        
+                            <div class="mb-3">
+                                <label for="categoryOfferPercentage" class="form-label">Offer Percentage</label>
+                                <input type="number" class="form-control" id="categoryOfferPercentage" name="categoryOfferPercentage" min="0" max="100" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="categoryOfferStartDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="categoryOfferStartDate" name="categoryOfferStartDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="categoryOfferEndDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="categoryOfferEndDate" name="categoryOfferEndDate" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create Offer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Offers List -->
+        <div class="mt-5">
+            <h2>category Offers</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Percentage</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="offersTableBody">
+                   <!-- Category Offers will be displayed here -->
+                   <% offers.forEach(offer => { %>
+                    <tr>
+                        <td><%= offer.type %></td>
+                        <td><%= offer.categoryId.categoryName %></td>
+                        <td><%= offer.offerPercentage %> %</td>
+                        <td><%= new Date(offer.startDate).toLocaleDateString() %></td>
+                        <td><%= new Date(offer.endDate).toLocaleDateString() %></td>
+                        <td>
+                            <form action="/admin/remove-category-offer" method="POST" style="display:inline;">
+                                <input type="hidden" name="offerId" value="<%= offer._id %>">
+                                <button type="submit">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<% if (message) { %>
+    <script>
+      Swal.fire({
+        icon: '<%= message.icon %>',
+        text: '<%= message.text %>',
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1000
+      });
+    </script>
+<% } %>

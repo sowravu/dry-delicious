@@ -60,13 +60,17 @@ const addProduct = async (req, res) => {
     const stock250gm = weight.SM ? weight.SM.stock : null;
 
     const price250gm = weight.SM ? weight.SM.salesPrice : null;
+    const Actualprice250gm= weight.SM ? weight.SM.Actualprice:null;
     const stock500gm = weight.Medium ? weight.Medium.stock : 0;
 
     
     const price500gm = weight.Medium ? weight.Medium.salesPrice : null;
+    const Actualprice500gm= weight.Medium ? weight.Medium.Actualprice : null;
+
     const stock1kg = weight.L ? weight.L.stock : null;
 
     const price1kg = weight.L ? weight.L.salesPrice : null;
+    const Actualprice1kg= weight.L ? weight.L.Actualprice : null;
     const productBrand = req.body.productbrand;
 
     const productcategory = req.body.productcategory;
@@ -83,7 +87,7 @@ const addProduct = async (req, res) => {
     } else {
       const newProduct = await new product({
         productname: productName,
-        productDis: productDescription,
+        productDis: productDescription.trim(),
         productImage: image,
         productCategory: productcategory,
         productBrand: productBrand,
@@ -91,17 +95,20 @@ const addProduct = async (req, res) => {
           {
             weight: "250gm",
             stock: stock250gm,
-            salesPrice: price250gm,
+            Actualprice:Actualprice250gm,
+            salesPrice:price250gm,
           },
           {
             weight: "500gm",
             stock: stock500gm,
-            salesPrice: price500gm,
+            Actualprice:Actualprice500gm,
+            salesPrice:price500gm,
           },
           {
             weight: "1kg",
             stock: stock1kg,
-            salesPrice: price1kg,
+            Actualprice:Actualprice1kg,
+            salesPrice:price1kg,
           },
         ],
         is_delete: false,
@@ -147,10 +154,14 @@ const editProduct = async (req, res) => {
     const weight = req.body.weigth;
     const stock250gm = weight.SM ? weight.SM.stock : 0;
     const price250gm = weight.SM ? weight.SM.salesPrice : 0;
+    const Actualprice250gm= weight.SM ? weight.SM.Actualprice:0;
     const stock500gm = weight.Medium ? weight.Medium.stock : 0;
+    
     const price500gm = weight.Medium ? weight.Medium.salesPrice : 0;
+    const Actualprice500gm= weight.Medium ? weight.Medium.Actualprice : 0;
     const stock1kg = weight.L ? weight.L.stock : 0;
     const price1kg = weight.L ? weight.L.salesPrice : 0;
+    const Actualprice1kg= weight.L ? weight.L.Actualprice : 0;
     const productBrand = req.body.productbrand;
     const productcategory = req.body.productcategory;
 
@@ -205,16 +216,19 @@ const editProduct = async (req, res) => {
               {
                 weight: "250gm",
                 stock: stock250gm,
+                Actualprice:Actualprice250gm,
                 salesPrice: price250gm,
               },
               {
                 weight: "500gm",
                 stock: stock500gm,
+                Actualprice:Actualprice500gm,
                 salesPrice: price500gm,
               },
               {
                 weight: "1kg",
                 stock: stock1kg,
+                Actualprice:Actualprice1kg,
                 salesPrice: price1kg,
               },
             ],
@@ -240,16 +254,19 @@ const editProduct = async (req, res) => {
               {
                 weight: "250gm",
                 stock: stock250gm,
+                Actualprice:Actualprice250gm,
                 salesPrice: price250gm,
               },
               {
                 weight: "500gm",
                 stock: stock500gm,
+                Actualprice:Actualprice500gm,
                 salesPrice: price500gm,
               },
               {
                 weight: "1kg",
                 stock: stock1kg,
+                Actualprice:Actualprice1kg,
                 salesPrice: price1kg,
               },
             ],

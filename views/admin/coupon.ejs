@@ -1,0 +1,175 @@
+<!-- Include header layout here -->
+<%- include("../layouts/admin/header.ejs") %>
+<%- include("../layouts/admin/navbar.ejs") %>
+
+<main class="main-wrap">
+    <!-- Include top navigation here -->
+    <%- include("../layouts/admin/topnav.ejs") %>
+
+    <section class="content-main">
+        <div class="content-header">
+            <h2 class="content-title">Coupon Management</h2>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="couponForm" action="/admin/coupon" method="POST">
+                    <div class="mb-4">
+                        <label for="discountType" class="form-label">Discount Type</label>
+                        <select class="form-select" id="discountType" name="discountType" required>
+                            <option value="percentage">Percentage</option>
+                        </select>
+                    </div>
+                
+                    <div class="mb-4">
+                        <label for="discountValue" class="form-label">Discount Value</label>
+                        <input type="number" class="form-control" id="discountValue" name="discountValue" min="0" required>
+                        <div class="text-danger mt-1" id="discountValueError"></div>
+                    </div>
+                
+                    <div class="mb-4">
+                        <label for="minimumPurchase" class="form-label">Minimum Purchase</label>
+                        <input type="number" class="form-control" id="minimumPurchase" name="minimumPurchase" min="0" value="0" required>
+                        <div class="text-danger mt-1" id="minimumPurchaseError"></div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="maximumPurchase" class="form-label">Maximum discount</label>
+                        <input type="number" class="form-control" id="maximumAmount" name="maximumAmount" min="0" value="0" required>
+                        <div class="text-danger mt-1" id="maximumPurchaseError"></div>
+                    </div>
+                
+                    <div class="mb-4">
+                        <label for="usageLimit" class="form-label">Usage Limit</label>
+                        <input type="number" class="form-control" id="usageLimit" name="usageLimit" min="1" value="1" required>
+                        <div class="text-danger mt-1" id="usageLimitError"></div>
+                    </div>
+                
+                    <div class="mb-4">
+                        <label for="expirationDate" class="form-label">Expiration Date</label>
+                        <input type="date" class="form-control" id="expirationDate" name="expirationDate" required>
+                        <div class="text-danger mt-1" id="expirationDateError"></div>
+                    </div>
+                
+                    <button type="submit" class="btn btn-primary">Create Coupon</button>
+                </form>
+                
+                <script>
+                    const couponForm = document.getElementById('couponForm');
+                
+                    couponForm.addEventListener('submit', function (e) {
+                        // Clear previous error messages
+                        document.getElementById('discountValueError').textContent = '';
+                        document.getElementById('minimumPurchaseError').textContent = '';
+                        document.getElementById('usageLimitError').textContent = '';
+                        document.getElementById('expirationDateError').textContent = '';
+                
+                        // Validate fields
+                        let isValid = true;
+                
+                        const discountValue = document.getElementById('discountValue').value;
+                        if (discountValue < 0) {
+                            document.getElementById('discountValueError').textContent = 'Discount value cannot be negative.';
+                            isValid = false;
+                        }
+                
+                        const minimumPurchase = document.getElementById('minimumPurchase').value;
+                        if (minimumPurchase < 0) {
+                            document.getElementById('minimumPurchaseError').textContent = 'Minimum purchase cannot be negative.';
+                            isValid = false;
+                        }
+
+                        const maximumPurchase = document.getElementById('maximumPurchase').value;
+                        if (maximumPurchase < 0) {
+                            document.getElementById('maximumPurchaseError').textContent = 'maximum purchase cannot be negative.';
+                            isValid = false;
+                        }
+                
+                        const usageLimit = document.getElementById('usageLimit').value;
+                        if (usageLimit < 1) {
+                            document.getElementById('usageLimitError').textContent = 'Usage limit must be at least 1.';
+                            isValid = false;
+                        }
+                
+                        const expirationDate = document.getElementById('expirationDate').value;
+                        if (new Date(expirationDate) <= new Date()) {
+                            document.getElementById('expirationDateError').textContent = 'Expiration date must be in the future.';
+                            isValid = false;
+                        }
+                
+                        // Prevent form submission if validation fails
+                        if (!isValid) {
+                            e.preventDefault();
+                        }
+                    });
+                </script>
+                
+            </div>
+        </div>
+
+        <!-- Coupon Listing -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Existing Coupons</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Discount Type</th>
+                                <th>Discount Value</th>
+                                <th>Minimum Purchase</th>
+                                <th>Maximum  Amount</th>
+
+                                <th>Usage Limit</th>
+                                <th>Expiration Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (coupons && coupons.length > 0) { %>
+                                <% coupons.forEach(coupon => { %>
+                                    <tr>
+                                        <td><%= coupon.code %></td>
+                                        <td><%= coupon.discountType %></td>
+                                        <td><%= coupon.discountValue %><%= coupon.discountType === 'percentage' ? '%' : '' %></td>
+                                        <td><%= coupon.minimumPurchase %></td>
+                                        <td><%= coupon.maximumAmountdiscount %></td>
+
+                                        <td><%= coupon.usageLimit %></td>
+                                        <td><%= new Date(coupon.expirationDate).toLocaleDateString() %></td>
+                                        <td>
+                                           
+                                            <a href="/admin/coupon-delete/<%= coupon._id %>" class="btn btn-sm btn-outline-danger" >Delete</a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="7" class="text-center">No coupons found</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<% if (message) { %>
+    <script>
+        Swal.fire({
+            icon: '<%= message.icon %>',
+            text: '<%= message.text %>',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1000
+        });
+    </script>
+<% } %>
+
+<!-- Include footer if needed -->
+<%- include("../layouts/admin/footer.ejs") %>
+

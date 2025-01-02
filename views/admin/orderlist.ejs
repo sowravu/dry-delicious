@@ -1,0 +1,105 @@
+<%- include("../layouts/admin/header.ejs")  %>
+    
+<%- include("../layouts/admin/navbar.ejs")  %>
+    <main class="main-wrap">
+        <%- include("../layouts/admin/topnav.ejs")  %>
+      
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Order List </h2>
+                    <p>Lorem ipsum dolor sit amet.</p>
+                </div>
+                <div>
+                    <input type="text" placeholder="Search order ID" class="form-control bg-white">
+                </div>
+            </div>
+            <div class="card mb-4">
+                <header class="card-header">
+                    <div class="row gx-3">
+                        <div class="col-lg-4 col-md-6 me-auto">
+                            <input type="text" placeholder="Search..." class="form-control">
+                        </div>
+                    
+                     
+                    </div>
+                </header> <!-- card-header end// -->
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>S.No</th>
+                          <th scope="col">Order ID</th>
+                          <th scope="col">Name</th>
+                          <th scope="col">Total Amount</th>
+                          <th scope="col">Order Details</th>
+                          <th scope="col">Order Status</th>
+                          <th scope="col">Date</th>
+                          <th scope="col">Payment</th>
+                          <th scope="col" class="text-end">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% orders.forEach((order, orderIndex) => { %>
+                          <tr>
+                              
+                            <td rowspan="<%= order.items.length %>"><%= orderIndex + 1 %></td>
+                            <td rowspan="<%= order.items.length %>"><%= order.orderId %></td>
+                            <td rowspan="<%= order.items.length %>"><%= order.shipping_address.Fullname %></td>
+                            <td rowspan="<%= order.items.length %>">₹<%= order.total_price %></td>
+                            
+                            <!-- Render the first product -->
+
+                            <td>
+                              <%= order.items[0].name %> - <%= order.items[0].size %>
+                              <span class="text-muted">(₹<%= order.items[0].price %> x <%= order.items[0].quantity %> = ₹<%= order.items[0].sub_total %>)</span>
+                            </td>
+                            <td>
+                              <span class="badge rounded-pill alert-<%= order.items[0].order_status === 'confirmed' ? 'warning' : order.items[0].order_status === 'Shipped' ? 'info' : order.items[0].order_status === 'Delivered' ? 'success' : 'danger' %>">
+                                <%= order.items[0].order_status %>
+                              </span>
+                            </td>
+                            <td rowspan="<%= order.items.length %>"><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                            <td rowspan="<%= order.items.length %>"><%= order.payment_method %></td>
+                            <td rowspan="<%= order.items.length %>" class="text-end">
+                              <a href="/admin/order-details?orderid=<%= order.orderId %>" class="btn btn-md rounded font-sm">Detail</a>
+                            </td>
+                          </tr>
+                          <!-- Render additional products -->
+                          <% order.items.slice(1).forEach((item) => { %>
+                            <tr>
+                              <td>
+                                <%= item.name %> - <%= item.size %>
+                                <span class="text-muted">(₹<%= item.price %> x <%= item.quantity %> = ₹<%= item.sub_total %>)</span>
+                              </td>
+                              <td>
+                                <span class="badge rounded-pill alert-<%= item.order_status === 'confirmed' ? 'warning' : item.order_status === 'Shipped' ? 'info' : item.order_status === 'Delivered' ? 'success' : 'danger' %>">
+                                  <%= item.order_status %>
+                                </span>
+                              </td>
+                            </tr>
+                          <% }); %>
+                        <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                
+            </div> <!-- card end// -->
+            <div class="pagination-area mt-15 mb-50">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                        <li class="page-item"><a class="page-link" href="#">02</a></li>
+                        <li class="page-item"><a class="page-link" href="#">03</a></li>
+                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                        <li class="page-item"><a class="page-link" href="#">16</a></li>
+                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </section> <!-- content-main end// -->
+<%- include("../layouts/admin/footer.ejs")  %>
+   

@@ -86,6 +86,12 @@
                       </div>
 
                       <div class="form-group">
+                        <label for="ActualpriceSM">Actual price
+                        <input type="number" id="ActualpriceSM" name="weigth[SM][Actualprice]" class="form-control"
+                          step="0.01" placeholder="Enter Actual price" min="0" />
+                          <span id="errorpriceSM" class="text-danger"></span>
+                      </div>
+                      <div class="form-group">
                         <label for="salesPriceSM">Sales Price:</label>
                         <input type="number" id="salesPriceSM" name="weigth[SM][salesPrice]" class="form-control"
                           step="0.01" placeholder="Enter sales price" min="0" />
@@ -100,7 +106,12 @@
                         <input type="number" id="stockMedium" name="weigth[Medium][stock]" class="form-control" min="0"
                           placeholder="Enter stock count" />
                       </div>
-
+                      <div class="form-group">
+                        <label for="ActualpriceMedium">Actual price:</label>
+                        <input type="number" id="ActualpriceMedium" name="weigth[Medium][Actualprice]"
+                          class="form-control" step="0.01" placeholder="Enter Actual price" min="0" />
+                          <span id="errorpriceSM" class="text-danger"></span>
+                      </div>
                       <div class="form-group">
                         <label for="salesPriceMedium">Sales Price:</label>
                         <input type="number" id="salesPriceMedium" name="weigth[Medium][salesPrice]"
@@ -116,7 +127,12 @@
                         <input type="number" id="stockL" name="weigth[L][stock]" class="form-control" min="0"
                           placeholder="Enter stock count" />
                       </div>
-
+                      <div class="form-group">
+                        <label for="ActualpriceL">Actual price:</label>
+                        <input type="number" id="ActualpriceL" name="weigth[L][Actualprice]" class="form-control"
+                          step="0.01" placeholder="Enter Actual price" min="0" />
+                          <span id="errorpriceSM" class="text-danger"></span>
+                      </div>
                       <div class="form-group">
                         <label for="salesPriceL">Sales Price:</label>
                         <input type="number" id="salesPriceL" name="weigth[L][salesPrice]" class="form-control"
@@ -268,14 +284,17 @@
         let currentFile;
         let currentImgElement;
         let croppedImages = [];
+        let uncroppedImages = [];
         function handleFiles(event) {
           const imagePreviewContainer = document.getElementById("imagePreview");
           imagePreviewContainer.innerHTML = "";
           croppedImages = [];
+          uncroppedImages = [];
           const files = event.target.files;
 
           if (files) {
             Array.from(files).forEach((file) => {
+              uncroppedImages.push(file);
               const reader = new FileReader();
 
               reader.onload = (e) => {
@@ -315,34 +334,27 @@
         }
 
         function cropImage() {
-          const canvas = cropper.getCroppedCanvas();
+  const canvas = cropper.getCroppedCanvas();
+  canvas.toBlob((blob) => {
+    const croppedFile = new File([blob], currentFile.name, { type: 'image/png' });
+    croppedImages.push(croppedFile); 
+    
+    const dataTransfer = new DataTransfer();
+    const allImages = [...uncroppedImages.filter(file => file !== currentFile), ...croppedImages];
 
-          canvas.toBlob((blob) => {
-            const croppedFile = new File([blob], currentFile.name, { type: 'image/png' });
+    allImages.forEach((image) => {
+      dataTransfer.items.add(image);
+    });
 
+    const fileInput = document.getElementById('image');
+    fileInput.files = dataTransfer.files;
+    currentImgElement.src = URL.createObjectURL(croppedFile);
 
-            croppedImages.push(croppedFile); // Add the cropped image to the array
-
-            const dataTransfer = new DataTransfer();
-
-            croppedImages.forEach((image) => {
-              dataTransfer.items.add(image);
-            });
-
-            const fileInput = document.getElementById('image');
-            fileInput.files = dataTransfer.files;
-
-
-            currentImgElement.src = URL.createObjectURL(croppedFile);
-
-
-            document.getElementById("cropModal").style.display = "none";
-
-
-            cropper.destroy();
-            cropper = null;
-          }, 'image/png');
-        }
+    document.getElementById("cropModal").style.display = "none";
+    cropper.destroy();
+    cropper = null;
+  }, 'image/png');
+}
 
       </script>
       </body>

@@ -3,18 +3,37 @@ const session = require("express-session");
 const flash = require('connect-flash');
 const passport = require("./config/passport");
 
+
 const mongoose = require("mongoose");
 const path = require("path");
+
 
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
+
     console.log("connectd to mongo");
+    
   })
   .catch((err) => console.log(err,"faild to conne"));
 
 const express = require("express");
 const app = express();
+
+
+const preventCacheMiddleware = (req, res, next) => {
+
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.set("Pragma", "no-cache");
+  res.set("Expires", "0");
+  res.set("Surrogate-Control", "no-store");
+  next();
+
+};
+
+// Apply globally
+app.use(preventCacheMiddleware);
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -51,6 +70,8 @@ const adminRoute = require("./routes/adminRoute");
 
 app.use("/", userRoute);
 app.use("/admin", adminRoute);
+
+
 
 //server connection
 app.listen(process.env.PORT, () => {

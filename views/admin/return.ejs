@@ -1,0 +1,137 @@
+<!-- Include header layout here -->
+<%- include("../layouts/admin/header.ejs")  %>
+<%- include("../layouts/admin/navbar.ejs")  %>
+<main class="main-wrap">
+    <!-- Include top navigation here -->
+    <%- include("../layouts/admin/topnav.ejs")  %>
+    <style>
+        .status-badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background-color: #FFE8A1; /* Light yellow */
+    color: #C47F00; /* Darker yellow for text */
+}
+
+.status-approved {
+    background-color: #DFF2BF; /* Light green */
+    color: #4F8A10; /* Dark green for text */
+}
+
+.status-rejected {
+    background-color: #FFD2D2; /* Light red */
+    color: #D8000C; /* Dark red for text */
+}
+
+    </style>
+
+    <section class="content-main">
+        <div class="content-header">
+            <h2 class="content-title">Return Orders List</h2>
+            <div>
+                <!-- Success and error messages would be dynamically inserted here -->
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Product</th>
+                                <th>Size</th>
+                                <th>Quantity</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Refund Amount</th>
+                                <th>Return Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Example row, repeat this structure for each return order -->
+                            <% for(let i = 0; i < returns.length; i++) { %>
+                                <tr>
+                                    <td><%= returns[i].orderId %></td>
+                                    <td><%= returns[i].productId.productname %></td>
+                                    <td><%= returns[i].size %></td>
+                                    <td><%= returns[i].quantity %></td>
+                                    <td><%= returns[i].reason %></td>
+                                    <td>
+                                        <span class="status-badge status-<%= returns[i].status.toLowerCase() %>">
+                                            <%= returns[i].status %>
+                                        </span>
+                                    </td>
+                                    <td>₹<%= returns[i].refundAmount %></td>
+                                    <td><%= returns[i].returnDate %></td>
+                                    <td>
+                                        <form action="/admin/approve-return?id=<%= returns[i]._id %>" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                           </form>
+
+                                        <form action="/admin/reject-return/?id=<%= returns[i]._id %>" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                      </form>
+                                    </td>
+                                </tr>
+                            <% } %>
+                            
+                            <!-- Repeat the above row structure for each return order -->
+                        </tbody>
+                    </table>
+                </div> <!-- table-responsive end -->
+            </div> <!-- card-body end -->
+        </div> <!-- card end -->
+
+        <!-- Pagination Controls -->
+        <div class="pagination-area mt-15 mb-50">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-start">
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            <i class="material-icons md-chevron_left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            <i class="material-icons md-chevron_right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </section> <!-- content-main end -->
+</main>
+<%- include("../layouts/admin/footer.ejs")  %>
+
+<!-- Include footer layout here -->
+
+
+
+<% if (message) { %>
+    
+    <script>
+      Swal.fire({
+        icon: '<%= message.icon %>',
+        text: '<%= message.text %>',
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1000
+      });
+    </script>
+
+  <% } %>

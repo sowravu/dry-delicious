@@ -31,8 +31,8 @@ const addressSchema = new mongoose.Schema({
  },
  addressType: {
   type: String,
-  enum: ['Home', 'Work'], // Restricts values to "Home" or "Work"
-  required: true           // Makes the field mandatory
+  enum: ['Home', 'Work'],
+  required: true           
 },
 
 })

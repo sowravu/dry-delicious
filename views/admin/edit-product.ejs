@@ -145,7 +145,11 @@
                         <input type="number" id="stockSM" name="weigth[SM][stock]" class="form-control" min="0"
                           value="<%=data.weightoptions[0].stock  %>" placeholder="Enter stock count" />
                       </div>
-
+                      <div class="form-group">
+                        <label for="ActualpriceSM">Sales Price:</label>
+                        <input type="number" id="ActualpriceSM" name="weigth[SM][Actualprice]" class="form-control"
+                          step="0.01" value="<%=data.weightoptions[0].Actualprice %>" min="0" placeholder="Enter sales price" />
+                      </div>
                       <div class="form-group">
                         <label for="salesPriceSM">Sales Price:</label>
                         <input type="number" id="salesPriceSM" name="weigth[SM][salesPrice]" class="form-control"
@@ -160,7 +164,12 @@
                         <input type="number" id="stockMedium" name="weigth[Medium][stock]" class="form-control" min="0"
                           value="<%=data.weightoptions[1].stock  %>" placeholder="Enter stock count" />
                       </div>
-
+                      <div class="form-group">
+                        <label for="ActualpriceMedium">Actual price:</label>
+                        <input type="number" id="ActualpriceMedium" name="weigth[Medium][Actualprice]"
+                          class="form-control" step="0.01" min="0" value="<%=data.weightoptions[1].Actualprice %>"
+                          placeholder="Enter sales price" />
+                      </div>
                       <div class="form-group">
                         <label for="salesPriceMedium">Sales Price:</label>
                         <input type="number" id="salesPriceMedium" name="weigth[Medium][salesPrice]"
@@ -176,7 +185,11 @@
                         <input type="number" id="stockL" name="weigth[L][stock]" class="form-control" min="0"
                           value="<%=data.weightoptions[2].stock %>" placeholder="Enter stock count" />
                       </div>
-
+                      <div class="form-group">
+                        <label for="ActualpriceL">Actual price:</label>
+                        <input type="number" id="ActualpriceL" name="weigth[L][Actualprice]" class="form-control"
+                          value="<%=data.weightoptions[2].Actualprice %>" min="0" step="0.01" placeholder="Enter sales price" />
+                      </div>
                       <div class="form-group">
                         <label for="salesPriceL">Sales Price:</label>
                         <input type="number" id="salesPriceL" name="weigth[L][salesPrice]" class="form-control"
@@ -184,8 +197,6 @@
                       </div>
                     </div>
                   </div>
-
-
                 </div>
               </div>
             </div>
