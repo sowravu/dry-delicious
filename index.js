@@ -9,8 +9,6 @@ const path = require("path");
 
 const MONGO_URI = process.env.MONGODB_URI;
 
-
-
 mongoose
   .connect(MONGO_URI, {
     useNewUrlParser: true,
@@ -21,9 +19,7 @@ mongoose
     console.error("Failed to connect to MongoDB:", error.message);
   });
 
-
-
-
+console.log("process env is",process.env.JACK)
 
 const express = require("express");
 const app = express();
