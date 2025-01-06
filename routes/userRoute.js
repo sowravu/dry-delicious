@@ -7,6 +7,7 @@ const userController = require("../controllers/user/userController");
 const orderController=require("../controllers/user/orderController")
 const wishlistController=require("../controllers/user/wishlistController")
 const WalletController=require("../controllers/user/WalletController")
+const path=require("path")
 
 
 const { Passport } = require("passport");
@@ -16,7 +17,7 @@ user_route.use(express.json());
 user_route.use(express.urlencoded({extended:true}));
 
 user_route.set("view engine","ejs");
-user_route.set("views","./views/user");
+user_route.set('views', path.join(__dirname, '../views/user'));
 user_route.use(express.static("public/user"));
 
 
