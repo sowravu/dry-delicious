@@ -1,4 +1,4 @@
-const env = require("dotenv").config();
+require("dotenv").config();
 const session = require("express-session");
 const flash = require('connect-flash');
 const passport = require("./config/passport");
@@ -7,15 +7,23 @@ const passport = require("./config/passport");
 const mongoose = require("mongoose");
 const path = require("path");
 
+const MONGO_URI = process.env.MONGODB_URI;
+
+
 
 mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-
-    console.log("connectd to mongo");
-    
+  .connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
-  .catch((err) => console.log(err,"faild to conne"));
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch((error) => {
+    console.error("Failed to connect to MongoDB:", error.message);
+  });
+
+
+
+
 
 const express = require("express");
 const app = express();

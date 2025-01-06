@@ -318,8 +318,11 @@ const cancelOrder = async (req, res) => {
     const size = req.query.size;
     const quantity = req.query.quantity
     const orderfind = await Order.findOne({ user: user._id, "items._id": itemid })
+
     console.log("order find is ", orderfind)
+
     const matchedItem = orderfind?.items?.find(item => item._id == itemid);
+
     const refund = matchedItem?.sub_total
     const result = await Order.updateOne(
       {
@@ -471,8 +474,7 @@ const generateInvoice = async (req, res) => {
       margin: { top: '1cm', right: '1cm', bottom: '1cm', left: '1cm' }
     });
 
-    // Save PDF locally for debugging
-    fs.writeFileSync(`invoice-${orderId}.pdf`, pdfBuffer);
+   
 
     console.log('PDF Buffer Size:', pdfBuffer.length);
 

@@ -190,6 +190,118 @@ const loadDashboard = async (req, res) => {
 
 
 
+const getSalesData = async (req, res) => {
+  try {
+    const { filter, start, end } = req.query;
+    console.log("Filter received:", filter);
+    console.log("Custom date range:", start, end);
+
+    let dateFilter = {};
+    const now = new Date();
+
+    switch (filter) {
+      case 'daily':
+       
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+
+       
+        const yesterdayStart = new Date();
+        yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+        yesterdayStart.setHours(0, 0, 0, 0);
+
+        dateFilter = {
+          createdAt: {
+            $gte: yesterdayStart, 
+            $lt: todayEnd 
+          }
+        };
+        break;
+
+      case 'monthly':
+   
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+        dateFilter = {
+          createdAt: {
+            $gte: monthStart,
+            $lt: monthEnd
+          }
+        };
+        break;
+
+      case 'yearly':
+   
+        const yearStart = new Date(now.getFullYear(), 0, 1);
+        const yearEnd = new Date(now.getFullYear() + 1, 0, 1);
+
+        dateFilter = {
+          createdAt: {
+            $gte: yearStart,
+            $lt: yearEnd
+          }
+        };
+        break;
+
+      case 'custom':
+        
+        if (start && end) {
+          dateFilter = {
+            createdAt: {
+              $gte: new Date(start),
+              $lt: new Date(end)
+            }
+          };
+        } else {
+          return res.status(400).json({ error: "Invalid custom date range" });
+        }
+        break;
+
+      default:
+        return res.status(400).json({ error: "Invalid filter type" });
+    }
+
+    console.log("Date filter applied:", dateFilter);
+
+    const salesData = await Order.aggregate([
+      {
+        $match: {
+          ...dateFilter,
+          "items.order_status": "Delivered",
+          payment_status: "success"
+        }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          totalSales: { $sum: "$total_price" }
+        }
+      },
+      { $sort: { _id: 1 } } 
+    ]);
+
+    console.log("Aggregated sales data:", salesData);
+
+   
+    const labels = salesData.map(item => item._id);
+    const data = salesData.map(item => item.totalSales);
+
+    console.log("Labels:", labels);
+    console.log("Data:", data);
+
+    res.json({ labels, data });
+  } catch (error) {
+    console.error("Sales Data Error:", error);
+    res.status(500).json({ error: "Could not fetch sales data" });
+  }
+};
+
+
+
 
 const downloadPDF = async (req, res) => {
   try {
@@ -804,5 +916,5 @@ module.exports = {
   loginverify,
   loginload,
   loadDashboard,
-  
+  getSalesData,
 };

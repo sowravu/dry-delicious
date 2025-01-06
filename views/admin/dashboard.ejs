@@ -65,6 +65,7 @@
                     <a href="#" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create report</a>
                 </div>
             </div>
+              <!-- total sales and products toltal couts showing div -->
             <div class="row">
                 <div class="col-lg-3">
                     <div class="card card-body mb-4">
@@ -119,182 +120,40 @@
                         </article>
                     </div> -->
                 </div>
+
+              <!-- Ending total sales and products toltal couts showing div -->
+
+               
             </div>
             <div class="row">
-                <div class="col-xl-8 col-lg-12">
-                    <div class="card mb-4">
-                        <article class="card-body">
-                            <h5 class="card-title">Sale statistics</h5>
-                            <canvas id="myChart" height="120px"></canvas>
-                        </article>
+              <div class="col-xl-8 col-lg-12">
+                <div class="card mb-4">
+                  <article class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h5 class="card-title">Sales Report</h5>
+                      <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dateFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                          Filter: <span id="selectedFilter">Daily</span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dateFilterDropdown">
+                          <li><a class="dropdown-item filter-option" href="#" data-filter="daily">Daily</a></li>
+                          <li><a class="dropdown-item filter-option" href="#" data-filter="monthly">Monthly</a></li>
+                          <li><a class="dropdown-item filter-option" href="#" data-filter="yearly">Yearly</a></li>
+                          <li><a class="dropdown-item filter-option" href="#" data-filter="custom">Custom Date</a></li>
+                        </ul>
+                      </div>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <div class="card mb-4">
-                                <article class="card-body">
-                                    <h5 class="card-title">New Members</h5>
-                                    <div class="new-member-list">
-                                        <div class="d-flex align-items-center justify-content-between mb-4">
-                                            <div class="d-flex align-items-center">
-                                                <img src="assets/imgs/people/avatar4.jpg" alt="" class="avatar">
-                                                <div>
-                                                    <h6>Patric Adams</h6>
-                                                    <p class="text-muted font-xs">
-                                                        Sanfrancisco
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <a href="#" class="btn btn-xs"><i class="material-icons md-add"></i> Add</a>
-                                        </div>
-                                        <div class="d-flex align-items-center justify-content-between mb-4">
-                                            <div class="d-flex align-items-center">
-                                                <img src="assets/imgs/people/avatar2.jpg" alt="" class="avatar">
-                                                <div>
-                                                    <h6>Dilan Specter</h6>
-                                                    <p class="text-muted font-xs">
-                                                        Sanfrancisco
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <a href="#" class="btn btn-xs"><i class="material-icons md-add"></i> Add</a>
-                                        </div>
-                                        <div class="d-flex align-items-center justify-content-between mb-4">
-                                            <div class="d-flex align-items-center">
-                                                <img src="assets/imgs/people/avatar3.jpg" alt="" class="avatar">
-                                                <div>
-                                                    <h6>Tomas Baker</h6>
-                                                    <p class="text-muted font-xs">
-                                                        Sanfrancisco
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <a href="#" class="btn btn-xs"><i class="material-icons md-add"></i> Add</a>
-                                        </div>
-                                    </div>
-                                </article>
-                            </div>
-                        </div>
-                        <div class="col-lg-7">
-                            <div class="card mb-4">
-                                <article class="card-body">
-                                    <h5 class="card-title">Recent activities</h5>
-                                    <ul class="verti-timeline list-unstyled font-sm">
-                                        <li class="event-list">
-                                            <div class="event-timeline-dot">
-                                                <i class="material-icons md-play_circle_outline font-xxl"></i>
-                                            </div>
-                                            <div class="media">
-                                                <div class="me-3">
-                                                    <h6><span>Today</span> <i class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i></h6>
-                                                </div>
-                                                <div class="media-body">
-                                                    <div>
-                                                        Lorem ipsum dolor sit amet consectetur
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li class="event-list active">
-                                            <div class="event-timeline-dot">
-                                                <i class="material-icons md-play_circle_outline font-xxl animation-fade-right"></i>
-                                            </div>
-                                            <div class="media">
-                                                <div class="me-3">
-                                                    <h6><span>17 May</span> <i class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i></h6>
-                                                </div>
-                                                <div class="media-body">
-                                                    <div>
-                                                        Debitis nesciunt voluptatum dicta reprehenderit
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li class="event-list">
-                                            <div class="event-timeline-dot">
-                                                <i class="material-icons md-play_circle_outline font-xxl"></i>
-                                            </div>
-                                            <div class="media">
-                                                <div class="me-3">
-                                                    <h6><span>13 May</span> <i class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i></h6>
-                                                </div>
-                                                <div class="media-body">
-                                                    <div>
-                                                        Accusamus voluptatibus voluptas.
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li class="event-list">
-                                            <div class="event-timeline-dot">
-                                                <i class="material-icons md-play_circle_outline font-xxl"></i>
-                                            </div>
-                                            <div class="media">
-                                                <div class="me-3">
-                                                    <h6><span>05 April</span> <i class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i></h6>
-                                                </div>
-                                                <div class="media-body">
-                                                    <div>
-                                                        At vero eos et accusamus et iusto odio dignissi
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li class="event-list">
-                                            <div class="event-timeline-dot">
-                                                <i class="material-icons md-play_circle_outline font-xxl"></i>
-                                            </div>
-                                            <div class="media">
-                                                <div class="me-3">
-                                                    <h6><span>26 Mar</span> <i class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i></h6>
-                                                </div>
-                                                <div class="media-body">
-                                                    <div>
-                                                        Responded to need “Volunteer Activities
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </article>
-                            </div>
-                        </div>
+                    <div id="customDateFilter" class="mt-3" style="display: none;">
+                      <input type="date" id="startDate" class="form-control mb-2" placeholder="Start Date">
+                      <input type="date" id="endDate" class="form-control" placeholder="End Date">
+                      <button id="applyCustomDate" class="btn btn-primary mt-2">Apply</button>
                     </div>
+                    <canvas id="salesChart" height="120px"></canvas>
+                  </article>
                 </div>
-                <div class="col-xl-4 col-lg-12">
-                    <div class="card mb-4">
-                        <article class="card-body">
-                            <h5 class="card-title">Revenue Base on Area</h5>
-                            <canvas id="myChart2" height="217"></canvas>
-                        </article>
-                    </div>
-                    <div class="card mb-4">
-                        <article class="card-body">
-                            <h5 class="card-title">Marketing Chanel</h5>
-                            <span class="text-muted font-xs">Facebook</span>
-                            <div class="progress mb-3">
-                                <div class="progress-bar" role="progressbar" style="width: 15%">15%</div>
-                            </div>
-                            <span class="text-muted font-xs">Instagram</span>
-                            <div class="progress mb-3">
-                                <div class="progress-bar" role="progressbar" style="width: 65%">65% </div>
-                            </div>
-                            <span class="text-muted font-xs">Google</span>
-                            <div class="progress mb-3">
-                                <div class="progress-bar" role="progressbar" style="width: 51%"> 51% </div>
-                            </div>
-                            <span class="text-muted font-xs">Twitter</span>
-                            <div class="progress mb-3">
-                                <div class="progress-bar" role="progressbar" style="width: 80%"> 80%</div>
-                            </div>
-                            <span class="text-muted font-xs">Other</span>
-                            <div class="progress mb-3">
-                                <div class="progress-bar" role="progressbar" style="width: 80%"> 80%</div>
-                            </div>
-                        </article>
-                    </div>
-                </div>
+              </div>
             </div>
-
+            
             <div class="dashboard-section">
                 <h2 class="section-heading">Top-Selling Products</h2>
                 <table class="data-table">
@@ -463,5 +322,89 @@
                 </nav>
             </div>
         </section> <!-- content-main end// -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
        
         <%- include("../layouts/admin/footer.ejs")  %>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const ctx = document.getElementById("salesChart").getContext("2d");
+    let salesChart;
+  
+    function renderChart(data, labels) {
+      const chartType = data.length > 1 ? 'line' : 'scatter';
+      if (salesChart) salesChart.destroy();
+      salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Sales',
+            data: data,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+  
+    async function fetchData(filterType, startDate, endDate) {
+      try {
+        const url = new URL('/admin/dashboard/saleschart', window.location.origin);
+        url.searchParams.append('filter', filterType);
+        if (startDate) url.searchParams.append('start', startDate);
+        if (endDate) url.searchParams.append('end', endDate);
+  
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const { data, labels } = await response.json();
+        console.log("data and  is ",data, )
+        console.log("lebals is ",labels)
+        renderChart(data, labels);
+        
+      } catch (error) {
+        console.error("Error fetching sales data:", error);
+        alert("Failed to fetch sales data. Please try again.");
+      }
+    }
+  
+    document.querySelectorAll(".filter-option").forEach(option => {
+      option.addEventListener("click", (e) => {
+        e.preventDefault();
+        const filterType = e.target.dataset.filter;
+        document.getElementById("selectedFilter").innerText = filterType.charAt(0).toUpperCase() + filterType.slice(1);
+        
+        const customDateFilter = document.getElementById("customDateFilter");
+        if (filterType === "custom") {
+          customDateFilter.style.display = "block";
+        } else {
+          customDateFilter.style.display = "none";
+          fetchData(filterType);
+        }
+      });
+    });
+  
+    document.getElementById("applyCustomDate").addEventListener("click", () => {
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+      if (startDate && endDate) {
+        fetchData("custom", startDate, endDate);
+      } else {
+        alert("Please select both start and end dates.");
+      }
+    });
+  
+    // Initial chart load
+    fetchData("daily");
+  });
+  </script>

@@ -819,6 +819,8 @@ try {
 
     const { Fullname, Address, city, State, pinCode, Country, phone, addressType,addressId } =
       req.body;
+console.log(addressId)
+      console.log("the req.body is ",req.body)
     if (addressId) {
       await address.findByIdAndUpdate(
         { _id: addressId.trim() },
@@ -836,8 +838,11 @@ try {
         }
       );
     }
-
-   return res.json({ success: true });
+    req.session.message = {
+      icon: "success",
+      text: "Address edited successfully.",
+    };
+   return res.redirect("/checkout");
   } catch (error) {
     console.log(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("deleting failed");

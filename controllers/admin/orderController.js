@@ -47,15 +47,24 @@ const changeOrderStatus=async (req,res)=>{
     try {
 
         const orderid=req.query.orderid;
-        const {  payment_method }=req.body
+        const {  payment_method,payment_status }=req.body
         const {  itemid, order_status } = req.body;
-        
+     
         console.log(itemid );
         console.log(orderid)
         console.log("paymant method is",payment_method)
        console.log("status order si",order_status)
 
        const previousStatusCheck=await  Order.findOne({orderId:orderid})
+
+       if (previousStatusCheck.payment_status=='pending') {
+        req.session.message = {
+          icon: "error",
+          text: "The payment for this order has not been completed.",
+        };
+        return res.redirect(`/admin/order-details?orderid=${orderid}`);
+      }
+      
 
        const previousONlinecheck = await Order.findOne({
         orderId: orderid,
@@ -64,6 +73,7 @@ const changeOrderStatus=async (req,res)=>{
       });
 
        const currentorderstatus = previousStatusCheck.items.find((item) => item._id.toString() === itemid);
+       console.log("previous online check" ,previousONlinecheck)
        if(previousONlinecheck){
         
         req.session.message = {

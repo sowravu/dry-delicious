@@ -30,7 +30,7 @@ admin_route.post("/login",adminController.loginverify);
 admin_route.get("/dashboard",adminAuth,adminController.loadDashboard);
  admin_route.get("/dashboard/pdf",adminAuth,adminController.downloadPDF)
  admin_route.get("/dashboard/excel",adminAuth,adminController.downloadExcel)
-
+ admin_route.get("/dashboard/saleschart", adminAuth, adminController.getSalesData);
 // User Management 
 
 admin_route.get("/users",adminAuth,adminController.usersload);

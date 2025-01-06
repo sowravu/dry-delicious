@@ -79,7 +79,7 @@
                                                     <% if (order.payment_method==="COD" ) { %>
                                                         Payment ID: None
                                                         <% } else { %>
-                                                            Payment ID: hfhsdkfhkjdh
+                                                            Payment status: <%= order.payment_status %>
                                                             <% } %>
                                                                 <br>
                                             </p>
@@ -142,6 +142,7 @@
                                                             </td>
                                                             <td>
                                                                 <input type="hidden" name="payment_method" value="<%= order.payment_method %>">
+                                                                <input type="hidden" name="payment_status" value="<%= order.payment_status %>">
                                                                 <button type="submit" class="btn btn-primary">Update</button>
                                                             </td>
                                                             <td class="text-end">₹<%= item.sub_total %></td>
