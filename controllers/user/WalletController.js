@@ -19,7 +19,7 @@ const loadWallet=async(req,res)=>{
         console.log("user data is ",userdata._id)
         const user = await User.findById(userdata._id);
         const transactions = await Transaction.find({ userId:userdata._id }).sort({ createdAt: -1 }).limit(10);
-        res.render("wallet", { user:userdata._id,walletBalance: user.walletBalance||0, transactions });
+        res.render("Wallet", { user:userdata._id,walletBalance: user.walletBalance||0, transactions });
       } catch (error) {
         console.error(error);
         res.status(500).send("An error occurred while loading the wallet");
