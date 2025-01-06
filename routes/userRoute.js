@@ -17,7 +17,7 @@ user_route.use(express.json());
 user_route.use(express.urlencoded({extended:true}));
 
 user_route.set("view engine","ejs");
-user_route.set('views', path.join(__dirname, 'views/user'));
+user_route.set('views', path.join(__dirname, '../views/user'));
 user_route.use(express.static("public/user"));
 
 
