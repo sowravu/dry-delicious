@@ -425,83 +425,72 @@
                         <div class="row billing-fields">
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 sm-margin-30px-bottom">
                                 <div class="create-ac-content bg-light-gray padding-20px-all">
-                                    <div id="addressList" style="margin-top: 2em;">
-                                        <% for (let i=0; i < data.address.length; i++) { %>
-                                            <% if (data.address.length> 0) { %>
-
-                                                <!-- Address Block Start -->
-                                                <div
-                                                    style="border-bottom: 1px solid #ccc; padding: 1em 0; display: flex; justify-content: space-between; align-items: center;">
-                                                    <label style="width: 100%; display: flex; cursor: pointer;">
-                                                        <!-- Radio button to select the delivery address -->
-                                                        <input type="radio" name="selectedAddressId"
-                                                            value="<%= data.address[i]._id %>" required
-                                                            style="margin-right: 1em; align-self: start;" >
-
-                                                        <div>
-                                                            <p>
-                                                                <span style="
-                                                        display: inline-block;
-                                                        padding: 0.25em 0.5em;
-                                                        font-size: 12px;
-                                                        font-weight: bold;
-                                                        color: #333;
-                                                        background-color: #f1f1f1;
-                                                        border-radius: 4px;
-                                                        text-transform: uppercase;
-                                                        box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
-                                                    ">
-                                                                    <%= data.address[i].addressType %>
-
-                                                                </span>
-                                                            </p>
-                                                            <p><strong>
-                                                                    <%= data.address[i].Fullname %>
-                                                                </strong></p>
-
-                                                            <p>
-                                                                <%= data.address[i].Address %>
-                                                            </p>
-
-                                                            <p>
-                                                                <%= data.address[i].State %>, <%=
-                                                                        data.address[i].pinCode %>, <%=
-                                                                            data.address[i].Country %>
-                                                            </p>
-
-                                                            <p>Phone: <%= data.address[i].phone %>
-                                                            </p>
-
-                                                        </div>
-                                                    </label>
+                                    <input type="hidden" name="totalprice" value="<%= totalprice %>">
+                                    <input type="hidden" id="discounttest" name="discountAmount" value="">
+                                    <input type="hidden" id="applycoutpon" name="appliedCoupon" value="">
+                                    <% if (data.address.length > 0) { %>
+                                        <% for (let i = 0; i < data.address.length; i++) { %>
+                                            <!-- Address Block Start -->
+                                            <div
+                                                style="border-bottom: 1px solid #ccc; padding: 1em 0; display: flex; justify-content: space-between; align-items: center;">
+                                                <label style="width: 100%; display: flex; cursor: pointer;">
+                                                    <!-- Radio button to select the delivery address -->
+                                                    <input type="radio" name="selectedAddressId"
+                                                        value="<%= data.address[i]._id %>" required
+                                                        style="margin-right: 1em; align-self: start;">
+                                    
                                                     <div>
-                                                        
-                                                        <button 
+                                                        <p>
+                                                            <span style="
+                                                                display: inline-block;
+                                                                padding: 0.25em 0.5em;
+                                                                font-size: 12px;
+                                                                font-weight: bold;
+                                                                color: #333;
+                                                                background-color: #f1f1f1;
+                                                                border-radius: 4px;
+                                                                text-transform: uppercase;
+                                                                box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+                                                            ">
+                                                                <%= data.address[i].addressType %>
+                                                            </span>
+                                                        </p>
+                                                        <p><strong>
+                                                                <%= data.address[i].Fullname %>
+                                                            </strong></p>
+                                    
+                                                        <p>
+                                                            <%= data.address[i].Address %>
+                                                        </p>
+                                    
+                                                        <p>
+                                                            <%= data.address[i].State %>, <%= data.address[i].pinCode %>, <%= data.address[i].Country %>
+                                                        </p>
+                                    
+                                                        <p>Phone: <%= data.address[i].phone %>
+                                                        </p>
+                                                    </div>
+                                                </label>
+                                                <div>
+                                                     
+                                               
+                                                    <button 
                                                         type="button" 
                                                         data-address='<%= JSON.stringify(data.address[i]) %>' 
                                                         onclick="toggleEditForm(this)"
-                                                        style="margin-right: 1em; padding: 0.5em 1em; border: none; background-color: #007bff; color: white; cursor: pointer; border-radius: 5px;"
-                                                        >
+                                                        style="margin-right: 1em; padding: 0.5em 1em; border: none; background-color: #007bff; color: white; cursor: pointer; border-radius: 5px;">
                                                         Edit
                                                     </button>
-                                                         
-                                                    </div>
                                                 </div>
-
-                                                <!-- Hidden Edit Form -->
-                                                 
-                                                <input type="hidden" name="totalprice" value="<%= totalprice %>">
-                                                <input type="hidden" id="discounttest" name="discountAmount" value="">
-                                                <input type="hidden" id="applycoutpon" name="appliedCoupon" value="">
-
-                                                <!-- Address Block End -->
-                                                <% } else { %>
-                                                    <div>
-                                                        <p>Enter your updated address</p>
-                                                    </div>
-                                                    <% } %>
-                                                        <% } %>
-                                    </div>
+                                            </div>
+                                            <!-- Address Block End -->
+                                        <% } %>
+                                    <% } else { %>
+                                        <div>
+                                            <p>No address available. Please add a new address.</p>
+                                        </div>
+                                    <% } %>
+                                    
 
                                 </div>
                             </div>

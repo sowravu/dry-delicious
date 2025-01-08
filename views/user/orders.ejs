@@ -343,7 +343,7 @@
           <h3>Order Summary</h3>
           <p><strong>Order ID:</strong> <%= orders[i].orderId %></p>
           <p><strong>Order Date:</strong> <%= new Date(orders[i].createdAt).toLocaleDateString() %></p>
-          <p><strong>Coupon Discount:</strong> ₹<%= orders[i].coupon_discount || 0 %></p>
+          
           <p><strong>Shipping Charge:</strong> ₹<%= orders[i].shipping_charge || 0 %></p>
           <p><strong>Total Price:</strong> ₹<%= orders[i].total_price %></p>
           <p><strong>Payment Method:</strong> <%= orders[i].payment_method %></p>

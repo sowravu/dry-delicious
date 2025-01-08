@@ -18,13 +18,16 @@ const puppeteer = require('puppeteer');
 const PDFDocument = require('pdfkit');
 const path = require('path');
 const fs = require('fs');
+
+
+
 const orderplaced = async (req, res) => {
   try {
     const userId = req.query.id;
     const { selectedAddressId, totalprice, sub_total, paymentmethod, discountAmount, appliedCoupon } = req.body;
-
-    console.log("discountAmount is", discountAmount);
-    console.log("appliedCoupon is", appliedCoupon);
+    const finalDiscountAmount = discountAmount && discountAmount.length > 0 ? discountAmount : 0;
+    console.log("discount Amount is",discountAmount );
+    console.log("applied Coupon is", appliedCoupon);
     console.log("total price is", totalprice);
    
     const selectedAddress = await address.findById({ _id: selectedAddressId });
@@ -37,7 +40,7 @@ const orderplaced = async (req, res) => {
 
       for (let i = 0; i < products.length; i++) {
         let productTotal = products[i].price * products[i].quantity;
-        let discountShare = (productTotal / totalCartValue) * discountAmount[0];
+        let discountShare = (productTotal / totalCartValue) * discountAmount;
         discountAmountPerProduct.push(discountShare / products[i].quantity);
       }
     } else {
@@ -45,7 +48,7 @@ const orderplaced = async (req, res) => {
     }
 
     console.log("discountAmountPerProduct", discountAmountPerProduct);
-    console.log("totalprice is", totalprice);
+  
 
     const items = products.map((product, index) => ({
       product: product.productId,
@@ -54,10 +57,12 @@ const orderplaced = async (req, res) => {
       quantity: product.quantity,
       image: product.image,
       size: product.size,
-      sub_total: (product.price - discountAmountPerProduct[index]) * product.quantity,
+      sub_total: Math.ceil((product.price - discountAmountPerProduct[index]) * product.quantity),
     }));
-
-    const totalpricewithcouponreduced = Number(totalprice[0]) - Number(discountAmount[0]);
+     
+  
+   
+    const totalpricewithcouponreduced = totalprice[0] - discountAmount;
 
 
 

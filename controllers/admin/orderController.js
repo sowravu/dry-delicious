@@ -51,13 +51,16 @@ const changeOrderStatus=async (req,res)=>{
         const {  itemid, order_status } = req.body;
      
         console.log(itemid );
+
         console.log(orderid)
+        
         console.log("paymant method is",payment_method)
-       console.log("status order si",order_status)
+
+        console.log("status order si",order_status)
 
        const previousStatusCheck=await  Order.findOne({orderId:orderid})
-
-       if (previousStatusCheck.payment_status=='pending') {
+console.log("previousStatusCheck is is",previousStatusCheck)
+       if ( previousStatusCheck.payment_method!='COD'  && previousStatusCheck.payment_status=='pending') {
         req.session.message = {
           icon: "error",
           text: "The payment for this order has not been completed.",

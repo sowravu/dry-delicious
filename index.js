@@ -19,7 +19,7 @@ mongoose
     console.error("Failed to connect to MongoDB:", error.message);
   });
 
-console.log("process env is",process.env.JACK)
+
 
 const express = require("express");
 const app = express();
