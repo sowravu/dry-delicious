@@ -33,6 +33,12 @@
     color: #007bff;
 }
 
+.btn a {
+    position: relative;
+    z-index: 10;
+}
+
+
 </style>
 
 <div id="pre-loader">
@@ -248,7 +254,7 @@
                                     <div class="wrap-caption right">
                                        <h2 class="h1 mega-title slideshow__title">Dates &amp; Nuts</h2>
                                         <span class="mega-subtitle slideshow__subtitle">Save up to 50% Off</span>
-                                        <span class="btn">Shop now</span>
+                                        <span class="btn"><a href="/shop">Shop now</a></span>
                                     </div>
                                 </div>
                             </div>
@@ -264,7 +270,7 @@
                                     <div class="wrap-caption right">
                                        <h2 class="h1 mega-title slideshow__title">Dates &amp; Nuts</h2>
                                         <span class="mega-subtitle slideshow__subtitle">Save up to 50% Off</span>
-                                        <span class="btn">Shop now</span>
+                                        <span class="btn"><a href="/shop">Shop now</a></span>
                                     </div>
                                 </div>
                             </div>
@@ -387,7 +393,7 @@
                         <div class="wrap-text left text-small font-bold">
                             <h2 class="h2 mega-title">DryDelicious <br> The Finest Selection of Premium Dry Fruits</h2>
                             <div class="rte-setting mega-subtitle">Discover a world of healthy, flavorful, and nutritious dry fruits at your fingertips. At DryDelicious, we offer only the highest quality nuts, seeds, and dried fruits sourced from the best farms around the world. Perfect for snacking, gifting, or adding to your favorite recipes.</div>
-                            <a href="#" class="btn">Purchase Now</a>
+                            <a href="/shop" class="btn">Purchase Now</a>
                         </div>
                     </div>
                 </div>
@@ -423,22 +429,19 @@
                                     <img class="grid-view-item__image hover variantImg" src="/uploads/<%= product[i].productImage[0] %>" alt="image" title="product">
                                     <!-- Variant Image -->
                                     <!-- product label -->
-                                    <div class="product-labels rounded">
-                                        <span class="lbl on-sale">Sale</span>
-                                        <span class="lbl pr-label1">New</span>
-                                    </div>
+                                 
                                     <!-- End product label -->
                                 </a>
                                 <!-- end product image -->
                 
                                 <!-- countdown start -->
-                                <div class="saleTime desktop" data-countdown="2022/03/01"></div>
+                               
                                 <!-- countdown end -->
                 
                                 <!-- Start product button -->
-                                <form class="variants add" action="#" onclick="window.location.href='cart.html'" method="post">
+                                <!-- <form class="variants add" action="#" onclick="window.location.href='cart.html'" method="post">
                                     <button class="btn btn-addto-cart" type="button" tabindex="0">Add To Cart</button>
-                                </form>
+                                </form> -->
                                 <div class="button-set">
                                     <a href="javascript:void(0)" title="Quick View" class="quick-view-popup quick-view" data-toggle="modal" data-target="#content_quickview">
                                         <i class="icon anm anm-search-plus-r"></i>

@@ -890,12 +890,20 @@ const resetPassword=async(req,res)=>{
     console.log(error)
   }
 }
-
+const  loadAbout=async(req,res)=>{
+  try {
+    return res.render("about")
+  } catch (error) {
+    console.log(error)
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error for loading about page")
+  }
+}
 
 
  
 
 module.exports = {
+  loadAbout,
   resetPassword,
   LoadresetPassword,
   checkoutEditaddress,
