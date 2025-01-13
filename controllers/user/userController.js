@@ -14,7 +14,7 @@ const CartItem = require("../../models/cartModel");
 const Wishlist=require("../../models/wishlistModel")
 const coupon=require("../../models/coupenModel")
 
-//the page to display page not found
+// page not found
 const pageNotFound = async (req, res) => {
   try {
     return res.render("page-404");
@@ -91,16 +91,23 @@ const loadHome = async (req, res) => {
 const loadshop = async (req, res) => {
   try {
     const userdata = req.session.users;
+
     const currentpage = parseInt(req.query.page) || 1;
-    const limit = 8;
+
+    const limit = parseInt(req.query.limit) || 8;
+
     const filter = { is_delete: false };
-    const findwishlist=await Wishlist.findOne({ userId: userdata._id });
-   
+
+    const findwishlist = await Wishlist.findOne({ userId: userdata._id });
 
     const selectedCategories = req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [];
+
+    
     const selectedBrands = req.query.brand ? (Array.isArray(req.query.brand) ? req.query.brand : [req.query.brand]) : [];
+
     const selectedSort = req.query.sort || '';
 
+    const searchQuery = req.query.search || '';
 
     if (selectedCategories.length) {
       filter.productCategory = { $in: selectedCategories };
@@ -110,17 +117,24 @@ const loadshop = async (req, res) => {
       filter.productBrand = { $in: selectedBrands };
     }
 
+    if (searchQuery) {
+      filter.productname = { $regex: searchQuery, $options: 'i' };
+    }
 
     let sortOption = {};
+    
     if (selectedSort === "priceAsc") sortOption = { "weightoptions.salesPrice": 1 };
+
     if (selectedSort === "priceDesc") sortOption = { "weightoptions.salesPrice": -1 };
+
     if (selectedSort === "nameAsc") sortOption = { productname: 1 };
+
     if (selectedSort === "nameDesc") sortOption = { productname: -1 };
 
     const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / limit);
 
-    const product = await Product.find(filter)
+    const products = await Product.find(filter)
       .sort(sortOption)
       .skip((currentpage - 1) * limit)
       .limit(limit)
@@ -132,7 +146,7 @@ const loadshop = async (req, res) => {
 
     return res.render("shop", {
       findwishlist,
-      product,
+      products,
       categories,
       brand,
       currentpage,
@@ -140,11 +154,12 @@ const loadshop = async (req, res) => {
       selectedCategories,
       selectedSort,
       selectedBrands,
+      searchQuery,
       limit
     });
   } catch (error) {
     console.log(error);
-    res.send("Failed to load shop page");
+    res.status(500).send("Failed to load shop page");
   }
 };
 
@@ -903,6 +918,7 @@ const  loadAbout=async(req,res)=>{
  
 
 module.exports = {
+
   loadAbout,
   resetPassword,
   LoadresetPassword,

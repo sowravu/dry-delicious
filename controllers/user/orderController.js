@@ -460,20 +460,20 @@ const generateInvoice = async (req, res) => {
       return res.status(404).send('Order not found');
     }
 
-    // Create a new PDF document
+ 
     const doc = new PDFDocument({
       size: 'A4',
       margin: 50
     });
 
-    // Set response headers
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=invoice-${orderId}.pdf`);
 
-    // Pipe the PDF to the response
+  
     doc.pipe(res);
 
-    // Add the header
+    
     doc.fontSize(24)
        .font('Helvetica-Bold')
        .text('Invoice', { align: 'center' });
@@ -488,7 +488,6 @@ const generateInvoice = async (req, res) => {
 
     doc.moveDown(2);
 
-    // Add shipping details
     doc.fontSize(16)
        .font('Helvetica-Bold')
        .text('Shipping Details');
@@ -502,19 +501,19 @@ const generateInvoice = async (req, res) => {
 
     doc.moveDown(2);
 
-    // Add order items table
+    
     doc.fontSize(16)
        .font('Helvetica-Bold')
        .text('Order Items');
 
     doc.moveDown();
 
-    // Table headers
+    
     const tableTop = doc.y;
     const tableHeaders = ['Product', 'Size', 'Price', 'Quantity', 'Order Status', 'Total'];
     const columnWidth = (doc.page.width - 100) / tableHeaders.length;
 
-    // Draw table headers
+    
     doc.fontSize(12)
        .font('Helvetica-Bold');
     
@@ -525,7 +524,7 @@ const generateInvoice = async (req, res) => {
       });
     });
 
-    // Draw table content
+
     doc.font('Helvetica');
     let tableY = tableTop + 25;
 
@@ -544,7 +543,6 @@ const generateInvoice = async (req, res) => {
 
     doc.moveDown(2);
 
-    // Add totals
     if (order.discountAmount) {
       doc.text(`Total Discount: ₹${order.discountAmount.toFixed(2)}`, {
         align: 'right'
@@ -565,7 +563,7 @@ const generateInvoice = async (req, res) => {
          align: 'center'
        });
 
-    // Finalize the PDF
+
     doc.end();
 
   } catch (error) {

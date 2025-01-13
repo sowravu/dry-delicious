@@ -29,6 +29,9 @@ const loginload = async (req, res) => {
 
 const loadDashboard = async (req, res) => {
   try {
+    const startDate = req.query.startDate;
+const endDate = req.query.endDate;
+
     const admin = req.session.adminId;
     const filter = req.query.filter || "All";
     console.log("filter is", filter);
@@ -45,6 +48,7 @@ const loadDashboard = async (req, res) => {
     let dateFilter = {};
     if (filter === "Today") {
       const startOfDay = new Date(now);
+      console.log("start day is is ",startOfDay)
       startOfDay.setHours(0, 0, 0, 0);
       dateFilter = { createdAt: { $gte: startOfDay } };
     } else if (filter === "This Week") {
@@ -60,6 +64,17 @@ const loadDashboard = async (req, res) => {
       const startOfYear = new Date(now.getFullYear(), 0, 1);
       dateFilter = { createdAt: { $gte: startOfYear } };
     }
+    if (filter === "Custom") {
+      if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // Include the full day for the end date
+        dateFilter = { createdAt: { $gte: start, $lte: end } };
+      } else {
+        return res.status(400).send("Please provide both start and end dates for the custom filter.");
+      }
+    }
+    
 
     const baseQuery = {
       ...dateFilter,
@@ -170,6 +185,8 @@ const loadDashboard = async (req, res) => {
     const productCount = await Product.countDocuments();
    
     return res.render("dashboard", {
+      startDate,
+      endDate,
       admin: adminData,
       orders,
       filter,
@@ -307,7 +324,11 @@ const downloadPDF = async (req, res) => {
   try {
     const admin = req.session.adminId;
     const filter = req.query.filter || "All";
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
 
+    console.log("startDate is",startDate)
+    console.log("endDate",endDate)
     if (admin) {
       let dateFilter = {};
       const now = new Date();
@@ -325,8 +346,14 @@ const downloadPDF = async (req, res) => {
       } else if (filter === "Yearly") {
         const startOfYear = new Date(now.getFullYear(), 0, 1);
         dateFilter = { createdAt: { $gte: startOfYear } };
+      }else if (filter === "Custom" && startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // Include the full day for the end date
+        dateFilter = { createdAt: { $gte: start, $lte: end } };
+      } else if (filter === "Custom") {
+        return res.status(400).send("Please provide both start and end dates for the custom filter.");
       }
-
       const orders = await Order.find({
         ...dateFilter,
         payment_status: "success",
@@ -424,7 +451,8 @@ const downloadExcel = async (req, res) => {
   try {
     const admin = req.session.adminId;
     const filter = req.query.filter || "All";
-
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
     if (admin) {
       let dateFilter = {};
       const now = new Date();
@@ -442,7 +470,17 @@ const downloadExcel = async (req, res) => {
       } else if (filter === "Yearly") {
         const startOfYear = new Date(now.getFullYear(), 0, 1);
         dateFilter = { createdAt: { $gte: startOfYear } };
+      }else if (filter === "Custom") {
+        if (startDate && endDate) {
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          end.setHours(23, 59, 59, 999); // Include the full day for the end date
+          dateFilter = { createdAt: { $gte: start, $lte: end } };
+        } else {
+          return res.status(400).send("Please provide both start and end dates for the custom filter.");
+        }
       }
+
 
       const orders = await Order.find({
         ...dateFilter,
@@ -692,16 +730,17 @@ const userUnblock = async (req, res) => {
 const addCategories = async (req, res) => {
   try {
     
-    const name = req.body.name;
+    const name = req.body.name?.trim();
     const Description = req.body.Description;
-    const categoriesData = await Category.findOne({ categoryName: name });
-
+    const capitalizedName = name.toUpperCase();
+    const categoriesData = await Category.findOne({ categoryName: capitalizedName });
+    console.log("capitalizedName",capitalizedName)
     if (categoriesData) {
      req.flash("error_msg","category is already here")
      res.redirect("/admin/categories")
     } else {
       const savecategoriesData = await new Category({
-        categoryName: name,
+        categoryName: capitalizedName,
         Description: Description,
         isDelete: false,
       });
@@ -717,7 +756,9 @@ const addCategories = async (req, res) => {
 // Edit Category Controller
 const editCategories = async (req, res) => {
   try {
-    const name = req.body.name;
+    const name = req.body.name?.trim();
+
+
     const Description = req.body.description;
 
     const id = req.body.id;

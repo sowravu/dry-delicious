@@ -1,8 +1,5 @@
 const CartItem = require("../../models/cartModel");
 const User = require("../../models/userModel");
-const Brand = require("../../models/brandModel");
-const Category = require("../../models/CategoryModel");
-const address = require("../../models/addressModel");
 const Product = require("../../models/productsModel");
 const StatusCodes = require("../../utils/statusCodes")
 const Order = require("../../models/orderModel");
@@ -14,7 +11,7 @@ const Transaction = require('../../models/transactionModel');
 const loadOrders = async (req, res) => {
     try {
       
-      const orders = await Order.find({}).lean();
+      const orders = await Order.find({}).lean().sort({ createdAt: -1 });
       res.render("orderlist", { orders: orders });
     } catch (error) {
       console.error("Error fetching orders:", error.message);
@@ -22,8 +19,6 @@ const loadOrders = async (req, res) => {
     }
   };
   
- 
-
   const loadorderdetail = async (req, res) => {
     try {
         const orderid = req.query.orderid;
@@ -191,8 +186,6 @@ for(let i=0 ; i<changeorderStatus.items.length;i++){
     }
 
 }
-
-
       }
         const transaction = new Transaction({
             userId: finduser._id,
@@ -243,8 +236,11 @@ const RejectReturn=async(req,res)=>{
                const items=changeorderStatus.items.find(option =>option.size===findreturnorder.size);
   
                if(items){
+
                   items.order_status='Return Rejected'  
+
                   await changeorderStatus.save();
+
                   req.session.message = {
                     icon: "success",
                     text: "return is successfully Rejected.",
@@ -262,11 +258,9 @@ const RejectReturn=async(req,res)=>{
 
           }
 
-       
-
     } catch (error) {
            console.log(error)
-     
+           res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
 
     }
 }
@@ -274,7 +268,6 @@ const RejectReturn=async(req,res)=>{
 
 
 module.exports={
-   
     RejectReturn,
     ApproveReturn,
     loadreturn,

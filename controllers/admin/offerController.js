@@ -97,6 +97,7 @@ const removeoffer = async (req, res) => {
     }
   } catch (error) {
     console.log(error)
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 }
 const loadcategoryoffers = async (req, res) => {
@@ -107,7 +108,7 @@ const loadcategoryoffers = async (req, res) => {
     return res.render("categoryoffer", { category: categories, offers });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 };
 
@@ -126,10 +127,28 @@ const addcategoryoffers = async (req, res) => {
       return res.redirect("/admin/category-offer");
     }
 
-    
+
     const findcategory = await category.findById(categorySelect);
     console.log("findcategory id id ", findcategory);
-    if (!findcategory) return res.status(404).send("Category not found");
+    if (!findcategory) {
+      req.session.message = {
+        icon: "error",
+        text: "Category not found",
+      };
+      return res.redirect("/admin/category-offer");
+
+    }
+
+
+    const now = new Date();
+    const endDate = new Date(categoryOfferEndDate)
+    if (endDate <= now) {
+      req.session.message = {
+        icon: "error",
+        text: "Expiration date must be in the future",
+      };
+      return res.redirect("/admin/category-offer");
+    }
 
     const newOffer = new CategoryOffer({
       type: "Category",
@@ -142,13 +161,13 @@ const addcategoryoffers = async (req, res) => {
 
     await newOffer.save();
 
-   
+
     const products = await product.find({ productCategory: findcategory._id, is_delete: false });
     for (const product of products) {
       product.weightoptions.forEach((option) => {
-       
+
         if (!option.originalSalesPrice) {
-          option.originalSalesPrice = option.salesPrice; 
+          option.originalSalesPrice = option.salesPrice;
         }
         option.salesPrice = Math.round(option.salesPrice - (option.salesPrice * categoryOfferPercentage) / 100);
       });
@@ -163,7 +182,7 @@ const addcategoryoffers = async (req, res) => {
     return res.redirect("/admin/category-offer");
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 };
 
@@ -171,7 +190,7 @@ const removecategoryoffer = async (req, res) => {
   try {
     const { offerId } = req.body;
 
-    
+
     const offer = await CategoryOffer.findById(offerId);
     console.log("offer is ", offer);
     if (!offer) return res.status(404).send("Offer not found");
@@ -179,13 +198,13 @@ const removecategoryoffer = async (req, res) => {
     offer.isActive = false;
     await offer.save();
 
-   
+
     const products = await product.find({ productCategory: offer.categoryId, is_delete: false });
     for (const product of products) {
       product.weightoptions.forEach((option) => {
         if (option.originalSalesPrice) {
-          option.salesPrice = option.originalSalesPrice; 
-          delete option.originalSalesPrice; 
+          option.salesPrice = option.originalSalesPrice;
+          delete option.originalSalesPrice;
         }
       });
       await product.save();
@@ -199,7 +218,7 @@ const removecategoryoffer = async (req, res) => {
     return res.redirect("/admin/category-offer");
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 };
 

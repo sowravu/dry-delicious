@@ -50,7 +50,13 @@ const addcoupon = async (req, res) => {
 
         const expiry = new Date(expirationDate);
         if (expiry <= new Date()) {
-            return res.status(400).json({ message: 'Expiration date must be in the future' });
+            
+        req.session.message = {
+            icon: "error",
+            text: "Expiration date must be in the future",
+          };
+
+          return res.redirect("/admin/coupon")
         }
 
         
@@ -79,16 +85,42 @@ const addcoupon = async (req, res) => {
 
     } catch (error) {
         console.error('Error creating coupon:', error);
-        return res.status(500).json({ message: 'An error occurred while creating the coupon' });
+        req.session.message = {
+            icon: "error",
+            text: "An error occurred while creating the coupon",
+          };
+
+          return res.redirect("/admin/coupon")
     }
 };
 
-module.exports = { addcoupon };
+
+const deletecoupon=async(req,res)=>{
+    try {
+         const id=req.query.id;
+         if(id){
+            const findcouponandDelete=await Coupon.findByIdAndDelete(id)
+            req.session.message = {
+                icon: "success",
+                text: "coupon deleted sucessfully",
+              };
+    
+              return res.redirect("/admin/coupon")
+         }
+       
+        
+
+    } catch (error) {
+        console.log(error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error for deleteing  ")
+    }
+}
 
 
 
 
 module.exports={
     addcoupon,
-    loadcoupon
+    loadcoupon,
+    deletecoupon
 }

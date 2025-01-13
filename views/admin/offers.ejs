@@ -83,12 +83,9 @@
                         <td>
                         
                             <!-- Remove Button -->
-                             <form action="/admin/remove-offer?id=<%= offers.productId %>" method="post">
-
-                                 <!-- <a href="/admin/remove-offer" class="btn btn-danger">Remove</a> -->
-                                 <button type="submit"  class="btn btn-danger"  >Remove</button>
-
-                             </form>
+                            <form id="removeOfferForm" action="/admin/remove-offer?id=<%= offers.productId %>" method="post">
+                                <button type="button" class="btn btn-danger" id="removeOfferButton">Remove</button>
+                              </form>
 
                     </tr>
                     <% }) %>
@@ -98,24 +95,37 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
-
-
-
-
-
-
-<% if (message) { %>
-    <script>
-      Swal.fire({
-        icon: '<%= message.icon %>',
-        text: '<%= message.text %>',
-        toast: true,
-        position: 'top-right',
-        showConfirmButton: false,
-        timerProgressBar: true,
-        timer: 1000
-      });
-    </script>
-  <% } %>
+    <% if (message) { %>
+        <script>
+          Swal.fire({
+            icon: '<%= message.icon %>',
+            text: '<%= message.text %>',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1000
+          });
+        </script>
+        <% } %>
+        
+        <script>
+          document.getElementById('removeOfferButton').addEventListener('click', function () {
+            Swal.fire({
+              title: 'Are you sure?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                document.getElementById('removeOfferForm').submit(); // Submit the form if confirmed
+              }
+            });
+          });
+        </script>

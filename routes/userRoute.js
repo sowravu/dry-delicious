@@ -92,6 +92,12 @@ user_route.post('/create-razorpay-order', userAuth, WalletController.createOrder
 user_route.post('/verify-paymentt', userAuth, WalletController.verifyPayment);
 
 
+
+
+
+
+
+
 user_route.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: "/" }), (req, res) => {
   if(req.user && req.user.isVerified){
     req.session.users = req.user;

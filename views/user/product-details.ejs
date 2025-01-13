@@ -328,7 +328,7 @@
                                     <!-- start product image -->
                                     <div class="product-image">
                                         <!-- start product image -->
-                                        <a href="#">
+                                        <a href="/product-details?id=<%= relativeProducts[i]._id %>">
                                             <!-- image -->
                                             <img class="primary blur-up lazyload"
                                                 data-src="/uploads/<%= relativeProducts[i].productImage[0] %>"
@@ -342,9 +342,7 @@
                                                 title="product">
                                             <!-- End hover image -->
                                             <!-- product label -->
-                                            <div class="product-labels rectangular"><span
-                                                    class="lbl on-sale">-16%</span> <span
-                                                    class="lbl pr-label1">new</span></div>
+                                          
                                             <!-- End product label -->
                                         </a>
                                         <!-- end product image -->
@@ -352,14 +350,8 @@
                                         <!-- Start product button -->
 
                                         <div class="button-set">
-                                            <a href="#" title="Quick View" class="quick-view" tabindex="0">
-                                                <i class="icon anm anm-search-plus-r"></i>
-                                            </a>
-                                            <div class="wishlist-btn">
-                                                <a class="wishlist add-to-wishlist" href="wishlist.html">
-                                                    <i class="icon anm anm-heart-l"></i>
-                                                </a>
-                                            </div>
+                                        
+                                           
                                         </div>
                                         <!-- end product button -->
                                     </div>

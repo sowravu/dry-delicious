@@ -5,17 +5,84 @@
     <!--Search Form Drawer-->
     <div class="search">
       <div class="search__form">
-        <form class="search-bar__form" action="#">
+        <form class="search-bar__form" action="/shop" method="GET">
+          <input type="hidden" name="page" value="1">
+          <input type="hidden" name="limit" value="<%= limit %>">
+          <% selectedCategories.forEach(function(category) { %>
+            <input type="hidden" name="category" value="<%= category %>">
+          <% }); %>
+          <% selectedBrands.forEach(function(brand) { %>
+            <input type="hidden" name="brand" value="<%= brand %>">
+          <% }); %>
+          <% if (selectedSort) { %>
+            <input type="hidden" name="sort" value="<%= selectedSort %>">
+          <% } %>
           <button class="go-btn search__button" type="submit"><i class="icon anm anm-search-l"></i></button>
-          <input id="myInput" class="search__input" onkeyup="myFunction()" type="search"
-            placeholder="Search entire store..." aria-label="Search" autocomplete="off">
+          <input id="myInput" name="search" class="search__input" type="search"
+            value="<%= searchQuery %>" placeholder="Search entire store..." aria-label="Search" autocomplete="off">
         </form>
         <button type="button" class="search-trigger close-btn"><i class="icon anm anm-times-l"></i></button>
       </div>
     </div>
+    
     <!--End Search Form Drawer-->
     <!--Top Header-->
-     
+    <style>
+      .pagination-container .page-link-prev:hover,
+      .pagination-container .page-link-next:hover,
+      .pagination-container .page-link-number:hover {
+        background-color: #f0f0f0 !important;
+      }
+
+
+      .page-item-number {
+  margin-right: 10px;
+}
+
+.page-link-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #000;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  color: #000;
+}
+
+.page-link-number.active {
+  background-color: #000;
+  color: #fff;
+
+
+  
+}
+.page-link-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: 1px solid #000;
+        border-radius: 50%;
+        background-color: #fff;
+        color: #000;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .page-link-number.active {
+        background-color: #000;
+        color: #fff;
+    }
+
+
+
+
+    </style>
 
     <!--End Top Header-->
     <!--Header-->
@@ -197,101 +264,93 @@
       <div id="page-content">
         <!--Collection Banner-->
         <div class="collection-header">
-          <div class="collection-hero">
-            <div class="collection-hero__image"><img class="blur-up lazyload" height="250px"
-                data-src="assets/images/cat-women1.jpg" src="assets/images/cat-women1.jpg" alt="Women" title="Women" />
+            <div class="collection-hero">
+                <div class="collection-hero__image">
+                    <img class="blur-up lazyload" height="250px" data-src="assets/images/cat-women1.jpg" src="assets/images/cat-women1.jpg" alt="Women" title="Women" />
+                </div>
+                <div class="collection-hero__title-wrapper">
+                    <h1 class="collection-hero__title page-width">All Products</h1>
+                </div>
             </div>
-            <div class="collection-hero__title-wrapper">
-              <h1 class="collection-hero__title page-width">All Products</h1>
-            </div>
-          </div>
         </div>
         <br>
         <!--End Collection Banner-->
-        <form id="filterForm" method="GET" action="/shop">
-          <div class="container">
+        
+        <div class="container">
             <div class="row">
-              <!--Sidebar-->
-              <div class="col-12 col-sm-12 col-md-3 col-lg-3 sidebar filterbar">
-                <div class="closeFilter d-block d-md-none d-lg-none"><i class="icon icon anm anm-times-l"></i></div>
-                <div class="sidebar_tags">
-                  <!--Categories-->
-                  <div class="sidebar_widget categories filter-widget">
-                    <div class="widget-title">
-                      <h2>Categories</h2>
-                    </div>
-                    <div class="widget-content">
-                      <ul class="sidebar_categories">
-                        <% for(let i=0; i < categories.length; i++) {%>
-                          <li>
-                            <input type="checkbox" name="category" value="<%= categories[i]._id %>"
-                              id="category_<%= i %>" <%=selectedCategories.includes(categories[i]._id.toString())
-                              ? 'checked' : '' %> >
-                            <label for="category_<%= i %>">
-                              <%= categories[i].categoryName %>
-                            </label>
-                          </li>
-
-                          <% } %>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="sidebar_widget categories filter-widget">
-                    <div class="widget-title">
-                      <h2>Brands</h2>
-                    </div>
-                    <div class="widget-content">
-                      <ul class="sidebar_categories">
-                        <% for(let i=0; i < brand.length; i++) {%>
-                          <li>
-                            <input type="checkbox" name="brand" value="<%= brand[i]._id %>" id="brand_<%= i %>"
-                            <%=selectedBrands.includes(brand[i]._id.toString()) ? "checked" : "" %>
-                            <label for="brand_<%= i %>">
-                              <%= brand[i].brandname %>
-                            </label>
-                          </li>
-
-                          <% } %>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div class="sidebar_widget filterBox filter-widget">
-                    <div class="widget-title">
-                      <h2>Sort option</h2>
-                    </div>
-                    <ul>
-                      <li>
-                        <input type="radio" name="sort" value="priceAsc" id="priceAsc" <%=selectedSort==="priceAsc"
-                          ? "checked" : "" %> >
-                        <label for="priceAsc">Price: Low to High</label>
-                        <br>
-                        <input type="radio" name="sort" value="priceDesc" id="priceDesc">
-                        <label for="priceDesc">Price: High to Low</label>
-                        <br>
-                        <input type="radio" name="sort" value="nameAsc" id="nameAsc">
-                        <label for="nameAsc">Name: A to Z</label>
-                        <br>
-                        <input type="radio" name="sort" value="nameDesc" id="nameDesc">
-                        <label for="nameDesc">Name: Z to A</label>
-                        <br>
-                      </li>
-
-
-                    </ul>
-
-
-                  </div>
-
-              
-                  <button type="submit" class="btn btn-primary">Apply Filter</button>
-
-
-                  <div class="container" style="position: relative; height: 100vh;">
-                    <a href="/shop" style="
+                <!--Sidebar-->
+                <div class="col-12 col-sm-12 col-md-3 col-lg-3 sidebar filterbar">
+                    <div class="closeFilter d-block d-md-none d-lg-none"><i class="icon icon anm anm-times-l"></i></div>
+                    <div class="sidebar_tags">
+                        <form id="filterForm" method="GET" action="/shop">
+                            <input type="hidden" name="page" value="<%= currentpage %>">
+                            
+                            <!--Categories-->
+                            <div class="sidebar_widget categories filter-widget">
+                                <div class="widget-title"><h2>Categories</h2></div>
+                                <div class="widget-content">
+                                    <ul class="sidebar_categories">
+                                        <% for(let i=0; i < categories.length; i++) { %>
+                                            <li>
+                                                <input type="checkbox" name="category" value="<%= categories[i]._id %>"
+                                                    id="category_<%= i %>" <%= selectedCategories.includes(categories[i]._id.toString()) ? 'checked' : '' %>>
+                                                <label for="category_<%= i %>"><%= categories[i].categoryName %></label>
+                                            </li>
+                                        <% } %>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!--Brands-->
+                            <div class="sidebar_widget categories filter-widget">
+                                <div class="widget-title"><h2>Brands</h2></div>
+                                <div class="widget-content">
+                                    <ul class="sidebar_categories">
+                                        <% for(let i=0; i < brand.length; i++) { %>
+                                            <li>
+                                                <input type="checkbox" name="brand" value="<%= brand[i]._id %>"
+                                                    id="brand_<%= i %>" <%= selectedBrands.includes(brand[i]._id.toString()) ? 'checked' : '' %>>
+                                                <label for="brand_<%= i %>"><%= brand[i].brandname %></label>
+                                            </li>
+                                        <% } %>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!--Sort Options-->
+                            <div class="sidebar_widget filterBox filter-widget">
+                                <div class="widget-title"><h2>Sort option</h2></div>
+                                <ul>
+                                    <li>
+                                        <input type="radio" name="sort" value="priceAsc" id="priceAsc" <%= selectedSort === "priceAsc" ? "checked" : "" %>>
+                                        <label for="priceAsc">Price: Low to High</label>
+                                    </li>
+                                    <li>
+                                        <input type="radio" name="sort" value="priceDesc" id="priceDesc" <%= selectedSort === "priceDesc" ? "checked" : "" %>>
+                                        <label for="priceDesc">Price: High to Low</label>
+                                    </li>
+                                    <li>
+                                        <input type="radio" name="sort" value="nameAsc" id="nameAsc" <%= selectedSort === "nameAsc" ? "checked" : "" %>>
+                                        <label for="nameAsc">Name: A to Z</label>
+                                    </li>
+                                    <li>
+                                        <input type="radio" name="sort" value="nameDesc" id="nameDesc" <%= selectedSort === "nameDesc" ? "checked" : "" %>>
+                                        <label for="nameDesc">Name: Z to A</label>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <!--Search Box-->
+                            
+                            
+                            <button type="submit" class="btn btn-primary">Apply Filter</button>
+                        </form>
+                        
+                        <div class="container" style="position: relative;">
+                            <a href="/shop" style="
                                 position: absolute;
-                                top: -37px;    /* Adjust top position */
-                                right: 20px;  /* Adjust right position */
+                                top: -37px;
+                                right: 20px;
                                 display: inline-flex;
                                 justify-content: center;
                                 height: 38px;
@@ -304,173 +363,148 @@
                                 font-size: 1rem;
                                 transition: background-color 0.3s ease;
                             " onmouseover="this.style.backgroundColor='#0056b3'"
-                      onmouseout="this.style.backgroundColor='#007bff'">
-                      Clear Filter
-                    </a>
-                  </div>
-
-
-
-
-                </div>
-              </div>
-        </form>
-        <!--End Sidebar-->
-        <!--Main Content-->
-
-
-
-        <div class="col-12 col-sm-12 col-md-9 col-lg-9 main-col">
-          <div class="productList">
-            <!--Toolbar-->
-            <button type="button" class="btn btn-filter d-block d-md-none d-lg-none"> Product Filters</button>
-            <div class="toolbar">
-              <div class="filters-toolbar-wrapper">
-                <div class="row">
-                  <div class="col-4 col-md-4 col-lg-4 text-right">
-                    <div class="filters-toolbar__item">
-
-                      <input class="collection-header__default-sort" type="hidden" value="manual">
+                               onmouseout="this.style.backgroundColor='#007bff'">
+                                Clear Filter
+                            </a>
+                        </div>
                     </div>
-                  </div>
-
                 </div>
-              </div>
-            </div>
-            <!--End Toolbar-->
-            <div class="grid-products grid--view-items">
-              <div class="row">
-                <% product.forEach(item => { %>
-                  <div class="col-6 col-sm-6 col-md-4 col-lg-3 item">
-                    <!-- Start product image -->
-                    <div class="product-image" style="position: relative; overflow: hidden;">
-                      <a href="/product-details?id=<%= item._id %>">
-                        <!-- Primary image -->
-                        <img style="height: 180px; width: 250px;" class="primary blur-up lazyload"
-                          data-src="/uploads/<%= item.productImage[0] %>" src="/uploads/<%= item.productImage[0] %>"
-                          alt="<%= item.productname %>" title="<%= item.productname %>">
-                        <!-- Hover image -->
-                        <% if (item.productImage.length > 1) { %>
-                          <img style="height: 180px; width: 250px;" class="hover blur-up lazyload"
-                            data-src="/uploads/<%= item.productImage[1] %>" src="/uploads/<%= item.productImage[1] %>"
-                            alt="<%= item.productname %>" title="<%= item.productname %>">
-                        <% } %>
-                      </a>
-            
-                      <!-- Wishlist button -->
-                      <div class="button-set">
-                        <% 
-                          let isProductInWishlist = false;
-                          let isRed = false; // Initialize the isRed variable
-                          if (findwishlist && findwishlist.products) {
-                            findwishlist.products.forEach(wishlistItem => {
-                              if (wishlistItem.productId.toString() === item._id.toString()) {
-                                isProductInWishlist = true;
-                                isRed = wishlistItem.isRed; // Assign isRed based on the wishlist item
-                              }
-                            });
-                          }
-                        %>
-                        <% if (isProductInWishlist && isRed) { %>
-                          <!-- Product is in wishlist and is red (filled heart) -->
-                          <div class="wishlist-btn" data-product-id="<%= item._id %>">
-                            <i class="fas fa-heart" style="font-size: 20px; color: red; cursor: pointer; transition: color 0.3s ease;"></i>
-                          </div>
-                        <% } else { %>
-                          <!-- Product is not in wishlist, or not red (empty heart) -->
-                          <div class="wishlist-btn" data-product-id="<%= item._id %>">
-                            <i class="far fa-heart" style="font-size: 20px; color: rgb(242, 9, 9); cursor: pointer; transition: color 0.3s ease;"></i>
-                          </div>
-                        <% } %>
-                      </div>
-                    </div>
-                    <!-- End product image -->
-            
-                    <!-- Start product details -->
-                    <div class="product-details text-center">
-                      <!-- Product name -->
-                      <div class="product-name">
-                        <a class="product-link" href="/product-details?id=<%= item._id %>">
-                          <%= item.productname %>
-                        </a>
-                      </div>
-                      <!-- End product name -->
-            
-                      <!-- Product price -->
-                      <div class="product-price">
-                        <% 
-                            let price = item.weightoptions.find(option => option.stock > 0);
-                        %>
-                        <% if (price) { %>
-                            <span class="price">₹<%= price.salesPrice %></span>
-                            <span class="old-price" style="text-decoration: line-through; color: #999;">₹<%= price.Actualprice %></span>
-                        <% } else { %>
-                            <span class="price">Out of Stock</span>
-                        <% } %>
+                <!--End Sidebar-->
+                
+                <!--Main Content-->
+                <div class="col-12 col-sm-12 col-md-9 col-lg-9 main-col">
+                    <div class="productList">
+                        <!--Toolbar-->
+                        <button type="button" class="btn btn-filter d-block d-md-none d-lg-none">Product Filters</button>
+                        <div class="toolbar">
+                            <div class="filters-toolbar-wrapper">
+                                <div class="row">
+                                    <div class="col-4 col-md-4 col-lg-4 text-right">
+                                        <div class="filters-toolbar__item">
+                                            <input class="collection-header__default-sort" type="hidden" value="manual">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--End Toolbar-->
+                        
+                        <div class="grid-products grid--view-items">
+                            <div class="row">
+                                <% products.forEach(item => { %>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 item">
+                                        <!-- Start product image -->
+                                        <div class="product-image" style="position: relative; overflow: hidden;">
+                                            <a href="/product-details?id=<%= item._id %>">
+                                                <!-- Primary image -->
+                                                <img style="height: 180px; width: 250px;" class="primary blur-up lazyload"
+                                                    data-src="/uploads/<%= item.productImage[0] %>" src="/uploads/<%= item.productImage[0] %>"
+                                                    alt="<%= item.productname %>" title="<%= item.productname %>">
+                                                <!-- Hover image -->
+                                                <% if (item.productImage.length > 1) { %>
+                                                    <img style="height: 180px; width: 250px;" class="hover blur-up lazyload"
+                                                        data-src="/uploads/<%= item.productImage[1] %>" src="/uploads/<%= item.productImage[1] %>"
+                                                        alt="<%= item.productname %>" title="<%= item.productname %>">
+                                                <% } %>
+                                            </a>
+                                            
+                                            <!-- Wishlist button -->
+                                            <div class="button-set">
+                                                <% 
+                                                    let isProductInWishlist = false;
+                                                    let isRed = false;
+                                                    if (findwishlist && findwishlist.products) {
+                                                        findwishlist.products.forEach(wishlistItem => {
+                                                            if (wishlistItem.productId.toString() === item._id.toString()) {
+                                                                isProductInWishlist = true;
+                                                                isRed = wishlistItem.isRed;
+                                                            }
+                                                        });
+                                                    }
+                                                %>
+                                                <% if (isProductInWishlist && isRed) { %>
+                                                    <div class="wishlist-btn" data-product-id="<%= item._id %>">
+                                                        <i class="fas fa-heart" style="font-size: 20px; color: red; cursor: pointer; transition: color 0.3s ease;"></i>
+                                                    </div>
+                                                <% } else { %>
+                                                    <div class="wishlist-btn" data-product-id="<%= item._id %>">
+                                                        <i class="far fa-heart" style="font-size: 20px; color: rgb(242, 9, 9); cursor: pointer; transition: color 0.3s ease;"></i>
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                        <!-- End product image -->
+                                        
+                                        <!-- Start product details -->
+                                        <div class="product-details text-center">
+                                            <!-- Product name -->
+                                            <div class="product-name">
+                                                <a class="product-link" href="/product-details?id=<%= item._id %>">
+                                                    <%= item.productname %>
+                                                </a>
+                                            </div>
+                                            <!-- End product name -->
+                                            
+                                            <!-- Product price -->
+                                            <div class="product-price">
+                                                <% 
+                                                    let price = item.weightoptions.find(option => option.stock > 0);
+                                                %>
+                                                <% if (price) { %>
+                                                    <span class="price">₹<%= price.salesPrice %></span>
+                                                    <span class="old-price" style="text-decoration: line-through; color: #999;">₹<%= price.Actualprice %></span>
+                                                <% } else { %>
+                                                    <span class="price">Out of Stock</span>
+                                                <% } %>
+                                            </div>
+                                            <!-- End product price -->
+                                        </div>
+                                        <!-- End product details -->
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
                     </div>
                     
-                      <!-- End product price -->
+                    <!-- Pagination -->
+                    <div class="pagination-container" style="margin-top: 20px; margin-bottom: 40px;">
+                        <nav aria-label="Pagination">
+                            <ul class="page-list" style="display: flex; justify-content: center; padding: 0; list-style-type: none;">
+                              <% if (currentpage > 1) { %>
+                                <li class="page-item-prev" style="margin-right: 10px;">
+                                  <a class="page-link-prev" href="?page=<%= currentpage - 1 %>&limit=<%= limit %><%= selectedCategories.map(cat => '&category=' + cat).join('') %><%= selectedBrands.map(brand => '&brand=' + brand).join('') %><%= selectedSort ? '&sort=' + selectedSort : '' %><%= searchQuery ? '&search=' + searchQuery : '' %>"
+                                    style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid #000; border-radius: 50%; background-color: #fff; color: #000; text-decoration: none; transition: all 0.3s ease;">
+                                    <i class="icon-prev" style="font-size: 18px;">&#8249;</i>
+                                  </a>
+                                </li>
+                              <% } %>
+                        
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                  <li class="page-item-number <%= i === currentpage ? 'page-active' : '' %>">
+                                      <a class="page-link-number <%= i === currentpage ? 'active' : '' %>" 
+                                         href="?page=<%= i %>&limit=<%= limit %><%= selectedCategories.map(cat => '&category=' + cat).join('') %><%= selectedBrands.map(brand => '&brand=' + brand).join('') %><%= selectedSort ? '&sort=' + selectedSort : '' %>">
+                                          <%= i %>
+                                      </a>
+                                  </li>
+                              <% } %>
+                        
+                              <% if (currentpage < totalPages) { %>
+                                <li class="page-item-next" style="margin-left: 10px;">
+                                  <a class="page-link-next" href="?page=<%= currentpage + 1 %>&limit=<%= limit %><%= selectedCategories.map(cat => '&category=' + cat).join('') %><%= selectedBrands.map(brand => '&brand=' + brand).join('') %><%= selectedSort ? '&sort=' + selectedSort : '' %><%= searchQuery ? '&search=' + searchQuery : '' %>"
+                                    style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid #000; border-radius: 50%; background-color: #fff; color: #000; text-decoration: none; transition: all 0.3s ease;">
+                                    <i class="icon-next" style="font-size: 18px;">&#8250;</i>
+                                  </a>
+                                </li>
+                              <% } %>
+                            </ul>
+                        </nav>
                     </div>
-                    <!-- End product details -->
-                  </div>
-                <% }); %>
-              </div>
+                    <!-- End Pagination -->
+                </div>
+                <!--End Main Content-->
             </div>
-            
-            
-            
-            
-
-
-          </div>
-          <div class="infinitpaginOuter">
-            <!-- <div class="infinitpagin">	
-                            <a href="#" class="btn loadMore">Load More</a>
-
-                        </div> -->
-            <div class="pagination-container" style="margin-top: 20px; margin-bottom: 40px;">
-              <nav aria-label="Pagination">
-                <ul class="page-list" style="display: flex; justify-content: center; padding: 0;">
-
-                  <% if (currentpage> 1) { %>
-                    <li class="page-item-prev" style="margin-right: 10px;">
-                      <a class="page-link-prev" href="?page=<%= currentpage - 1 %>&limit=<%= limit %>"
-                        style="display: flex; align-items: center; padding: 10px; border: 1px solid #ccc; border-radius: 50%; background-color: #f1f1f1;">
-                        <i class="icon-prev" style="font-size: 14px;">&#8249;</i>
-                      </a>
-                    </li>
-                    <% } %>
-
-                      <% for (let i=1; i <=totalPages; i++) { %>
-                        <li class="page-item-number <%= i === currentpage ? 'page-active' : '' %>"
-                          style="margin-right: 10px;">
-                          <a class="page-link-number" href="?page=<%= i %>&limit=<%= limit %>"
-                            style="padding: 10px 15px; border: 1px solid #ccc; border-radius: 50%;" <%=i===currentpage
-                            ? 'background-color: #007bff; color: white;' : 'background-color: #f1f1f1; color: #007bff;'
-                            %>">
-                            <%= i %>
-                          </a>
-                        </li>
-                        <% } %>
-
-                          <% if (currentpage < totalPages) { %>
-                            <li class="page-item-next" style="margin-left: 10px;">
-                              <a class="page-link-next" href="?page=<%= currentpage + 1 %>&limit=<%= limit %>"
-                                style="display: flex; align-items: center; padding: 10px; border: 1px solid #ccc; border-radius: 50%; background-color: #f1f1f1;">
-                                <i class="icon-next" style="font-size: 14px;">&#8250;</i>
-                              </a>
-                            </li>
-                            <% } %>
-
-                </ul>
-              </nav>
-            </div>
-
-          </div>
         </div>
-
-        <!--End Main Content-->
-      </div>
+    </div>
   </div>
 
   </div>
@@ -741,15 +775,6 @@
       </div>
     </div>
   </div>
-
-
-
-
-
-
-
-
-
   <!-- Including Jquery -->
   <script src="assets/js/vendor/jquery-3.3.1.min.js"></script>
   <script src="assets/js/vendor/jquery.cookie.js"></script>
@@ -770,29 +795,12 @@
 
 
   <script>
-    function myFunction() {
-      // Declare variables
-      var input, filter, items, productName, txtValue;
-      input = document.getElementById('myInput');
-      filter = input.value.toUpperCase();
-      items = document.getElementsByClassName("item");
-
-      // Loop through all items and show/hide based on search query
-      for (var i = 0; i < items.length; i++) {
-        productName = items[i].getElementsByClassName("product-link")[0];
-        txtValue = productName.textContent || productName.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          items[i].style.display = ""; // Show matching items
-        } else {
-          items[i].style.display = "none"; // Hide non-matching items
-        }
-      }
-    }
 
 
 
 
-// Show wishlist button on hover
+
+
 document.querySelectorAll('.product-image').forEach(image => {
   image.addEventListener('mouseenter', function () {
     const wishlistButton = this.querySelector('.wishlist-btn');
@@ -820,8 +828,8 @@ document.querySelectorAll('.wishlist-btn').forEach(button => {
       return;
     }
 
-    // Check current state
-    const isInWishlist = heartIcon.classList.contains('fas'); // Check if filled heart
+    
+    const isInWishlist = heartIcon.classList.contains('fas'); 
 
     try {
       const response = await fetch("/wishlist", {
@@ -834,7 +842,7 @@ document.querySelectorAll('.wishlist-btn').forEach(button => {
 
       if (response.ok) {
         if (isInWishlist) {
-          // Change to empty heart
+        
           heartIcon.classList.remove('fas');
           heartIcon.classList.add('far');
           heartIcon.style.color = 'gray';
@@ -848,7 +856,7 @@ document.querySelectorAll('.wishlist-btn').forEach(button => {
             timer: 1250
           });
         } else {
-          // Change to filled heart
+         
           heartIcon.classList.remove('far');
           heartIcon.classList.add('fas');
           heartIcon.style.color = 'red';

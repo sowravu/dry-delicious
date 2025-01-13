@@ -21,7 +21,7 @@
                     </div>
                 
                     <div class="mb-4">
-                        <label for="discountValue" class="form-label">Discount Value</label>
+                        <label for="discountValue" class="form-label">Discount percentage</label>
                         <input type="number" class="form-control" id="discountValue" name="discountValue" min="0" required>
                         <div class="text-danger mt-1" id="discountValueError"></div>
                     </div>
@@ -139,7 +139,7 @@
                                         <td><%= new Date(coupon.expirationDate).toLocaleDateString() %></td>
                                         <td>
                                            
-                                            <a href="/admin/coupon-delete/<%= coupon._id %>" class="btn btn-sm btn-outline-danger" >Delete</a>
+                                            <a id="coupondelete" data-url="/admin/coupon-delete?id=<%= coupon._id %>" href="javascript:void(0)" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(this)" >Delete</a>
                                         </td>
                                     </tr>
                                 <% }) %>
@@ -155,6 +155,8 @@
         </div>
     </section>
 </main>
+<!-- Include footer if needed -->
+<%- include("../layouts/admin/footer.ejs") %>
 
 <% if (message) { %>
     <script>
@@ -168,8 +170,27 @@
             timer: 1000
         });
     </script>
-<% } %>
+    <% } %>
 
-<!-- Include footer if needed -->
-<%- include("../layouts/admin/footer.ejs") %>
 
+
+    <script>
+       function confirmDelete(element){
+        const deleteurl=element.getAttribute("data-url");
+
+           swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+           }).then((result)=>{
+            if(result.isConfirmed){
+                window.location.href=deleteurl
+            }
+           })
+
+       }
+    </script>

@@ -73,7 +73,6 @@ admin_route.get("/offers",adminAuth,offerController.loadoffers)
 admin_route.post("/offers",adminAuth,offerController.addoffers)
 admin_route.post("/remove-offer",adminAuth,offerController.removeoffer)
 admin_route.get("/category-offer",offerController.loadcategoryoffers)
-
 admin_route.post("/category-offer",offerController.addcategoryoffers)
 admin_route.post("/remove-category-offer",offerController.removecategoryoffer)
 
@@ -87,7 +86,7 @@ admin_route.post("/reject-return",adminAuth,orderController.RejectReturn)
 //coupon management 
 admin_route.get("/coupon",adminAuth,couponController.loadcoupon);
 admin_route.post("/coupon",adminAuth,couponController.addcoupon);
-
+admin_route.get("/coupon-delete",adminAuth,couponController.deletecoupon)
 
 
 
