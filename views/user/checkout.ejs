@@ -302,50 +302,59 @@
                                         <p class="small text-muted mb-3">
                                             If you have shopped with us before, please enter your details below. New customers can proceed to the Billing & Shipping section.
                                         </p>
-                                        <form action="/checkoutAddressAdd" method="post">
+                                        <form id="checkoutForm" action="/checkoutAddressAdd" method="post" onsubmit="return validateForm()">
                                             <div class="mb-2">
                                                 <label class="form-label small">Full Name</label>
-                                                <input type="text" name="Fullname" class="form-control form-control-sm">
+                                                <input type="text" id="fullname" name="Fullname" class="form-control form-control-sm">
+                                                <small id="fullnameError" class="text-danger"></small>
                                             </div>
                                             <div class="mb-2">
                                                 <label class="form-label small">Address</label>
-                                                <input type="text" name="Address" class="form-control form-control-sm">
+                                                <input type="text" id="address" name="Address" class="form-control form-control-sm">
+                                                <small id="addressError" class="text-danger"></small>
                                             </div>
                                             <div class="mb-2">
                                                 <label class="form-label small">City</label>
-                                                <input type="text" name="city" class="form-control form-control-sm">
+                                                <input type="text" id="city" name="city" class="form-control form-control-sm">
+                                                <small id="cityError" class="text-danger"></small>
                                             </div>
                                             <div class="mb-2">
                                                 <label class="form-label small">State</label>
-                                                <input type="text" name="State" class="form-control form-control-sm">
+                                                <input type="text" id="state" name="State" class="form-control form-control-sm">
+                                                <small id="stateError" class="text-danger"></small>
                                             </div>
                                             <div class="mb-2">
                                                 <label class="form-label small">Pin Code</label>
-                                                <input type="text" name="pinCode" class="form-control form-control-sm">
+                                                <input type="text" id="pincode" name="pinCode" class="form-control form-control-sm">
+                                                <small id="pincodeError" class="text-danger"></small>
                                             </div>
                                             <div class="mb-2">
                                                 <label class="form-label small">Country</label>
-                                                <input type="text" name="Country" class="form-control form-control-sm">
+                                                <input type="text" id="country" name="Country" class="form-control form-control-sm">
+                                                <small id="countryError" class="text-danger"></small>
                                             </div>
                                             <div class="mb-2">
                                                 <label class="form-label small">Phone</label>
-                                                <input type="text" name="phone" class="form-control form-control-sm">
+                                                <input type="text" id="phone" name="phone" class="form-control form-control-sm">
+                                                <small id="phoneError" class="text-danger"></small>
                                             </div>
                                             <div class="mb-2">
                                                 <span class="form-label small">Address Type</span>
                                                 <div>
                                                     <div class="form-check form-check-inline">
-                                                        <input type="radio" name="addressType" value="Home" class="form-check-input">
+                                                        <input type="radio" id="home" name="addressType" value="Home" class="form-check-input">
                                                         <label class="form-check-label small">Home</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
-                                                        <input type="radio" name="addressType" value="Work" class="form-check-input" checked>
+                                                        <input type="radio" id="work" name="addressType" value="Work" class="form-check-input" checked>
                                                         <label class="form-check-label small">Work</label>
                                                     </div>
                                                 </div>
+                                                <small id="addressTypeError" class="text-danger"></small>
                                             </div>
                                             <button type="submit" class="btn btn-primary btn-sm w-100">Submit</button>
                                         </form>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -1134,3 +1143,86 @@ function closeModal() {
         });
     });
 </script>
+
+
+
+<script>
+    function validateForm() {
+        let isValid = true;
+    
+        // Get form elements
+        const fullname = document.getElementById("fullname");
+        const address = document.getElementById("address");
+        const city = document.getElementById("city");
+        const state = document.getElementById("state");
+        const pincode = document.getElementById("pincode");
+        const country = document.getElementById("country");
+        const phone = document.getElementById("phone");
+        const addressTypeHome = document.getElementById("home");
+        const addressTypeWork = document.getElementById("work");
+    
+        // Error elements
+        const fullnameError = document.getElementById("fullnameError");
+        const addressError = document.getElementById("addressError");
+        const cityError = document.getElementById("cityError");
+        const stateError = document.getElementById("stateError");
+        const pincodeError = document.getElementById("pincodeError");
+        const countryError = document.getElementById("countryError");
+        const phoneError = document.getElementById("phoneError");
+        const addressTypeError = document.getElementById("addressTypeError");
+    
+        // Clear previous errors
+        fullnameError.textContent = "";
+        addressError.textContent = "";
+        cityError.textContent = "";
+        stateError.textContent = "";
+        pincodeError.textContent = "";
+        countryError.textContent = "";
+        phoneError.textContent = "";
+        addressTypeError.textContent = "";
+    
+        // Validate each field
+        if (fullname.value.trim() === "") {
+            fullnameError.textContent = "Full name is required.";
+            isValid = false;
+        }
+    
+        if (address.value.trim() === "") {
+            addressError.textContent = "Address is required.";
+            isValid = false;
+        }
+    
+        if (city.value.trim() === "") {
+            cityError.textContent = "City is required.";
+            isValid = false;
+        }
+    
+        if (state.value.trim() === "") {
+            stateError.textContent = "State is required.";
+            isValid = false;
+        }
+    
+        if (pincode.value.trim() === "" || isNaN(pincode.value) || pincode.value.length !== 6) {
+            pincodeError.textContent = "Valid 6-digit pin code is required.";
+            isValid = false;
+        }
+    
+        if (country.value.trim() === "") {
+            countryError.textContent = "Country is required.";
+            isValid = false;
+        }
+    
+        if (phone.value.trim() === "" || isNaN(phone.value) || phone.value.length !== 10) {
+            phoneError.textContent = "Valid 10-digit phone number is required.";
+            isValid = false;
+        }
+    
+        if (!addressTypeHome.checked && !addressTypeWork.checked) {
+            addressTypeError.textContent = "Please select an address type.";
+            isValid = false;
+        }
+    
+        return isValid;
+    }
+    </script>
+    

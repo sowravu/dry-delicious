@@ -85,6 +85,7 @@ user_route.post("/wishlist",userAuth,wishlistController.addwishlist)
 user_route.delete("/wishlist", userAuth, wishlistController.addwishlist);
 user_route.post("/wishlist",userAuth,wishlistController.addwishlist)
 user_route.post("/wishlisttocart",userAuth,wishlistController.wishlistToCart)
+user_route.get("/wishlist-delete",userAuth,wishlistController.deleteWishlistItem)
 
 //Wallet controller
 user_route.get('/Wallet',userAuth,WalletController.loadWallet)

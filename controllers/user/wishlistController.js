@@ -50,8 +50,9 @@ const addwishlist = async (req, res) => {
       }
       await wishlist.save();
       return res.status(StatusCodes.OK).json({ message: 'Product added to wishlist' });
+
     } else if (req.method === "DELETE") {
-      
+      console.log("req.method is",req.method)
       if (wishlist) {
        
         wishlist.products = wishlist.products.filter(item => item.productId.toString() !== productId);
@@ -132,12 +133,29 @@ const wishlistToCart=async (req,res)=>{
     });
     
   }
-
+}
+const deleteWishlistItem=async(req,res)=>{
+  try {
+    const { wishlistId, productId }=req.query;
+    await Wishlist.updateOne(
+      { _id: wishlistId },
+      { $pull: { products: { productId } } } 
+  );
+  req.session.message = {
+    icon: "success",
+    text: `product removed successfully`,
+  };
+  
+   return res.redirect("/wishlist");
+  } catch (error) {
+    console.log("Error deleting wishlist item:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("server error")
+  }
 }
 
 
-
 module.exports={
+  deleteWishlistItem,
     wishlistToCart,
     loadWishlist,
     addwishlist

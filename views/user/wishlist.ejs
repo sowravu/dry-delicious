@@ -217,11 +217,18 @@
                                 <tbody>
                                   <% if (wishlist && wishlist.products && wishlist.products.length > 0) { %>
                                   <% for(let i=0 ; i < wishlist.products.length ; i++ )  { 
+    
                                     const product = wishlist.products[i].productId;  %>
+                                    
                                   <tr>
+
                                     <td class="product-remove text-center" valign="middle">
-                                        <a href="#"><i class="icon icon anm anm-times-l"></i></a>
-                                    </td>
+                                      <a href="javascript:void(0)" 
+                                         onclick="confirmDelete('<%= wishlist._id %>', '<%= product._id %>')">
+                                          <i class="icon icon anm anm-times-l"></i>
+                                      </a>
+                                  </td>
+                                  
                                     <td class="product-thumbnail text-center">
                                         <a href="#"><img src="uploads/<%= product.productImage[0] %>" alt="Minerva Dress black" title="Minerva Dress black" /></a>
                                     </td>
@@ -501,3 +508,38 @@ document.querySelectorAll('.add-to-cart-btn').forEach(button => {
 
 </script>
 
+<% if (message) { %>
+  <script>
+      Swal.fire({
+          icon: '<%= message.icon %>',
+          text: '<%= message.text %>',
+          toast: true,
+          position: 'top-right',
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1000
+      });
+  </script>
+  <% } %>
+
+
+
+
+  <script>
+    function confirmDelete(wishlistId, productId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to remove this item from the wishlist?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/wishlist-delete?wishlistId=${wishlistId}&productId=${productId}`;
+            }
+        });
+    }
+</script>
