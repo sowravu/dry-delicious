@@ -291,17 +291,16 @@
                         <div class="col-md-6 mb-3">
                             <div class="customer-box returning-customer p-3 border rounded">
                                 <h5 class="mb-3">
-                                    <i class="icon anm anm-user-al"></i> Returning customer?
-                                    <a href="#customer-login" id="customer" class="text-decoration-underline"
-                                        data-toggle="collapse">
-                                        Click here to Add address
+                                    <i class="icon anm anm-user-al"></i> Add Address:
+                                    <a href="#customer-login" id="customer" class="text-decoration-underline" data-toggle="collapse" aria-expanded="false">
+                                        Click here to add a new address
                                     </a>
                                 </h5>
+                        
                                 <div id="customer-login" class="collapse customer-content">
                                     <div class="customer-info">
                                         <p class="small text-muted mb-3">
-                                            If you have shopped with us before, please enter your details below. New
-                                            customers can proceed to the Billing & Shipping section.
+                                            If you have shopped with us before, please enter your details below. New customers can proceed to the Billing & Shipping section.
                                         </p>
                                         <form action="/checkoutAddressAdd" method="post">
                                             <div class="mb-2">
@@ -336,13 +335,11 @@
                                                 <span class="form-label small">Address Type</span>
                                                 <div>
                                                     <div class="form-check form-check-inline">
-                                                        <input type="radio" name="addressType" value="Home"
-                                                            class="form-check-input">
+                                                        <input type="radio" name="addressType" value="Home" class="form-check-input">
                                                         <label class="form-check-label small">Home</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
-                                                        <input type="radio" name="addressType" value="Work"
-                                                            class="form-check-input" checked>
+                                                        <input type="radio" name="addressType" value="Work" class="form-check-input" checked>
                                                         <label class="form-check-label small">Work</label>
                                                     </div>
                                                 </div>
@@ -352,9 +349,8 @@
                                     </div>
                                 </div>
                             </div>
-
-
                         </div>
+                        
 
 
 
@@ -644,8 +640,13 @@
 
                                             </html>
                                             <div class="order-button-payment text-left my-4">
+                                                <% if (data.address.length > 0) { %>
                                                 <button class="btn btn-dark btn-lg w-50" type="submit">Place
                                                     Order</a></button>
+                                                    <% } else { %>
+                                                        <button style="background-color: gray; color: white; cursor: not-allowed; border: 1px solid gray;" disabled class="btn btn-dark btn-lg w-50" type="submit">Place
+                                                            Order</a></button>
+                                                      <% } %>
                                             </div>
                     </form>
 
