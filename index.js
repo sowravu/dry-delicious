@@ -35,7 +35,7 @@ const preventCacheMiddleware = (req, res, next) => {
 
 };
 
-// Apply globally
+
 app.use(preventCacheMiddleware);
 
 app.use(
