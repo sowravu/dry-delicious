@@ -68,7 +68,7 @@ const endDate = req.query.endDate;
       if (startDate && endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999); // Include the full day for the end date
+        end.setHours(23, 59, 59, 999); 
         dateFilter = { createdAt: { $gte: start, $lte: end } };
       } else {
         return res.status(400).send("Please provide both start and end dates for the custom filter.");
@@ -349,7 +349,7 @@ const downloadPDF = async (req, res) => {
       }else if (filter === "Custom" && startDate && endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999); // Include the full day for the end date
+        end.setHours(23, 59, 59, 999); 
         dateFilter = { createdAt: { $gte: start, $lte: end } };
       } else if (filter === "Custom") {
         return res.status(400).send("Please provide both start and end dates for the custom filter.");
@@ -375,7 +375,7 @@ const downloadPDF = async (req, res) => {
       doc.pipe(fs.createWriteStream(filePath));
       doc.pipe(res);
 
-      // Header Section
+      
       const logoPath = "public/user/assets/images/download (3)sdfsd.png";
       if (fs.existsSync(logoPath)) {
         doc.image(logoPath, 50, 20, { width: 80 });
@@ -474,7 +474,7 @@ const downloadExcel = async (req, res) => {
         if (startDate && endDate) {
           const start = new Date(startDate);
           const end = new Date(endDate);
-          end.setHours(23, 59, 59, 999); // Include the full day for the end date
+          end.setHours(23, 59, 59, 999); 
           dateFilter = { createdAt: { $gte: start, $lte: end } };
         } else {
           return res.status(400).send("Please provide both start and end dates for the custom filter.");

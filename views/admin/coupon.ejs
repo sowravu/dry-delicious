@@ -1,11 +1,11 @@
-<!-- Include header layout here -->
+
 <%- include("../layouts/admin/header.ejs") %>
 <%- include("../layouts/admin/navbar.ejs") %>
 
 <main class="main-wrap">
-    <!-- Include top navigation here -->
+ 
     <%- include("../layouts/admin/topnav.ejs") %>
-
+        
     <section class="content-main">
         <div class="content-header">
             <h2 class="content-title">Coupon Management</h2>
@@ -57,13 +57,13 @@
                     const couponForm = document.getElementById('couponForm');
                 
                     couponForm.addEventListener('submit', function (e) {
-                        // Clear previous error messages
+                     
                         document.getElementById('discountValueError').textContent = '';
                         document.getElementById('minimumPurchaseError').textContent = '';
                         document.getElementById('usageLimitError').textContent = '';
                         document.getElementById('expirationDateError').textContent = '';
                 
-                        // Validate fields
+                     
                         let isValid = true;
                 
                         const discountValue = document.getElementById('discountValue').value;
@@ -96,7 +96,7 @@
                             isValid = false;
                         }
                 
-                        // Prevent form submission if validation fails
+                     
                         if (!isValid) {
                             e.preventDefault();
                         }
