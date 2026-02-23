@@ -10,10 +10,7 @@ const path = require("path");
 const MONGO_URI = process.env.MONGODB_URI;
 
 mongoose
-  .connect(MONGO_URI, {
-    useNewUrlParser: true,
-    
-  })
+  .connect(MONGO_URI)
   .then(() => console.log("MongoDB connected successfully"))
   .catch((error) => {
     console.error("Failed to connect to MongoDB:", error.message);
@@ -53,7 +50,7 @@ app.use(
 
 app.use((req, res, next) => {
   res.locals.message = req.session.message;
-  delete req.session.message; 
+  delete req.session.message;
   next();
 });
 

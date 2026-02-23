@@ -11,8 +11,8 @@ const address = require("../../models/addressModel");
 const StatusCodes = require("../../utils/statusCodes");
 const crypto = require("crypto");
 const CartItem = require("../../models/cartModel");
-const Wishlist=require("../../models/wishlistModel")
-const coupon=require("../../models/coupenModel")
+const Wishlist = require("../../models/wishlistModel")
+const coupon = require("../../models/coupenModel")
 
 // page not found
 const pageNotFound = async (req, res) => {
@@ -102,7 +102,7 @@ const loadshop = async (req, res) => {
 
     const selectedCategories = req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [];
 
-    
+
     const selectedBrands = req.query.brand ? (Array.isArray(req.query.brand) ? req.query.brand : [req.query.brand]) : [];
 
     const selectedSort = req.query.sort || '';
@@ -122,7 +122,7 @@ const loadshop = async (req, res) => {
     }
 
     let sortOption = {};
-    
+
     if (selectedSort === "priceAsc") sortOption = { "weightoptions.salesPrice": 1 };
 
     if (selectedSort === "priceDesc") sortOption = { "weightoptions.salesPrice": -1 };
@@ -192,7 +192,7 @@ const ForgetPassword = async (req, res) => {
       user.resetPasswordExpires = Date.now() + 3600000;
 
       await user.save();
-      const resetPasswordLink = `${process.env.NODE_ENV==='production'?process.env.PRODUCTION_DOMAIN:'http://localhost:5678'}/reset-password/${token}`;
+      const resetPasswordLink = `${process.env.NODE_ENV === 'production' ? process.env.PRODUCTION_DOMAIN : 'http://localhost:5678'}/reset-password/${token}`;
 
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -461,17 +461,22 @@ const loadUserProfile = async (req, res) => {
 
 const userProfile = async (req, res) => {
   try {
-    const { name, phone  } = req.body;
+    const { name, phone } = req.body;
     const userdata = req.session.users;
     const image = req.file ? req.file.filename : null
 
     const id = userdata._id.trim();
     const findUser = await User.findOne({ _id: id });
-  
+
     if (findUser) {
+      const updateData = { name: name, phone: phone };
+      if (image) {
+        updateData.Image = image;
+      }
+
       await User.findByIdAndUpdate(
         { _id: findUser._id },
-        { $set: { name: name, phone: phone,Image:image } }
+        { $set: updateData }
       );
       return res.redirect(`/profile?id=${id}`);
     } else {
@@ -489,7 +494,7 @@ const loadAddress = async (req, res) => {
   try {
     const userdata = req.session.users;
     const data = await User.findById({ _id: userdata._id }).populate("address");
-   
+
     if (address) {
       return res.render("address", { data: data });
     } else {
@@ -507,7 +512,7 @@ const Address = async (req, res) => {
     const userdata = req.session.users;
     const { Fullname, Address, city, State, pinCode, Country, phone, addressType } =
       req.body;
-  
+
     const saveAddress = await new address({
       Fullname: Fullname,
       Address: Address,
@@ -520,7 +525,7 @@ const Address = async (req, res) => {
     });
     await saveAddress.save();
     const id = userdata._id;
- 
+
     const updatedUser = await User.findByIdAndUpdate(
       id,
       { $push: { address: saveAddress._id } },
@@ -766,7 +771,7 @@ const Loadcheckout = async (req, res) => {
       totalprice += i.price * i.quantity;
     }
 
-    
+
     const applicableCoupons = coupons.filter((coupon) => {
       return totalprice >= coupon.minimumPurchase;
     });
@@ -777,7 +782,7 @@ const Loadcheckout = async (req, res) => {
         cartdata: cartdata,
         totalprice: totalprice,
         userid: userdata._id,
-        coupons: applicableCoupons, 
+        coupons: applicableCoupons,
       });
     } else {
       return res.redirect("/pageNotFound");
@@ -789,13 +794,13 @@ const Loadcheckout = async (req, res) => {
 };
 
 
-const checkoutAddaddress=async(req,res)=>{
+const checkoutAddaddress = async (req, res) => {
 
   try {
     const userdata = req.session.users;
     const { Fullname, Address, city, State, pinCode, Country, phone, addressType } =
       req.body;
-   
+
     const saveAddress = await new address({
       Fullname: Fullname,
       Address: Address,
@@ -808,7 +813,7 @@ const checkoutAddaddress=async(req,res)=>{
     });
     await saveAddress.save();
     const id = userdata._id;
-   
+
     const updatedUser = await User.findByIdAndUpdate(
       id,
       { $push: { address: saveAddress._id } },
@@ -824,17 +829,17 @@ const checkoutAddaddress=async(req,res)=>{
   } catch (error) {
     console.log(error);
   }
- 
+
 }
 
-const checkoutEditaddress=async(req,res)=>{
-try {
-    
+const checkoutEditaddress = async (req, res) => {
+  try {
 
-    const { Fullname, Address, city, State, pinCode, Country, phone, addressType,addressId } =
+
+    const { Fullname, Address, city, State, pinCode, Country, phone, addressType, addressId } =
       req.body;
-console.log(addressId)
-      console.log("the req.body is ",req.body)
+    console.log(addressId)
+    console.log("the req.body is ", req.body)
     if (addressId) {
       await address.findByIdAndUpdate(
         { _id: addressId.trim() },
@@ -856,7 +861,7 @@ console.log(addressId)
       icon: "success",
       text: "Address edited successfully.",
     };
-   return res.redirect("/checkout");
+    return res.redirect("/checkout");
   } catch (error) {
     console.log(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("deleting failed");
@@ -864,48 +869,48 @@ console.log(addressId)
 }
 
 
-const LoadresetPassword=async(req,res)=>{
+const LoadresetPassword = async (req, res) => {
   try {
-     
+
     return res.render("reset-pass")
-      
+
   } catch (error) {
     console.log(error)
-    
+
   }
 }
-const resetPassword=async(req,res)=>{
+const resetPassword = async (req, res) => {
   try {
     const userdata = req.session.users;
-    const finduser=await User.findById({_id:userdata._id});
-    const {oldPassword,newPassword,confirmPassword}=req.body;
-   if(finduser){
-    const passMatch = await bcrypt.compare(oldPassword,userdata.password);
+    const finduser = await User.findById({ _id: userdata._id });
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    if (finduser) {
+      const passMatch = await bcrypt.compare(oldPassword, userdata.password);
 
-    if(passMatch && newPassword==confirmPassword ){
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-       await User.findByIdAndUpdate(
-        userdata._id,
-        { $set: { password: hashedPassword } },
-        { new: true, runValidators: true } 
-      );
-      req.session.message = {
-        icon: "success",
-        text: "passaword updated successfully.",
-      };
-      return res.redirect(`/profile?id=${userdata._id}`)        
-    }else{
-      res.send("The old password is not match")
+      if (passMatch && newPassword == confirmPassword) {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+        await User.findByIdAndUpdate(
+          userdata._id,
+          { $set: { password: hashedPassword } },
+          { new: true, runValidators: true }
+        );
+        req.session.message = {
+          icon: "success",
+          text: "passaword updated successfully.",
+        };
+        return res.redirect(`/profile?id=${userdata._id}`)
+      } else {
+        res.send("The old password is not match")
+      }
+
     }
-
-   }
 
   } catch (error) {
     console.log(error)
   }
 }
-const  loadAbout=async(req,res)=>{
+const loadAbout = async (req, res) => {
   try {
     return res.render("about")
   } catch (error) {
@@ -915,7 +920,7 @@ const  loadAbout=async(req,res)=>{
 }
 
 
- 
+
 
 module.exports = {
 
