@@ -75,7 +75,8 @@ app.use("/admin", adminRoute);
 
 
 //server connection
-app.listen(process.env.PORT, () => {
-  console.log(`server is running...... http://localhost:${process.env.PORT}  `);
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`server is running...... http://localhost:${PORT}  `);
 });
 
