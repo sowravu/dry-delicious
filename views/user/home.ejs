@@ -144,9 +144,6 @@
                                         <!-- Hover image -->
                                         <img class="hover blur-up lazyload" data-src="/uploads/<%= product[i].productImage[1] %>" src="/uploads/<%= product[i].productImage[1] %>" alt="image" title="product">
                                         <!-- End hover image -->
-                                        <!-- Variant Image-->
-                                        <img class="grid-view-item__image hover variantImg" src="assets/i" alt="image" title="product">
-                                        <!-- Variant Image-->
                                     </a>
                                     <!-- end product image -->
 
@@ -253,14 +250,8 @@
                                     <img class="primary blur-up lazyload" data-src="/uploads/<%= product[i].productImage[0] %>" src="/uploads/<%= product[i].productImage[0] %>" alt="image" title="product">
                                     <!-- End image -->
                                     <!-- Hover image -->
-                                    <img class="hover blur-up lazyload" data-src="/uploads/<%= product[i].productImage[0] %>" src="/uploads/<%= product[i].productImage[0] %>" alt="image" title="product">
+                                    <img class="hover blur-up lazyload" data-src="/uploads/<%= product[i].productImage[1] || product[i].productImage[0] %>" src="/uploads/<%= product[i].productImage[1] || product[i].productImage[0] %>" alt="image" title="product">
                                     <!-- End hover image -->
-                                    <!-- Variant Image -->
-                                    <img class="grid-view-item__image hover variantImg" src="/uploads/<%= product[i].productImage[0] %>" alt="image" title="product">
-                                    <!-- Variant Image -->
-                                    <!-- product label -->
-                                 
-                                    <!-- End product label -->
                                 </a>
                                 <!-- end product image -->
                 
