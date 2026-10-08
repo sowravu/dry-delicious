@@ -192,7 +192,8 @@ const ForgetPassword = async (req, res) => {
       user.resetPasswordExpires = Date.now() + 3600000;
 
       await user.save();
-      const resetPasswordLink = `${process.env.NODE_ENV === 'production' ? process.env.PRODUCTION_DOMAIN : 'http://localhost:5678'}/reset-password/${token}`;
+      const baseUrl = process.env.NODE_ENV === 'production' && process.env.PRODUCTION_DOMAIN ? process.env.PRODUCTION_DOMAIN : `http://localhost:${process.env.PORT || 3001}`;
+      const resetPasswordLink = `${baseUrl}/reset-password/${token}`;
 
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
