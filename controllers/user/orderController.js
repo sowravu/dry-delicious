@@ -14,7 +14,6 @@ const razorpay = require("../../config/Razorpay");
 const Return = require("../../models/returnModel");
 const mongoose = require('mongoose');
 const Transaction = require('../../models/transactionModel');
-const puppeteer = require('puppeteer');
 const PDFDocument = require('pdfkit');
 
 

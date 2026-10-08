@@ -21,6 +21,8 @@ mongoose
 const express = require("express");
 const app = express();
 
+app.set("trust proxy", 1);
+
 
 const preventCacheMiddleware = (req, res, next) => {
 
